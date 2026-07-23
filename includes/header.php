@@ -1,6 +1,23 @@
 <?php
 require_once __DIR__ . '/db.php';
 
+// Monthly Loyalty Points Check
+if (isset($_SESSION['user_id'])) {
+    $stmt = $pdo->prepare("SELECT last_monthly_points_date FROM users WHERE id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $user_pts = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($user_pts) {
+        $current_month = date('Y-m');
+        $last_month = $user_pts['last_monthly_points_date'] ? date('Y-m', strtotime($user_pts['last_monthly_points_date'])) : '';
+        
+        if ($current_month !== $last_month) {
+            $update_stmt = $pdo->prepare("UPDATE users SET loyalty_points = loyalty_points + 20, last_monthly_points_date = CURDATE() WHERE id = ?");
+            $update_stmt->execute([$_SESSION['user_id']]);
+        }
+    }
+}
+
 // Calculate cart items count
 $cart_count = 0;
 if (isset($_SESSION['cart'])) {
@@ -8,6 +25,7 @@ if (isset($_SESSION['cart'])) {
         $cart_count += $qty;
     }
 }
+$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
 <html dir="rtl" lang="fa" style="">
@@ -32,9 +50,10 @@ if (isset($_SESSION['cart'])) {
         <div class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto flex-row">
             <div class="flex items-center gap-8">
                 <div class="hidden md:flex gap-8 flex-row">
-                    <a class="text-on-primary text-label-lg hover:text-secondary-fixed transition-colors duration-200 border-b-2 border-white pb-1 opacity-100" href="index.php">خانه</a>
-                    <a class="text-on-primary opacity-90 text-label-lg hover:text-secondary-fixed transition-colors duration-200" href="shop.php">فروشگاه</a>
-                    <a class="text-on-primary opacity-90 text-label-lg hover:text-secondary-fixed transition-colors duration-200" href="subscriptions.php">اشتراک خودکار</a>
+                    <a class="text-on-primary text-label-lg hover:text-secondary-fixed transition-all duration-200 <?php echo $current_page == 'index.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="index.php">خانه</a>
+                    <a class="text-on-primary text-label-lg hover:text-secondary-fixed transition-all duration-200 <?php echo $current_page == 'shop.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="shop.php">فروشگاه</a>
+                    <a class="text-on-primary text-label-lg hover:text-secondary-fixed transition-all duration-200 <?php echo $current_page == 'bookingpage.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="bookingpage.php">کلینیک</a>
+                    <a class="text-on-primary text-label-lg hover:text-secondary-fixed transition-all duration-200 <?php echo $current_page == 'subscriptions.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="subscriptions.php">اشتراک خودکار</a>
                 </div>
             </div>
             <div class="hidden lg:flex items-center bg-white/10 rounded-full px-4 py-2 text-on-primary gap-2 flex-1 max-w-md mx-4">
@@ -53,7 +72,11 @@ if (isset($_SESSION['cart'])) {
                     <?php else: ?>
                         <a href="loginpage.php" class="bg-secondary-container text-on-secondary-container px-6 py-2 rounded-lg font-label-lg btn-premium">ورود / ثبت‌نام</a>
                     <?php endif; ?>
-                    <a href="loginpage.php" class="material-symbols-outlined text-on-primary p-2 hover:bg-white/10 rounded-full transition-colors" data-icon="person">person</a>
+                    <?php if(isset($_SESSION['user_id'])): ?>
+                        <a href="usr_profile.php" class="material-symbols-outlined text-on-primary p-2 hover:bg-white/10 rounded-full transition-colors" data-icon="person">person</a>
+                    <?php else: ?>
+                        <a href="loginpage.php" class="material-symbols-outlined text-on-primary p-2 hover:bg-white/10 rounded-full transition-colors" data-icon="person">person</a>
+                    <?php endif; ?>
                     <a href="cart.php" class="relative material-symbols-outlined text-on-primary p-2 hover:bg-white/10 rounded-full transition-colors" data-icon="shopping_cart">
                         shopping_cart
                         <?php if($cart_count > 0): ?>

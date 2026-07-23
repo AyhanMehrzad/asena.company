@@ -16,10 +16,10 @@ include 'includes/header.php';
                         <h2 class="text-display-lg mb-2">کلینیک ۲۴ ساعته</h2>
                         <div class="max-h-0 opacity-0 group-hover/panel:max-h-56 group-hover/panel:opacity-100 transition-all duration-700 delay-100 overflow-hidden">
                             <p class="text-body-lg mb-8 opacity-90 max-w-xl whitespace-normal">دسترسی مستقیم به برترین متخصصین کشور در هر ساعت از شبانه‌روز. مشاوره تصویری و رزرو نوبت آنی.</p>
-                            <button class="bg-white text-primary px-10 py-4 rounded-xl font-bold text-label-lg btn-premium flex items-center gap-3">
+                            <a href="bookingpage.php" class="bg-white text-primary px-10 py-4 rounded-xl font-bold text-label-lg btn-premium flex items-center gap-3 w-fit">
                                 <span class="">رزرو نوبت فوری</span>
                                 <span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
-                            </button>
+                            </a>
                         </div>
                         <div class="group-hover/panel:hidden flex items-center gap-2 text-label-lg font-bold">
                             <span class="">مشاهده خدمات کلینیک</span>

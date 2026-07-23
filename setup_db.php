@@ -5,9 +5,10 @@ try {
     // Create Users Table
     $pdo->exec("CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        phone VARCHAR(15) UNIQUE NOT NULL,
+        phone VARCHAR(255) UNIQUE NOT NULL,
         name VARCHAR(100),
         sms_code VARCHAR(10),
+        password VARCHAR(255),
         role ENUM('user', 'admin') DEFAULT 'user',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");

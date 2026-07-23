@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'این شماره موبایل/ایمیل قبلاً ثبت شده است.';
             } else {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare("INSERT INTO users (phone, name, password) VALUES (?, ?, ?)");
+                $stmt = $pdo->prepare("INSERT INTO users (phone, name, password, loyalty_points) VALUES (?, ?, ?, 50)");
                 if ($stmt->execute([$phone, $name, $hash])) {
                     $user_id = $pdo->lastInsertId();
                     $_SESSION['user_id'] = $user_id;

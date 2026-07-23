@@ -1,9 +1,9 @@
 <?php
 require_once 'includes/db.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
-    $product_id = (int)($_POST['product_id'] ?? 0);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $action = $_REQUEST['action'] ?? '';
+    $product_id = (int)($_REQUEST['product_id'] ?? 0);
     
     if (!isset($_SESSION['cart'])) {
         $_SESSION['cart'] = [];
