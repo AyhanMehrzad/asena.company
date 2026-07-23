@@ -24,6 +24,34 @@ $pets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt = $pdo->prepare("SELECT d.*, p.name as pet_name FROM pet_documents d JOIN user_pets p ON d.pet_id = p.id WHERE d.user_id = ? ORDER BY d.uploaded_at DESC");
 $stmt->execute([$user_id]);
 $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch upcoming appointments
+$stmt = $pdo->prepare("
+    SELECT a.*, d.name as doctor_name, d.specialty as doctor_specialty, d.image_url as doctor_image 
+    FROM appointments a 
+    JOIN doctors d ON a.doctor_id = d.id 
+    WHERE a.user_id = ? AND a.appointment_date >= CURDATE()
+    ORDER BY a.appointment_date ASC, a.appointment_time ASC
+    LIMIT 4
+");
+$stmt->execute([$user_id]);
+$appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch recent orders
+$stmt = $pdo->prepare("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
+$stmt->execute([$user_id]);
+$orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch active subscriptions
+$stmt = $pdo->prepare("
+    SELECT s.*, p.name as product_name, p.image_url as product_image 
+    FROM subscriptions s 
+    JOIN products p ON s.product_id = p.id 
+    WHERE s.user_id = ? AND s.status = 'active'
+    ORDER BY s.next_delivery_date ASC
+");
+$stmt->execute([$user_id]);
+$subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <?php require_once 'includes/header.php'; ?>
 <style>
@@ -63,21 +91,23 @@ $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <span class="material-symbols-outlined">medical_services</span>
 <span class="text-sm">سوابق پزشکی</span>
 </a>
+<?php if(isset($user['role']) && $user['role'] === 'admin'): ?>
+<a class="flex items-center gap-3 px-4 py-3 text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all font-bold" href="admin/index.php">
+<span class="material-symbols-outlined">admin_panel_settings</span>
+<span class="text-sm">پنل مدیریت سایت</span>
+</a>
+<?php endif; ?>
 </nav>
 <div class="pt-6 border-t border-outline-variant flex flex-col gap-1">
 <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="usr_profile_settings.php">
 <span class="material-symbols-outlined">settings</span>
 <span class="text-sm">تنظیمات</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="usr_rewards.php">
-<span class="material-symbols-outlined">card_giftcard</span>
-<span class="text-sm">امتیاز وفاداری و جوایز</span>
-</a>
 <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="#">
 <span class="material-symbols-outlined">help</span>
 <span class="text-sm">پشتیبانی</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-all" href="#">
+<a class="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-all" href="logout.php">
 <span class="material-symbols-outlined">logout</span>
 <span class="text-sm">خروج</span>
 </a>
@@ -118,19 +148,26 @@ $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="flex gap-4 items-center relative z-10">
 <div class="flex flex-col items-center bg-white px-6 py-4 rounded-2xl border border-outline-variant shadow-sm min-w-[140px]">
 <p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold mb-1">امتیاز وفاداری</p>
-<p class="text-2xl font-bold text-secondary persian-number">۲,۴۵۰</p>
+<p class="text-2xl font-bold text-secondary persian-number"><?php echo number_format($user['loyalty_points'] ?? 0); ?></p>
 </div>
 <div class="flex flex-col items-center bg-primary-container text-white px-6 py-4 rounded-2xl shadow-md min-w-[180px]">
 <p class="text-[10px] uppercase tracking-wider opacity-80 font-bold mb-1">نوبت بعدی</p>
 <div class="flex items-center gap-2">
 <span class="material-symbols-outlined text-sm">calendar_month</span>
-<p class="text-base font-bold persian-number">۱۵ آبان - ۱۰:۳۰</p>
+<?php if (!empty($appointments)): ?>
+    <p class="text-base font-bold persian-number"><?php 
+        $next_date = new DateTime($appointments[0]['appointment_date']);
+        echo IntlDateFormatter::formatObject($next_date, 'd MMMM', 'fa') . ' - ' . substr($appointments[0]['appointment_time'], 0, 5); 
+    ?></p>
+<?php else: ?>
+    <p class="text-base font-bold">ندارید</p>
+<?php endif; ?>
 </div>
 </div>
 </div>
-<button class="bg-primary-container text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:bg-primary transition-all active:scale-95 shadow-lg shadow-primary-container/20">
+<a href="bookingpage.php" class="bg-primary-container text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:bg-primary transition-all active:scale-95 shadow-lg shadow-primary-container/20 flex items-center gap-2">
                 رزرو نوبت جدید
-            </button>
+            </a>
 </section>
 <!-- Grid Layout -->
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -146,70 +183,62 @@ $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <button class="text-sm font-bold text-primary-container hover:underline">مشاهده همه</button>
 </div>
 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-<!-- Appointment Card 1 -->
-<div class="group border border-outline-variant p-5 rounded-2xl flex flex-col gap-4 hover:border-primary-container hover:shadow-xl transition-all duration-300">
-<div class="flex gap-4">
-<div class="relative">
-<img alt="Dr Sarah" class="w-16 h-16 rounded-xl object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5_Jx1aoOWuXTAJ2zSWrBLb1gUGiQ0-0cjAGS1EXtBhzrc76bij05wKJddSvUcvgccLIPVP7fzOUftCncUPUO_W-CmOJFT_d5qn9C4zpUmllx0lTtfZqaxHyKCbzjRTv4zR-OXJ_oTRjUTrExoefpLE_WD0fCcIqqD0qe4u74fdV7FtvJqef0LILtnmLWh14UUPFg8XK5kInA4eRPh-zRicuxikVzTN5hzf4U62Dl36sEQE-SA6r-I"/>
-<span class="absolute -bottom-1 -right-1 w-5 h-5 bg-status-active border-2 border-white rounded-full"></span>
-</div>
-<div class="flex-1">
-<div class="flex justify-between items-start">
-<h4 class="text-base font-bold text-primary">دکتر سارا احمدی</h4>
-<div class="flex items-center gap-0.5 text-status-warning">
-<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
-<span class="text-xs font-bold text-on-surface">۴.۹</span>
-</div>
-</div>
-<p class="text-xs text-on-surface-variant font-medium">متخصص جراحی و داخلی</p>
-<div class="mt-2 flex gap-1">
-<span class="text-[10px] bg-primary-container/10 text-primary-container px-2 py-0.5 rounded-full font-bold">حضوری</span>
-<span class="text-[10px] bg-status-active/10 text-status-active px-2 py-0.5 rounded-full font-bold">تایید شده</span>
-</div>
-</div>
-</div>
-<div class="bg-surface-container-low p-3 rounded-xl flex justify-between items-center persian-number text-xs font-bold">
-<div class="flex items-center gap-1.5 text-on-surface-variant">
-<span class="material-symbols-outlined text-base">calendar_today</span>
-<span>۱۵ آبان ۱۴۰۲</span>
-</div>
-<div class="flex items-center gap-1.5 text-on-surface-variant">
-<span class="material-symbols-outlined text-base">schedule</span>
-<span>ساعت ۱۰:۳۰</span>
-</div>
-</div>
-<button class="w-full bg-primary-container text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all">
-<span class="material-symbols-outlined text-lg">videocam</span>
-                                ورود به اتاق مشاوره
-                            </button>
-</div>
-<!-- Appointment Card 2 -->
-<div class="group border border-outline-variant p-5 rounded-2xl flex flex-col gap-4 hover:border-primary-container hover:shadow-xl transition-all duration-300 opacity-90">
-<div class="flex gap-4">
-<img alt="Dr Rad" class="w-16 h-16 rounded-xl object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqYWVSdfo2U2dE8Hvmud_WOkssfQe2p1CLdLjOpWdiqSwl_rTu1X9dt3MOydwIvsqSaZEwBuREaQ2_h-t8qF8Vw2qbVObZyOHpnSm1BGETPzSk4xj18y43sPki9Ca1EbUzSWtLVdERmge2U5P3MrH2HoOyqUOcMnUwFckMGWesRdv_GxS0rX5c88qcguaNXRp_eo3p0f8jSFa-bbYbvZkS-ZkVDumkNjcZTIuL4FdOxIJYhN4GlqUM"/>
-<div class="flex-1">
-<h4 class="text-base font-bold text-primary">دکتر مهران راد</h4>
-<p class="text-xs text-on-surface-variant font-medium">جراح متخصص داخلی</p>
-<div class="mt-2 flex gap-1">
-<span class="text-[10px] bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-bold">ویزیت در محل</span>
-</div>
-</div>
-</div>
-<div class="bg-surface-container-low p-3 rounded-xl flex justify-between items-center persian-number text-xs font-bold">
-<div class="flex items-center gap-1.5 text-on-surface-variant">
-<span class="material-symbols-outlined text-base">calendar_today</span>
-<span>۲۲ آبان ۱۴۰۲</span>
-</div>
-<div class="flex items-center gap-1.5 text-on-surface-variant">
-<span class="material-symbols-outlined text-base">schedule</span>
-<span>ساعت ۱۷:۱۵</span>
-</div>
-</div>
-<button class="w-full border-2 border-primary-container text-primary-container py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-primary-container hover:text-white transition-all">
-<span class="material-symbols-outlined text-lg">map</span>
-                                مشاهده آدرس کلینیک
-                            </button>
-</div>
+<?php if (empty($appointments)): ?>
+    <div class="col-span-full text-center py-8 text-on-surface-variant">
+        <span class="material-symbols-outlined text-4xl mb-2 opacity-50">calendar_month</span>
+        <p class="font-bold">شما هیچ نوبت رزرو شده‌ای ندارید.</p>
+        <a href="bookingpage.php" class="text-primary-container hover:underline text-sm mt-2 inline-block">برای رزرو نوبت کلیک کنید</a>
+    </div>
+<?php else: ?>
+    <?php foreach ($appointments as $apt): ?>
+        <div class="group border border-outline-variant p-5 rounded-2xl flex flex-col gap-4 hover:border-primary-container hover:shadow-xl transition-all duration-300">
+        <div class="flex gap-4">
+        <div class="relative">
+        <img alt="<?php echo htmlspecialchars($apt['doctor_name']); ?>" class="w-16 h-16 rounded-xl object-cover" src="<?php echo htmlspecialchars($apt['doctor_image'] ?? 'https://via.placeholder.com/150'); ?>"/>
+        <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-status-active border-2 border-white rounded-full"></span>
+        </div>
+        <div class="flex-1">
+        <div class="flex justify-between items-start">
+        <h4 class="text-base font-bold text-primary"><?php echo htmlspecialchars($apt['doctor_name']); ?></h4>
+        <div class="flex items-center gap-0.5 text-status-warning">
+        <span class="text-[10px] bg-primary-container/10 text-primary-container px-2 py-0.5 rounded-full font-bold"><?php echo htmlspecialchars($apt['status'] == 'pending' ? 'در انتظار' : 'تایید شده'); ?></span>
+        </div>
+        </div>
+        <p class="text-xs text-on-surface-variant font-medium"><?php echo htmlspecialchars($apt['doctor_specialty']); ?></p>
+        <?php if (!empty($apt['pet_type'])): ?>
+            <div class="mt-2 flex gap-1">
+            <span class="text-[10px] bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-bold">حیوان: <?php echo htmlspecialchars($apt['pet_type']); ?></span>
+            </div>
+        <?php endif; ?>
+        </div>
+        </div>
+        <div class="bg-surface-container-low p-3 rounded-xl flex justify-between items-center persian-number text-xs font-bold">
+        <div class="flex items-center gap-1.5 text-on-surface-variant">
+        <span class="material-symbols-outlined text-base">calendar_today</span>
+        <span><?php 
+            $apt_date = new DateTime($apt['appointment_date']);
+            echo IntlDateFormatter::formatObject($apt_date, 'd MMMM YYYY', 'fa'); 
+        ?></span>
+        </div>
+        <div class="flex items-center gap-1.5 text-on-surface-variant">
+        <span class="material-symbols-outlined text-base">schedule</span>
+        <span>ساعت <?php echo substr($apt['appointment_time'], 0, 5); ?></span>
+        </div>
+        </div>
+        <?php if ($apt['status'] == 'approved'): ?>
+            <button class="w-full bg-primary-container text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all">
+            <span class="material-symbols-outlined text-lg">videocam</span>
+                                            ورود به اتاق مشاوره
+                                        </button>
+        <?php else: ?>
+            <button class="w-full border-2 border-primary-container text-primary-container py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-primary-container hover:text-white transition-all">
+            <span class="material-symbols-outlined text-lg">map</span>
+                                            مشاهده آدرس کلینیک
+                                        </button>
+        <?php endif; ?>
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>
 </div>
 </div>
 <!-- Order History (Clean Table) -->
@@ -232,36 +261,42 @@ $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </tr>
 </thead>
 <tbody class="divide-y divide-outline-variant persian-number font-medium">
-<tr class="hover:bg-primary-container/5 transition-colors">
-<td class="px-6 py-5 font-bold text-primary">#PC-98231</td>
-<td class="px-6 py-5 text-on-surface-variant">۱۴۰۲/۰۸/۰۵</td>
-<td class="px-6 py-5">
-<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-status-active/10 text-status-active text-xs font-bold">
-                                            تحویل شده
-                                        </span>
-</td>
-<td class="px-6 py-5 font-bold text-on-surface">۱,۲۸۰,۰۰۰ تومان</td>
+<?php if(empty($orders)): ?>
+<tr>
+    <td colspan="4" class="px-6 py-8 text-center text-on-surface-variant font-bold">هیچ سفارشی یافت نشد.</td>
 </tr>
-<tr class="bg-surface-container-low/30 hover:bg-primary-container/5 transition-colors">
-<td class="px-6 py-5 font-bold text-primary">#PC-98105</td>
-<td class="px-6 py-5 text-on-surface-variant">۱۴۰۲/۰۷/۲۸</td>
-<td class="px-6 py-5">
-<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-primary-container text-xs font-bold">
-                                            در حال ارسال
-                                        </span>
-</td>
-<td class="px-6 py-5 font-bold text-on-surface">۴۵۰,۰۰۰ تومان</td>
-</tr>
-<tr class="hover:bg-primary-container/5 transition-colors">
-<td class="px-6 py-5 font-bold text-primary">#PC-97822</td>
-<td class="px-6 py-5 text-on-surface-variant">۱۴۰۲/۰۷/۱۵</td>
-<td class="px-6 py-5">
-<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-status-active/10 text-status-active text-xs font-bold">
-                                            تحویل شده
-                                        </span>
-</td>
-<td class="px-6 py-5 font-bold text-on-surface">۳,۹۰۰,۰۰۰ تومان</td>
-</tr>
+<?php else: ?>
+    <?php foreach($orders as $order): ?>
+    <tr class="hover:bg-primary-container/5 transition-colors">
+    <td class="px-6 py-5 font-bold text-primary">#PC-<?php echo $order['id']; ?></td>
+    <td class="px-6 py-5 text-on-surface-variant">
+        <?php 
+        $order_date = new DateTime($order['created_at']);
+        echo IntlDateFormatter::formatObject($order_date, 'Y/MM/dd', 'fa'); 
+        ?>
+    </td>
+    <td class="px-6 py-5">
+        <?php 
+        $status_bg = 'bg-surface-container-high';
+        $status_text = 'text-on-surface';
+        $status_label = $order['status'];
+        
+        switch($order['status']) {
+            case 'pending_payment': $status_bg = 'bg-orange-100'; $status_text = 'text-orange-800'; $status_label = 'در انتظار پرداخت'; break;
+            case 'processing': $status_bg = 'bg-blue-100'; $status_text = 'text-blue-800'; $status_label = 'در حال پردازش'; break;
+            case 'shipped': $status_bg = 'bg-indigo-100'; $status_text = 'text-indigo-800'; $status_label = 'ارسال شده'; break;
+            case 'delivered': $status_bg = 'bg-status-active/10'; $status_text = 'text-status-active'; $status_label = 'تحویل شده'; break;
+            case 'cancelled': $status_bg = 'bg-error/10'; $status_text = 'text-error'; $status_label = 'لغو شده'; break;
+        }
+        ?>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full <?php echo $status_bg; ?> <?php echo $status_text; ?> text-xs font-bold">
+            <?php echo $status_label; ?>
+        </span>
+    </td>
+    <td class="px-6 py-5 font-bold text-on-surface"><?php echo number_format($order['total_amount']); ?> تومان</td>
+    </tr>
+    <?php endforeach; ?>
+<?php endif; ?>
 </tbody>
 </table>
 </div>
@@ -278,31 +313,27 @@ $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </h3>
 </div>
 <div class="p-6 space-y-4">
-<!-- Subscription Item 1 -->
-<div class="p-4 border border-outline-variant rounded-2xl flex items-center gap-4 hover:border-primary-container transition-all group relative overflow-hidden bg-white shadow-sm">
-<div class="absolute top-0 right-0 bg-secondary text-white px-3 py-0.5 text-[9px] font-bold rounded-bl-xl">۱۰٪ تخفیف طلایی</div>
-<img alt="Product" class="w-16 h-16 object-contain rounded-lg p-1 border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNNyDNeUmq7h033nVNrDsrCEN7KN6jmFtZTbvk15qfbAv2MEtT28FWh0_EijA820-DX2r4VHdnQkFdbShwIQWjI6N-6BW3dDs62E-fySgZgcuoMYsvNAHjOV-vxKoGs3uai1jZRuo0O25w_YNXKAxmC0dLoHcdD-cxZWOtrEzYWQyz0Z4VQtpzgv58apciYzJqkvtKi2K-en-HPRS0xYbCrlqU_wLjGrYzzDVEJdMNrPpweTVa71YW"/>
-<div class="flex-1">
-<h4 class="text-sm font-bold text-on-surface">رویال کنین - هپاتیک</h4>
-<p class="text-[11px] text-on-surface-variant persian-number mt-0.5">تکرار: هر ۴ هفته یک‌بار</p>
-<div class="mt-2 flex items-center gap-1.5 text-status-active font-bold text-xs persian-number">
-<span class="material-symbols-outlined text-[16px]">local_shipping</span>
-                                    ارسال بعدی: ۲۰ آبان
-                                </div>
-</div>
-</div>
-<!-- Subscription Item 2 -->
-<div class="p-4 border border-outline-variant rounded-2xl flex items-center gap-4 hover:border-primary-container transition-all bg-white shadow-sm">
-<img alt="Medicine" class="w-16 h-16 object-contain rounded-lg p-1 border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlCsXP6_QGnPSvWp08DueERbbkd3LPYhZWMiqKi7jIcmZJKnq6i19582o2gnbAozw6H7-jV1miz5ygfqrsIGRnVWEZAmaxVDNOISY2N_-qrvkrZHucQrjGTKb2Gsskiglyqn_zBWlbh2jXYo4ChOuvQYI_g7yIFcDREuBZc2ELNF83cLLmaDZQtpB4mqIpTOt-AKk_wCCyNMKSoPqlbWCCLw7NG58pCpT8gH7xliqgxJ4-nAMP7HtT"/>
-<div class="flex-1">
-<h4 class="text-sm font-bold text-on-surface">قرص براوکتو</h4>
-<p class="text-[11px] text-on-surface-variant persian-number mt-0.5">تکرار: هر ۳ ماه یک‌بار</p>
-<div class="mt-2 flex items-center gap-1.5 text-on-surface-variant font-bold text-xs persian-number">
-<span class="material-symbols-outlined text-[16px]">history</span>
-                                    ارسال بعدی: ۵ آذر
-                                </div>
-</div>
-</div>
+<?php if(empty($subscriptions)): ?>
+    <p class="text-sm text-on-surface-variant text-center py-4">شما هیچ اشتراک فعالی ندارید.</p>
+<?php else: ?>
+    <?php foreach($subscriptions as $sub): ?>
+    <div class="p-4 border border-outline-variant rounded-2xl flex items-center gap-4 hover:border-primary-container transition-all group relative overflow-hidden bg-white shadow-sm">
+    <div class="absolute top-0 right-0 bg-secondary text-white px-3 py-0.5 text-[9px] font-bold rounded-bl-xl">ارسال خودکار</div>
+    <img alt="Product" class="w-16 h-16 object-contain rounded-lg p-1 border border-outline-variant" src="<?php echo htmlspecialchars($sub['product_image']); ?>"/>
+    <div class="flex-1">
+    <h4 class="text-sm font-bold text-on-surface"><?php echo htmlspecialchars($sub['product_name']); ?></h4>
+    <p class="text-[11px] text-on-surface-variant persian-number mt-0.5">تکرار: هر <?php echo $sub['frequency_days']; ?> روز یک‌بار</p>
+    <div class="mt-2 flex items-center gap-1.5 text-status-active font-bold text-xs persian-number">
+    <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+                                        ارسال بعدی: <?php 
+        $next_del = new DateTime($sub['next_delivery_date']);
+        echo IntlDateFormatter::formatObject($next_del, 'd MMMM YYYY', 'fa'); 
+        ?>
+                                    </div>
+    </div>
+    </div>
+    <?php endforeach; ?>
+<?php endif; ?>
 <button class="w-full border-2 border-dashed border-outline-variant text-on-surface-variant py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-white hover:border-primary-container hover:text-primary transition-all group">
 <span class="material-symbols-outlined group-hover:scale-110 transition-transform">add_circle</span>
                             افزودن اشتراک جدید
@@ -328,9 +359,21 @@ $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
         <div class="flex-1">
             <h4 class="text-sm font-bold text-on-surface"><?php echo htmlspecialchars($pet['name']); ?></h4>
-            <p class="text-[11px] text-on-surface-variant"><?php echo htmlspecialchars($pet['type']); ?> • <?php echo htmlspecialchars($pet['race']); ?></p>
+            <p class="text-[11px] text-on-surface-variant">
+                <?php echo htmlspecialchars($pet['type']); ?> 
+                <?php if(!empty($pet['race'])) echo ' • ' . htmlspecialchars($pet['race']); ?>
+                <?php if(!empty($pet['gender'])) echo ' • ' . htmlspecialchars($pet['gender']); ?>
+                <?php if(!empty($pet['age'])) echo ' • سن: ' . htmlspecialchars($pet['age']); ?>
+            </p>
         </div>
-        <span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">edit</span>
+        <div class="flex gap-2">
+            <span onclick="openEditPetModal(<?php echo $pet['id']; ?>, '<?php echo addslashes(htmlspecialchars($pet['name'])); ?>', '<?php echo addslashes(htmlspecialchars($pet['type'])); ?>', '<?php echo addslashes(htmlspecialchars($pet['race'])); ?>', '<?php echo addslashes(htmlspecialchars($pet['gender'] ?? '')); ?>', '<?php echo addslashes(htmlspecialchars($pet['age'] ?? '')); ?>')" class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">edit</span>
+            <form action="profile_action.php" method="POST" onsubmit="return confirm('آیا از حذف این حیوان خانگی اطمینان دارید؟');" class="inline">
+                <input type="hidden" name="action" value="delete_pet">
+                <input type="hidden" name="pet_id" value="<?php echo $pet['id']; ?>">
+                <button type="submit" class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-error bg-transparent border-0 p-0 m-0 flex items-center">delete</button>
+            </form>
+        </div>
     </div>
     <?php endforeach; ?>
 <?php endif; ?>
@@ -408,7 +451,67 @@ $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <label class="block text-sm font-bold mb-1">نژاد (اختیاری)</label>
                 <input type="text" name="pet_race" class="w-full border border-outline-variant rounded-lg p-2 focus:ring-2 focus:ring-primary-container outline-none text-sm">
             </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-bold mb-1">جنسیت</label>
+                    <select name="pet_gender" class="w-full border border-outline-variant rounded-lg p-2 focus:ring-2 focus:ring-primary-container outline-none text-sm">
+                        <option value="">نامشخص</option>
+                        <option value="نر">نر</option>
+                        <option value="ماده">ماده</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1">سن</label>
+                    <input type="text" name="pet_age" placeholder="مثال: ۲ سال" class="w-full border border-outline-variant rounded-lg p-2 focus:ring-2 focus:ring-primary-container outline-none text-sm">
+                </div>
+            </div>
             <button type="submit" class="w-full bg-primary-container text-white py-3 rounded-xl font-bold mt-4 hover:bg-primary transition-colors">ثبت مشخصات</button>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Pet Modal -->
+<div id="editPetModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+        <button onclick="document.getElementById('editPetModal').classList.add('hidden')" class="absolute top-4 left-4 text-on-surface-variant hover:text-error"><span class="material-symbols-outlined">close</span></button>
+        <h2 class="text-xl font-bold text-primary mb-6">ویرایش حیوان خانگی</h2>
+        <form action="profile_action.php" method="POST" class="space-y-4">
+            <input type="hidden" name="action" value="edit_pet">
+            <input type="hidden" name="pet_id" id="edit_pet_id" value="">
+            <div>
+                <label class="block text-sm font-bold mb-1">نام حیوان</label>
+                <input type="text" name="pet_name" id="edit_pet_name" required class="w-full border border-outline-variant rounded-lg p-2 focus:ring-2 focus:ring-primary-container outline-none text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-bold mb-1">نوع حیوان</label>
+                <select name="pet_type" id="edit_pet_type" required class="w-full border border-outline-variant rounded-lg p-2 focus:ring-2 focus:ring-primary-container outline-none text-sm">
+                    <option value="">انتخاب کنید...</option>
+                    <option value="سگ">سگ</option>
+                    <option value="گربه">گربه</option>
+                    <option value="پرنده">پرنده</option>
+                    <option value="جونده">جونده</option>
+                    <option value="سایر">سایر</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-bold mb-1">نژاد (اختیاری)</label>
+                <input type="text" name="pet_race" id="edit_pet_race" class="w-full border border-outline-variant rounded-lg p-2 focus:ring-2 focus:ring-primary-container outline-none text-sm">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-bold mb-1">جنسیت</label>
+                    <select name="pet_gender" id="edit_pet_gender" class="w-full border border-outline-variant rounded-lg p-2 focus:ring-2 focus:ring-primary-container outline-none text-sm">
+                        <option value="">نامشخص</option>
+                        <option value="نر">نر</option>
+                        <option value="ماده">ماده</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1">سن</label>
+                    <input type="text" name="pet_age" id="edit_pet_age" class="w-full border border-outline-variant rounded-lg p-2 focus:ring-2 focus:ring-primary-container outline-none text-sm">
+                </div>
+            </div>
+            <button type="submit" class="w-full bg-primary-container text-white py-3 rounded-xl font-bold mt-4 hover:bg-primary transition-colors">ذخیره تغییرات</button>
         </form>
     </div>
 </div>
@@ -449,6 +552,16 @@ $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </span>
 </button>
 <script>
+    function openEditPetModal(id, name, type, race, gender, age) {
+        document.getElementById('edit_pet_id').value = id;
+        document.getElementById('edit_pet_name').value = name;
+        document.getElementById('edit_pet_type').value = type;
+        document.getElementById('edit_pet_race').value = race;
+        document.getElementById('edit_pet_gender').value = gender;
+        document.getElementById('edit_pet_age').value = age;
+        document.getElementById('editPetModal').classList.remove('hidden');
+    }
+
     // Micro-interactions and initialization
     window.addEventListener('load', () => {
         document.querySelectorAll('.glass-card, .rounded-2xl').forEach((el, index) => {

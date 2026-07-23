@@ -56,6 +56,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $_SESSION['profile_error'] = "لطفاً تمام فیلدها را پر کنید و فایلی انتخاب نمایید.";
         }
+    } elseif ($action === 'edit_pet') {
+        $pet_id = (int)($_POST['pet_id'] ?? 0);
+        $name = trim($_POST['pet_name'] ?? '');
+        $type = trim($_POST['pet_type'] ?? '');
+        $race = trim($_POST['pet_race'] ?? '');
+        
+        if ($pet_id > 0 && !empty($name) && !empty($type)) {
+            // Ensure the pet belongs to the user
+            $stmt = $pdo->prepare("UPDATE user_pets SET name = ?, type = ?, race = ? WHERE id = ? AND user_id = ?");
+            if ($stmt->execute([$name, $type, $race, $pet_id, $user_id])) {
+                $_SESSION['profile_success'] = "مشخصات حیوان خانگی با موفقیت بروزرسانی شد.";
+            } else {
+                $_SESSION['profile_error'] = "خطا در بروزرسانی حیوان خانگی.";
+            }
+        } else {
+            $_SESSION['profile_error'] = "نام و نوع حیوان الزامی است.";
+        }
+    } elseif ($action === 'delete_pet') {
+        $pet_id = (int)($_POST['pet_id'] ?? 0);
+        if ($pet_id > 0) {
+            $stmt = $pdo->prepare("DELETE FROM user_pets WHERE id = ? AND user_id = ?");
+            if ($stmt->execute([$pet_id, $user_id])) {
+                $_SESSION['profile_success'] = "حیوان خانگی با موفقیت حذف شد.";
+            } else {
+                $_SESSION['profile_error'] = "خطا در حذف حیوان خانگی.";
+            }
+        }
     }
 }
 

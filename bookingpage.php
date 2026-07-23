@@ -21,6 +21,28 @@ if (isset($_SESSION['user_id'])) {
         // ignore
     }
 }
+
+// Fetch booked slots for the next 14 days
+$booked_slots = [];
+try {
+    $stmt = $pdo->query("SELECT doctor_id, appointment_date, appointment_time FROM appointments WHERE appointment_date >= CURDATE() AND appointment_date <= DATE_ADD(CURDATE(), INTERVAL 14 DAY) AND status != 'cancelled'");
+    $appts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($appts as $appt) {
+        $docId = $appt['doctor_id'];
+        $date = $appt['appointment_date'];
+        $time = substr($appt['appointment_time'], 0, 5); // '09:00'
+        if (!isset($booked_slots[$docId])) {
+            $booked_slots[$docId] = [];
+        }
+        if (!isset($booked_slots[$docId][$date])) {
+            $booked_slots[$docId][$date] = [];
+        }
+        $booked_slots[$docId][$date][] = $time;
+    }
+} catch (PDOException $e) {
+    // ignore
+}
+$booked_slots_json = json_encode($booked_slots);
 ?>
 
 <!-- Include page-specific styles -->
@@ -102,6 +124,7 @@ if (isset($_SESSION['user_id'])) {
                          data-name="<?php echo htmlspecialchars($doctor['name']); ?>"
                          data-image="<?php echo htmlspecialchars($doctor['image_url']); ?>"
                          data-price="<?php echo $doctor['price']; ?>"
+                         data-schedule="<?php echo htmlspecialchars($doctor['schedule_info'] ?? '{}'); ?>"
                          onclick="selectDoctor(this)">
                         
                         <div class="relative mb-4">
@@ -135,52 +158,12 @@ if (isset($_SESSION['user_id'])) {
                 
                 <!-- Date Picker -->
                 <div class="flex gap-3 overflow-x-auto pb-2 custom-scrollbar" id="dates-list">
-                    <?php 
-                        // Generate some upcoming dates dynamically for realism
-                        $days = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
-                        $months = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
-                        
-                        for ($i = 0; $i < 7; $i++): 
-                            $timestamp = strtotime("+$i days");
-                            $day_name = $i == 0 ? 'امروز' : $days[date('w', $timestamp)];
-                            $day_num = date('d', $timestamp);
-                            // Fake jalali conversion for UI display
-                            $display_date = "۲۰۲۴-" . date('m-d', $timestamp); 
-                    ?>
-                    <div class="date-card flex-shrink-0 w-20 h-24 glass-card rounded-lg flex flex-col items-center justify-center cursor-pointer border-2 border-transparent hover:bg-surface-container transition-colors"
-                         data-date="<?php echo $display_date; ?>"
-                         data-display="<?php echo "{$day_name}، $day_num"; ?>"
-                         onclick="selectDate(this)">
-                        <span class="text-label-sm font-label-sm text-on-surface-variant"><?php echo $day_name; ?></span>
-                        <span class="text-headline-md font-headline-md text-on-surface"><?php echo $day_num; ?></span>
-                    </div>
-                    <?php endfor; ?>
+                    <div class="text-on-surface-variant text-sm py-4 px-2">لطفاً ابتدا یک پزشک را انتخاب کنید تا روزهای حضور نمایش داده شود.</div>
                 </div>
                 
                 <!-- Time Slots Grid -->
-                <div class="space-y-4" id="times-list">
-                    <div class="flex items-center gap-2 text-on-surface-variant">
-                        <span class="material-symbols-outlined text-[20px]">light_mode</span>
-                        <span class="text-label-lg font-label-lg">صبح (۰۹:۰۰ - ۱۲:۰۰)</span>
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                        <?php foreach(['۰۹:۰۰', '۰۹:۳۰', '۱۰:۰۰', '۱۰:۳۰', '۱۱:۳۰'] as $time): ?>
-                        <button type="button" class="time-btn py-3 px-4 rounded-lg bg-white border border-outline-variant text-body-md font-body-md hover:border-primary transition-colors text-center"
-                                onclick="selectTime(this, '<?php echo $time; ?> صبح')"><?php echo $time; ?></button>
-                        <?php endforeach; ?>
-                        <button type="button" class="py-3 px-4 rounded-lg bg-surface-container-low text-on-surface-variant/40 border border-transparent line-through text-body-md font-body-md cursor-not-allowed text-center" disabled>۱۱:۰۰</button>
-                    </div>
-                    
-                    <div class="flex items-center gap-2 text-on-surface-variant pt-4">
-                        <span class="material-symbols-outlined text-[20px]">wb_sunny</span>
-                        <span class="text-label-lg font-label-lg">بعد از ظهر (۱۴:۰۰ - ۱۸:۰۰)</span>
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                        <?php foreach(['۱۴:۰۰', '۱۴:۳۰', '۱۵:۰۰', '۱۵:۳۰', '۱۶:۰۰', '۱۶:۳۰', '۱۷:۰۰'] as $time): ?>
-                        <button type="button" class="time-btn py-3 px-4 rounded-lg bg-white border border-outline-variant text-body-md font-body-md hover:border-primary transition-colors text-center"
-                                onclick="selectTime(this, '<?php echo $time; ?> عصر')"><?php echo $time; ?></button>
-                        <?php endforeach; ?>
-                    </div>
+                <div class="space-y-4 hidden" id="times-list">
+                    <!-- Dynamic time slots will be generated here by JS -->
                 </div>
             </section>
 
@@ -295,10 +278,17 @@ if (isset($_SESSION['user_id'])) {
 </main>
 
 <script>
+    // Global Booked Slots from PHP
+    const bookedSlots = <?php echo $booked_slots_json; ?>;
+    
     // Booking interactive logic
     let selectedDoctorId = null;
+    let selectedDoctorSchedule = null;
     let selectedDate = null;
     let selectedTime = null;
+
+    const daysMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    const daysFa = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
 
     function selectDoctor(card) {
         // Reset all
@@ -316,17 +306,83 @@ if (isset($_SESSION['user_id'])) {
         selectedDoctorId = card.dataset.id;
         document.getElementById('input_doctor_id').value = selectedDoctorId;
         
+        // Parse Schedule
+        try {
+            selectedDoctorSchedule = JSON.parse(card.dataset.schedule || "{}");
+        } catch(e) {
+            selectedDoctorSchedule = {};
+        }
+        
         // Update summary
         document.getElementById('summary-doctor').classList.remove('opacity-50');
         document.getElementById('summary-doctor-name').textContent = card.dataset.name;
         document.getElementById('summary-doctor-img').src = card.dataset.image;
         
-        // Format price (e.g. 450000 -> ۴۵۰,۰۰۰)
+        // Format price
         let priceStr = new Intl.NumberFormat('fa-IR').format(card.dataset.price);
         document.getElementById('summary-price').textContent = priceStr;
         
+        // Reset Date & Time
+        selectedDate = null;
+        selectedTime = null;
+        document.getElementById('input_date').value = "";
+        document.getElementById('input_time').value = "";
+        document.getElementById('summary-date').textContent = "انتخاب نشده";
+        document.getElementById('summary-time').textContent = "انتخاب نشده";
+        
+        renderDates();
         updateStepper();
         checkFormCompleteness();
+    }
+
+    function renderDates() {
+        const datesList = document.getElementById('dates-list');
+        const timesList = document.getElementById('times-list');
+        datesList.innerHTML = '';
+        timesList.innerHTML = '';
+        timesList.classList.add('hidden');
+        
+        if (Object.keys(selectedDoctorSchedule).length === 0) {
+            datesList.innerHTML = '<div class="text-on-surface-variant text-sm py-4 px-2">این پزشک هنوز برنامه حضور خود را ثبت نکرده است.</div>';
+            return;
+        }
+
+        let addedCount = 0;
+        let d = new Date();
+        
+        // Check next 14 days
+        for (let i = 0; i < 14; i++) {
+            d.setDate(d.getDate() + 1); // start from tomorrow
+            let dayIndex = d.getDay();
+            let dayKey = daysMap[dayIndex];
+            
+            if (selectedDoctorSchedule[dayKey]) {
+                // Doctor is available on this day
+                addedCount++;
+                let displayDay = daysFa[dayIndex];
+                let displayNum = d.getDate();
+                let monthStr = (d.getMonth() + 1).toString().padStart(2, '0');
+                let dayStr = d.getDate().toString().padStart(2, '0');
+                let valueDate = d.getFullYear() + "-" + monthStr + "-" + dayStr; // YYYY-MM-DD format for DB
+                
+                let card = document.createElement('div');
+                card.className = "date-card flex-shrink-0 w-20 h-24 glass-card rounded-lg flex flex-col items-center justify-center cursor-pointer border-2 border-transparent hover:bg-surface-container transition-colors";
+                card.dataset.date = valueDate;
+                card.dataset.daykey = dayKey;
+                card.dataset.display = displayDay + "، " + displayNum;
+                card.onclick = function() { selectDate(this); };
+                
+                card.innerHTML = `
+                    <span class="text-label-sm font-label-sm text-on-surface-variant">${displayDay}</span>
+                    <span class="text-headline-md font-headline-md text-on-surface">${displayNum}</span>
+                `;
+                datesList.appendChild(card);
+            }
+        }
+        
+        if (addedCount === 0) {
+            datesList.innerHTML = '<div class="text-on-surface-variant text-sm py-4 px-2">پزشک در ۲ هفته آینده حضور ندارد.</div>';
+        }
     }
 
     function selectDate(card) {
@@ -339,18 +395,84 @@ if (isset($_SESSION['user_id'])) {
         document.getElementById('summary-date').textContent = card.dataset.display;
         document.getElementById('summary-date').classList.remove('text-on-surface-variant');
         
+        // Reset Time
+        selectedTime = null;
+        document.getElementById('input_time').value = "";
+        document.getElementById('summary-time').textContent = "انتخاب نشده";
+        
+        renderTimes(card.dataset.daykey, selectedDate);
+        
         updateStepper();
         checkFormCompleteness();
     }
 
-    function selectTime(btn, displayTime) {
+    function generateTimeSlots(start, end) {
+        if (!start || !end) return [];
+        let slots = [];
+        let curr = new Date(`1970-01-01T${start}:00`);
+        let endT = new Date(`1970-01-01T${end}:00`);
+        
+        while (curr < endT) {
+            let h = curr.getHours().toString().padStart(2, '0');
+            let m = curr.getMinutes().toString().padStart(2, '0');
+            slots.push(`${h}:${m}`);
+            curr.setMinutes(curr.getMinutes() + 45);
+        }
+        return slots;
+    }
+
+    function renderTimes(dayKey, dateStr) {
+        const timesList = document.getElementById('times-list');
+        timesList.innerHTML = '';
+        timesList.classList.remove('hidden');
+        
+        let daySched = selectedDoctorSchedule[dayKey];
+        if (!daySched) return;
+        
+        let morningSlots = generateTimeSlots(daySched.m_start, daySched.m_end);
+        let afternoonSlots = generateTimeSlots(daySched.a_start, daySched.a_end);
+        
+        let bookedForDate = (bookedSlots[selectedDoctorId] && bookedSlots[selectedDoctorId][dateStr]) ? bookedSlots[selectedDoctorId][dateStr] : [];
+
+        let buildSection = (title, icon, slots, label) => {
+            if (slots.length === 0) return '';
+            let html = `
+                <div class="flex items-center gap-2 text-on-surface-variant ${title.includes('عصر') ? 'pt-4' : ''}">
+                    <span class="material-symbols-outlined text-[20px]">${icon}</span>
+                    <span class="text-label-lg font-label-lg">${title}</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-2">
+            `;
+            
+            slots.forEach(time => {
+                let isBooked = bookedForDate.includes(time);
+                if (isBooked) {
+                    html += `<button type="button" class="py-2 px-2 rounded-lg bg-[#fd8100]/10 text-[#fd8100] border border-[#fd8100]/40 text-body-md font-body-md cursor-not-allowed text-center opacity-80 flex flex-col items-center justify-center gap-1" disabled>
+                                <span>${time}</span>
+                                <span class="text-[10px] font-bold">رزرو شده</span>
+                             </button>`;
+                } else {
+                    html += `<button type="button" class="time-btn py-3 px-4 rounded-lg bg-white border border-outline-variant text-body-md font-body-md hover:border-primary transition-colors text-center flex items-center justify-center"
+                                onclick="selectTime(this, '${time}', '${label}')">${time}</button>`;
+                }
+            });
+            
+            html += `</div>`;
+            return html;
+        };
+        
+        timesList.innerHTML += buildSection(`صبح (${daySched.m_start} - ${daySched.m_end})`, 'light_mode', morningSlots, 'صبح');
+        timesList.innerHTML += buildSection(`بعد از ظهر (${daySched.a_start} - ${daySched.a_end})`, 'wb_sunny', afternoonSlots, 'عصر');
+    }
+
+    function selectTime(btn, timeValue, label) {
         document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         
-        selectedTime = displayTime;
+        selectedTime = timeValue; // We'll store HH:MM in DB
         document.getElementById('input_time').value = selectedTime;
         
-        document.getElementById('summary-time').textContent = displayTime;
+        document.getElementById('summary-time').textContent = timeValue + ' ' + label;
         document.getElementById('summary-time').classList.remove('text-on-surface-variant');
         
         updateStepper();
