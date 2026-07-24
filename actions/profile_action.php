@@ -1,8 +1,8 @@
 <?php
-require_once 'includes/db.php';
+require_once '../includes/db.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: loginpage.php");
+    header("Location: login.php");
     exit;
 }
 
@@ -86,6 +86,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-header("Location: usr_profile.php");
+header("Location: profile.php");
 exit;
 ?>

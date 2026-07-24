@@ -55,7 +55,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <div class="hidden md:flex gap-8 flex-row shrink-0">
                     <a class="text-on-primary text-label-lg hover:text-secondary-fixed transition-all duration-200 <?php echo $current_page == 'index.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="index.php">خانه</a>
                     <a class="text-on-primary text-label-lg hover:text-secondary-fixed transition-all duration-200 <?php echo $current_page == 'shop.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="shop.php">فروشگاه</a>
-                    <a class="text-on-primary text-label-lg hover:text-secondary-fixed transition-all duration-200 <?php echo $current_page == 'bookingpage.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="bookingpage.php">کلینیک</a>
+                    <a class="text-on-primary text-label-lg hover:text-secondary-fixed transition-all duration-200 <?php echo $current_page == 'booking.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="booking.php">کلینیک</a>
                     <a class="text-on-primary text-label-lg hover:text-secondary-fixed transition-all duration-200 <?php echo $current_page == 'subscriptions.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="subscriptions.php">اشتراک خودکار</a>
                 </div>
                 
@@ -78,13 +78,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <?php endif; ?>
                         <!-- Removed direct logout button -->
                     <?php else: ?>
-                        <a href="loginpage.php" class="bg-secondary-container text-on-secondary-container px-6 py-2 rounded-lg font-label-lg btn-premium">ورود / ثبت‌نام</a>
+                        <a href="login.php" class="bg-secondary-container text-on-secondary-container px-6 py-2 rounded-lg font-label-lg btn-premium">ورود / ثبت‌نام</a>
                     <?php endif; ?>
                     
                     <?php if(isset($_SESSION['user_id'])): ?>
-                        <a href="usr_profile.php" class="material-symbols-outlined text-on-primary p-2 hover:bg-white/10 rounded-full transition-colors" data-icon="person">person</a>
+                        <a href="profile.php" class="material-symbols-outlined text-on-primary p-2 hover:bg-white/10 rounded-full transition-colors" data-icon="person">person</a>
                     <?php else: ?>
-                        <a href="loginpage.php" class="material-symbols-outlined text-on-primary p-2 hover:bg-white/10 rounded-full transition-colors" data-icon="person">person</a>
+                        <a href="login.php" class="material-symbols-outlined text-on-primary p-2 hover:bg-white/10 rounded-full transition-colors" data-icon="person">person</a>
                     <?php endif; ?>
                     
                     <a href="cart.php" class="relative material-symbols-outlined text-on-primary p-2 hover:bg-white/10 rounded-full transition-colors" data-icon="shopping_cart">

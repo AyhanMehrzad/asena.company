@@ -56,7 +56,7 @@ $final_price = $total_price - $total_discount;
                     <div class="flex-1 w-full">
                         <div class="flex justify-between items-start mb-2">
                             <h3 class="text-title-lg font-bold text-on-surface"><?php echo htmlspecialchars($prod['name']); ?></h3>
-                            <form action="cart_action.php" method="POST">
+                            <form action="actions/cart_action.php" method="POST">
                                 <input type="hidden" name="product_id" value="<?php echo $prod['id']; ?>">
                                 <input type="hidden" name="action" value="remove">
                                 <button type="submit" class="text-error hover:bg-error/10 p-2 rounded-lg transition-colors cursor-pointer">
@@ -68,7 +68,7 @@ $final_price = $total_price - $total_discount;
                         
                         <div class="flex justify-between items-center w-full">
                             <div class="flex items-center gap-4 bg-surface-container rounded-xl p-2">
-                                <form action="cart_action.php" method="POST">
+                                <form action="actions/cart_action.php" method="POST">
                                     <input type="hidden" name="product_id" value="<?php echo $prod['id']; ?>">
                                     <input type="hidden" name="action" value="decrease">
                                     <button type="submit" class="w-8 h-8 flex items-center justify-center bg-white rounded-lg shadow-sm hover:text-primary transition-colors cursor-pointer"><span class="material-symbols-outlined text-sm">remove</span></button>
@@ -76,7 +76,7 @@ $final_price = $total_price - $total_discount;
                                 
                                 <span class="font-bold w-6 text-center"><?php echo $prod['qty']; ?></span>
                                 
-                                <form action="cart_action.php" method="POST">
+                                <form action="actions/cart_action.php" method="POST">
                                     <input type="hidden" name="product_id" value="<?php echo $prod['id']; ?>">
                                     <input type="hidden" name="action" value="increase">
                                     <button type="submit" class="w-8 h-8 flex items-center justify-center bg-white rounded-lg shadow-sm hover:text-primary transition-colors cursor-pointer"><span class="material-symbols-outlined text-sm">add</span></button>
@@ -127,7 +127,7 @@ $final_price = $total_price - $total_discount;
                             <span class="material-symbols-outlined">arrow_left_alt</span>
                         </a>
                     <?php else: ?>
-                        <a href="loginpage.php" class="w-full bg-secondary-container text-on-secondary-container py-5 rounded-2xl font-bold flex justify-center items-center gap-3 btn-premium hover:bg-secondary-container/80 text-label-lg transition-all">
+                        <a href="login.php" class="w-full bg-secondary-container text-on-secondary-container py-5 rounded-2xl font-bold flex justify-center items-center gap-3 btn-premium hover:bg-secondary-container/80 text-label-lg transition-all">
                             برای پرداخت وارد شوید
                             <span class="material-symbols-outlined">person</span>
                         </a>

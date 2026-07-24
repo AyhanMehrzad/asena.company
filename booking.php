@@ -68,7 +68,7 @@ $booked_slots_json = json_encode($booked_slots);
     <!-- Breadcrumb -->
     <div class="text-label-sm text-on-surface-variant mb-6">
         <a href="index.php" class="hover:underline">خانه</a> > 
-        <a href="bookingpage.php" class="text-on-surface">رزرو نوبت</a>
+        <a href="booking.php" class="text-on-surface">رزرو نوبت</a>
     </div>
 
     <?php if(isset($_SESSION['booking_error'])): ?>
@@ -101,7 +101,7 @@ $booked_slots_json = json_encode($booked_slots);
     </div>
 
     <!-- Booking Form -->
-    <form action="booking_action.php" method="POST" id="booking-form" class="flex flex-col lg:flex-row-reverse gap-8">
+    <form action="actions/booking_action.php" method="POST" id="booking-form" class="flex flex-col lg:flex-row-reverse gap-8">
         
         <!-- Hidden Inputs to store selections -->
         <input type="hidden" name="doctor_id" id="input_doctor_id" value="">

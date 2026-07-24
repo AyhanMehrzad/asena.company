@@ -288,8 +288,8 @@ function buildUrlRemoveArrayItem($arrayName, $valueToRemove) {
                         <!-- Quick add to cart overlay -->
                         <div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/60 to-transparent flex justify-center z-20">
                             <!-- Using a form here isn't great because it's inside another form (our main filter form).
-                                 We will use JavaScript to submit to cart_action.php via POST or redirect. -->
-                            <button type="button" onclick="window.location.href='cart_action.php?action=add&product_id=<?php echo $product['id']; ?>'" class="bg-primary text-white w-full py-3 rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-primary-container">
+                                 We will use JavaScript to submit to actions/cart_action.php via POST or redirect. -->
+                            <button type="button" onclick="window.location.href='actions/cart_action.php?action=add&product_id=<?php echo $product['id']; ?>'" class="bg-primary text-white w-full py-3 rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-primary-container">
                                 <span class="material-symbols-outlined">add_shopping_cart</span>
                                 افزودن به سبد
                             </button>

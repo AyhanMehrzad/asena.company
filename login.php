@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php endif; ?>
 
 <!-- Input Fields -->
-<form class="space-y-5" method="POST" action="loginpage.php">
+<form class="space-y-5" method="POST" action="login.php">
 <input type="hidden" name="mode" id="form-mode" value="<?php echo htmlspecialchars($_POST['mode'] ?? 'login'); ?>" />
 
 <div class="input-group">

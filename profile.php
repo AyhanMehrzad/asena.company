@@ -1,7 +1,7 @@
 <?php
 require_once 'includes/db.php';
 if (!isset($_SESSION['user_id'])) {
-    header("Location: loginpage.php");
+    header("Location: login.php");
     exit;
 }
 
@@ -99,7 +99,7 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php endif; ?>
 </nav>
 <div class="pt-6 border-t border-outline-variant flex flex-col gap-1">
-<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="usr_profile_settings.php">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="profile_settings.php">
 <span class="material-symbols-outlined">settings</span>
 <span class="text-sm">تنظیمات</span>
 </a>
@@ -165,7 +165,7 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 </div>
 </div>
-<a href="bookingpage.php" class="bg-primary-container text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:bg-primary transition-all active:scale-95 shadow-lg shadow-primary-container/20 flex items-center gap-2">
+<a href="booking.php" class="bg-primary-container text-white px-8 py-3.5 rounded-xl font-bold text-sm hover:bg-primary transition-all active:scale-95 shadow-lg shadow-primary-container/20 flex items-center gap-2">
                 رزرو نوبت جدید
             </a>
 </section>
@@ -187,7 +187,7 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="col-span-full text-center py-8 text-on-surface-variant">
         <span class="material-symbols-outlined text-4xl mb-2 opacity-50">calendar_month</span>
         <p class="font-bold">شما هیچ نوبت رزرو شده‌ای ندارید.</p>
-        <a href="bookingpage.php" class="text-primary-container hover:underline text-sm mt-2 inline-block">برای رزرو نوبت کلیک کنید</a>
+        <a href="booking.php" class="text-primary-container hover:underline text-sm mt-2 inline-block">برای رزرو نوبت کلیک کنید</a>
     </div>
 <?php else: ?>
     <?php foreach ($appointments as $apt): ?>
@@ -368,7 +368,7 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
         <div class="flex gap-2">
             <span onclick="openEditPetModal(<?php echo $pet['id']; ?>, '<?php echo addslashes(htmlspecialchars($pet['name'])); ?>', '<?php echo addslashes(htmlspecialchars($pet['type'])); ?>', '<?php echo addslashes(htmlspecialchars($pet['race'])); ?>', '<?php echo addslashes(htmlspecialchars($pet['gender'] ?? '')); ?>', '<?php echo addslashes(htmlspecialchars($pet['age'] ?? '')); ?>')" class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">edit</span>
-            <form action="profile_action.php" method="POST" onsubmit="return confirm('آیا از حذف این حیوان خانگی اطمینان دارید؟');" class="inline">
+            <form action="actions/profile_action.php" method="POST" onsubmit="return confirm('آیا از حذف این حیوان خانگی اطمینان دارید؟');" class="inline">
                 <input type="hidden" name="action" value="delete_pet">
                 <input type="hidden" name="pet_id" value="<?php echo $pet['id']; ?>">
                 <button type="submit" class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-error bg-transparent border-0 p-0 m-0 flex items-center">delete</button>
@@ -430,7 +430,7 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
         <button onclick="document.getElementById('addPetModal').classList.add('hidden')" class="absolute top-4 left-4 text-on-surface-variant hover:text-error"><span class="material-symbols-outlined">close</span></button>
         <h2 class="text-xl font-bold text-primary mb-6">ثبت حیوان جدید</h2>
-        <form action="profile_action.php" method="POST" class="space-y-4">
+        <form action="actions/profile_action.php" method="POST" class="space-y-4">
             <input type="hidden" name="action" value="add_pet">
             <div>
                 <label class="block text-sm font-bold mb-1">نام حیوان</label>
@@ -475,7 +475,7 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
         <button onclick="document.getElementById('editPetModal').classList.add('hidden')" class="absolute top-4 left-4 text-on-surface-variant hover:text-error"><span class="material-symbols-outlined">close</span></button>
         <h2 class="text-xl font-bold text-primary mb-6">ویرایش حیوان خانگی</h2>
-        <form action="profile_action.php" method="POST" class="space-y-4">
+        <form action="actions/profile_action.php" method="POST" class="space-y-4">
             <input type="hidden" name="action" value="edit_pet">
             <input type="hidden" name="pet_id" id="edit_pet_id" value="">
             <div>
@@ -521,7 +521,7 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
         <button onclick="document.getElementById('addDocModal').classList.add('hidden')" class="absolute top-4 left-4 text-on-surface-variant hover:text-error"><span class="material-symbols-outlined">close</span></button>
         <h2 class="text-xl font-bold text-primary mb-6">آپلود سند جدید</h2>
-        <form action="profile_action.php" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <form action="actions/profile_action.php" method="POST" enctype="multipart/form-data" class="space-y-4">
             <input type="hidden" name="action" value="upload_document">
             <div>
                 <label class="block text-sm font-bold mb-1">حیوان مربوطه</label>

@@ -112,7 +112,7 @@ $top_product = $stmt->fetch(PDO::FETCH_ASSOC);
             <div class="bg-white rounded-xl stat-card-shadow border border-outline-variant/30 overflow-hidden">
                 <div class="px-6 py-5 border-b border-outline-variant/20 flex justify-between items-center">
                     <h2 class="font-title-lg text-title-lg text-primary">وضعیت زنده کلینیک</h2>
-                    <a href="clinic_managment.php" class="text-primary-container font-label-lg hover:underline">مشاهده تقویم کامل</a>
+                    <a href="clinic_management.php" class="text-primary-container font-label-lg hover:underline">مشاهده تقویم کامل</a>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-right">

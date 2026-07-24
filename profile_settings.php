@@ -1,7 +1,7 @@
 <?php
 require_once 'includes/db.php';
 if (!isset($_SESSION['user_id'])) {
-    header("Location: loginpage.php");
+    header("Location: login.php");
     exit;
 }
 
@@ -142,15 +142,15 @@ require_once 'includes/header.php';
                 <p class="text-label-sm text-on-surface-variant"><?php echo htmlspecialchars($user['phone']); ?></p>
             </div>
             
-            <a href="usr_profile.php" class="flex items-center gap-3 p-4 rounded-xl text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-bold text-body-md transition-colors">
+            <a href="profile.php" class="flex items-center gap-3 p-4 rounded-xl text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-bold text-body-md transition-colors">
                 <span class="material-symbols-outlined text-[24px]">person</span>
                 اطلاعات حساب کاربری
             </a>
-            <a href="usr_profile_settings.php" class="flex items-center gap-3 p-4 rounded-xl bg-secondary-container text-on-secondary-container font-bold text-body-md transition-colors">
+            <a href="profile_settings.php" class="flex items-center gap-3 p-4 rounded-xl bg-secondary-container text-on-secondary-container font-bold text-body-md transition-colors">
                 <span class="material-symbols-outlined text-[24px]">settings</span>
                 تنظیمات
             </a>
-            <a href="usr_rewards.php" class="flex items-center gap-3 p-4 rounded-xl text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-bold text-body-md transition-colors">
+            <a href="rewards.php" class="flex items-center gap-3 p-4 rounded-xl text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-bold text-body-md transition-colors">
                 <span class="material-symbols-outlined text-[24px]">card_giftcard</span>
                 امتیاز وفاداری و جوایز
             </a>
@@ -182,7 +182,7 @@ require_once 'includes/header.php';
     </div>
 <?php endif; ?>
 <!-- Section 1: Account Information -->
-<form method="POST" action="settings_action.php" class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden settings-card">
+<form method="POST" action="actions/settings_action.php" class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden settings-card">
 <input type="hidden" name="action" value="update_account">
 <div class="p-6 border-b border-outline-variant bg-surface-alt">
 <h2 class="font-title-lg text-title-lg text-primary flex items-center gap-2">
@@ -228,7 +228,7 @@ require_once 'includes/header.php';
 </div>
 </form>
 <!-- Section 2: Shipping Address -->
-<form method="POST" action="settings_action.php" class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden settings-card">
+<form method="POST" action="actions/settings_action.php" class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden settings-card">
 <input type="hidden" name="action" value="update_address">
 <div class="p-6 border-b border-outline-variant bg-surface-alt">
 <h2 class="font-title-lg text-title-lg text-primary flex items-center gap-2">

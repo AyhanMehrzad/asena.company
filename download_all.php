@@ -2,7 +2,7 @@
 require_once 'includes/db.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: loginpage.php");
+    header("Location: login.php");
     exit;
 }
 
@@ -15,7 +15,7 @@ try {
     
     if (count($documents) === 0) {
         $_SESSION['profile_error'] = "هیچ سندی برای دانلود یافت نشد.";
-        header("Location: usr_profile.php");
+        header("Location: profile.php");
         exit;
     }
     

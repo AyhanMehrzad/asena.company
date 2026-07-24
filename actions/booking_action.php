@@ -1,11 +1,11 @@
 <?php
-require_once 'includes/db.php';
+require_once '../includes/db.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     // Save the referring URL so they can come back after login
-    $_SESSION['redirect_after_login'] = 'bookingpage.php';
-    header("Location: loginpage.php");
+    $_SESSION['redirect_after_login'] = 'booking.php';
+    header("Location: login.php");
     exit;
 }
 
@@ -38,11 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // If we reach here, there was an error. Store it in session and redirect back.
     $_SESSION['booking_error'] = $error ?? "خطای نامشخص";
-    header("Location: bookingpage.php");
+    header("Location: booking.php");
     exit;
 } else {
     // If accessed directly without POST, redirect back to booking page
-    header("Location: bookingpage.php");
+    header("Location: booking.php");
     exit;
 }
 ?>

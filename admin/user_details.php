@@ -3,7 +3,7 @@ require_once '../includes/db.php'; // ensure we have db access
 
 $userId = $_GET['id'] ?? null;
 if (!$userId) {
-    header("Location: usermanagment.php");
+    header("Location: user_management.php");
     exit;
 }
 
@@ -91,7 +91,7 @@ $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
 if (!$user) {
-    header("Location: usermanagment.php");
+    header("Location: user_management.php");
     exit;
 }
 
@@ -125,7 +125,7 @@ $appointments = $stmt->fetchAll();
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
         <div class="flex items-center gap-4">
-            <a href="usermanagment.php" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface-variant">
+            <a href="user_management.php" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface-variant">
                 <span class="material-symbols-outlined">arrow_forward</span>
             </a>
             <div>

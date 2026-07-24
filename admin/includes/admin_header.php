@@ -138,9 +138,9 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
         $navItems = [
             'dashboard' => ['icon' => 'dashboard', 'title' => 'پیشخوان مدیریت', 'url' => 'index.php'],
             'orders' => ['icon' => 'local_shipping', 'title' => 'سفارشات و ارسال', 'url' => 'orders.php'],
-            'clinic' => ['icon' => 'medical_services', 'title' => 'مدیریت کلینیک', 'url' => 'clinic_managment.php'],
+            'clinic' => ['icon' => 'medical_services', 'title' => 'مدیریت کلینیک', 'url' => 'clinic_management.php'],
             'inventory' => ['icon' => 'shopping_bag', 'title' => 'انبار و فروشگاه', 'url' => 'inventory.php'],
-            'users' => ['icon' => 'group', 'title' => 'مدیریت کاربران', 'url' => 'usermanagment.php'],
+            'users' => ['icon' => 'group', 'title' => 'مدیریت کاربران', 'url' => 'user_management.php'],
             'analytics' => ['icon' => 'analytics', 'title' => 'تحلیل و آمار', 'url' => 'analytics.php']
         ];
 

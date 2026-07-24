@@ -3,7 +3,7 @@ require_once '../includes/db.php';
 
 // Route Guard
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../loginpage.php");
+    header("Location: ../login.php");
     exit;
 }
 $stmt = $pdo->prepare("SELECT role, name FROM users WHERE id = ?");
