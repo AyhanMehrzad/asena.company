@@ -15,12 +15,64 @@ $subStmt = $pdo->query("SELECT COUNT(DISTINCT user_id) FROM subscriptions WHERE 
 $premiumUsers = $subStmt->fetchColumn();
 
 // Activity logs
-// We'll simulate fetching logs here, but eventually it could come from a logs table
-$logs = [
-    ['icon' => 'person_add', 'color' => 'bg-status-active', 'title' => 'ثبت نام کاربر جدید', 'user' => 'علی احمدی', 'time' => '۱۰ دقیقه پیش'],
-    ['icon' => 'shopping_cart', 'color' => 'bg-secondary-container', 'title' => 'ثبت سفارش موفق', 'user' => 'سارا کریمی', 'time' => '۱ ساعت پیش'],
-    ['icon' => 'admin_panel_settings', 'color' => 'bg-primary-container', 'title' => 'ورود مدیر به سیستم', 'user' => htmlspecialchars($adminName), 'time' => '۲ ساعت پیش'],
-];
+$logs = [];
+
+// 1. Fetch latest users
+$stmtUsers = $pdo->query("SELECT id, name, created_at FROM users ORDER BY created_at DESC LIMIT 5");
+while ($row = $stmtUsers->fetch()) {
+    $logs[] = [
+        'icon' => 'person_add',
+        'color' => 'bg-status-active',
+        'title' => 'ثبت نام کاربر جدید',
+        'user' => $row['name'] ?: 'کاربر جدید',
+        'timestamp' => strtotime($row['created_at'])
+    ];
+}
+
+// 2. Fetch latest orders
+$stmtOrders = $pdo->query("SELECT o.id, o.created_at, u.name FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.created_at DESC LIMIT 5");
+while ($row = $stmtOrders->fetch()) {
+    $logs[] = [
+        'icon' => 'shopping_cart',
+        'color' => 'bg-secondary-container',
+        'title' => 'ثبت سفارش جدید',
+        'user' => $row['name'] ?: 'کاربر نامشخص',
+        'timestamp' => strtotime($row['created_at'])
+    ];
+}
+
+// 3. Fetch latest appointments
+$stmtApps = $pdo->query("SELECT a.id, a.created_at, u.name FROM appointments a JOIN users u ON a.user_id = u.id ORDER BY a.created_at DESC LIMIT 5");
+while ($row = $stmtApps->fetch()) {
+    $logs[] = [
+        'icon' => 'calendar_today',
+        'color' => 'bg-primary-container',
+        'title' => 'رزرو نوبت جدید',
+        'user' => $row['name'] ?: 'کاربر نامشخص',
+        'timestamp' => strtotime($row['created_at'])
+    ];
+}
+
+// Sort by timestamp descending
+usort($logs, function($a, $b) {
+    return $b['timestamp'] - $a['timestamp'];
+});
+
+// Take top 5 logs
+$logs = array_slice($logs, 0, 5);
+
+// Helper function for Persian time ago
+function timeAgo($timestamp) {
+    $seconds = time() - $timestamp;
+    $minutes = round($seconds / 60);
+    $hours = round($seconds / 3600);
+    $days = round($seconds / 86400);
+    
+    if ($seconds <= 60) return "همین الان";
+    else if ($minutes <= 60) return "$minutes دقیقه پیش";
+    else if ($hours <= 24) return "$hours ساعت پیش";
+    else return "$days روز پیش";
+}
 ?>
 
 <div class="p-8 max-w-[1400px] mx-auto">
@@ -151,7 +203,7 @@ $logs = [
                         </div>
                         <div class="flex-1">
                             <p class="font-label-lg text-primary"><?= $log['title'] ?> <span class="font-body-md text-on-surface-variant">توسط <?= $log['user'] ?></span></p>
-                            <p class="font-label-sm text-on-surface-variant opacity-60"><?= $log['time'] ?></p>
+                            <p class="font-label-sm text-on-surface-variant opacity-60"><?= timeAgo($log['timestamp']) ?></p>
                         </div>
                     </div>
                     <?php endforeach; ?>

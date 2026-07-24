@@ -35,6 +35,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit;
 }
 
+// Handle User Edit
+$error = null;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'edit_user') {
+    try {
+        $name = $_POST['name'] ?? '';
+        $phone = $_POST['phone'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $address = $_POST['address'] ?? '';
+        $role = $_POST['role'] ?? 'user';
+        $loyalty_points = $_POST['loyalty_points'] ?? 0;
+
+        $stmt = $pdo->prepare("UPDATE users SET name = ?, phone = ?, email = ?, address = ?, role = ?, loyalty_points = ? WHERE id = ?");
+        $stmt->execute([$name, $phone, $email, $address, $role, $loyalty_points, $userId]);
+        
+        // Sync with doctors table if role is doctor
+        if ($role === 'doctor') {
+            $stmt = $pdo->prepare("SELECT id FROM doctors WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            $doc = $stmt->fetch();
+            
+            if ($doc) {
+                $stmt = $pdo->prepare("UPDATE doctors SET name = ?, phone = ? WHERE user_id = ?");
+                $stmt->execute([$name, $phone, $userId]);
+            } else {
+                $stmt = $pdo->prepare("INSERT INTO doctors (user_id, name, phone, specialty) VALUES (?, ?, ?, 'عمومی')");
+                $stmt->execute([$userId, $name, $phone]);
+            }
+            
+            if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = '../uploads/doctors/';
+                if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+                $fileName = time() . '_' . basename($_FILES['profile_picture']['name']);
+                if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $uploadDir . $fileName)) {
+                    $dbPath = 'uploads/doctors/' . $fileName;
+                    $stmt = $pdo->prepare("UPDATE doctors SET image_url = ? WHERE user_id = ?");
+                    $stmt->execute([$dbPath, $userId]);
+                }
+            }
+        }
+        
+        header("Location: user_details.php?id=" . $userId . "&success=edit");
+        exit;
+    } catch(PDOException $e) {
+        $error = "خطا در بروزرسانی. ممکن است شماره تماس تکراری باشد.";
+    }
+}
+
 $currentPage = 'users';
 require_once 'includes/admin_header.php';
 
@@ -92,10 +139,21 @@ $appointments = $stmt->fetchAll();
             </div>
         </div>
         <div class="flex gap-3">
-            <button class="px-6 py-3 border border-outline-variant rounded-xl font-bold text-primary hover:bg-surface-container-low transition-colors">ویرایش پروفایل</button>
+            <button onclick="document.getElementById('editUserModal').classList.remove('hidden');document.getElementById('editUserModal').classList.add('flex')" class="px-6 py-3 border border-outline-variant rounded-xl font-bold text-primary hover:bg-surface-container-low transition-colors">ویرایش پروفایل</button>
             <button class="px-6 py-3 bg-error text-white rounded-xl font-bold shadow-md hover:bg-error-container hover:text-error transition-colors">مسدودسازی کاربر</button>
         </div>
     </div>
+
+    <?php if ($error): ?>
+        <div class="mb-8 p-4 bg-error-container text-error rounded-xl font-bold text-sm">
+            <?= htmlspecialchars($error) ?>
+        </div>
+    <?php endif; ?>
+    <?php if (isset($_GET['success']) && $_GET['success'] === 'edit'): ?>
+        <div class="mb-8 p-4 bg-status-active/20 text-status-active rounded-xl font-bold text-sm border border-status-active/30">
+            پروفایل کاربر با موفقیت بروزرسانی شد.
+        </div>
+    <?php endif; ?>
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -332,6 +390,69 @@ $appointments = $stmt->fetchAll();
                     </div>
                 </form>
             <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div id="editUserModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
+        <div class="px-6 py-4 border-b border-outline-variant/30 flex justify-between items-center bg-white z-10 shrink-0">
+            <h3 class="font-title-lg text-primary">ویرایش پروفایل کاربر</h3>
+            <button onclick="document.getElementById('editUserModal').classList.add('hidden');document.getElementById('editUserModal').classList.remove('flex')" class="text-on-surface-variant hover:text-error transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="p-6 overflow-y-auto">
+            <form method="POST" enctype="multipart/form-data" class="space-y-4">
+                <input type="hidden" name="action" value="edit_user">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-sm font-bold text-on-surface-variant">نام و نام خانوادگی</label>
+                        <input type="text" name="name" value="<?= htmlspecialchars($user['name'] ?? '') ?>" class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary">
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label class="text-sm font-bold text-on-surface-variant">شماره تماس</label>
+                        <input type="text" name="phone" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" dir="ltr" required class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary">
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label class="text-sm font-bold text-on-surface-variant">ایمیل</label>
+                        <input type="email" name="email" value="<?= htmlspecialchars($user['email'] ?? '') ?>" dir="ltr" class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary">
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label class="text-sm font-bold text-on-surface-variant">نقش کاربری</label>
+                        <select name="role" class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary">
+                            <option value="user" <?= ($user['role'] ?? 'user') === 'user' ? 'selected' : '' ?>>کاربر عادی</option>
+                            <option value="admin" <?= ($user['role'] ?? 'user') === 'admin' ? 'selected' : '' ?>>مدیر سیستم</option>
+                            <option value="doctor" <?= ($user['role'] ?? 'user') === 'doctor' ? 'selected' : '' ?>>پزشک</option>
+                        </select>
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label class="text-sm font-bold text-on-surface-variant">امتیاز وفاداری</label>
+                        <input type="number" name="loyalty_points" value="<?= htmlspecialchars($user['loyalty_points'] ?? 0) ?>" required class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-sm font-bold text-on-surface-variant">آدرس</label>
+                    <textarea name="address" rows="3" class="w-full rounded-lg border-outline-variant focus:ring-primary focus:border-primary"><?= htmlspecialchars($user['address'] ?? '') ?></textarea>
+                </div>
+                
+                <div class="space-y-1">
+                    <label class="text-sm font-bold text-on-surface-variant">تصویر پروفایل (برای پزشکان)</label>
+                    <input type="file" name="profile_picture" class="w-full text-sm text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-white hover:file:bg-primary transition-all border border-outline-variant rounded-lg p-2">
+                </div>
+                
+                <div class="pt-4 flex gap-3">
+                    <button type="submit" class="flex-1 py-3 rounded-lg font-bold bg-primary text-white hover:bg-primary-container transition-colors">ذخیره تغییرات</button>
+                    <button type="button" onclick="document.getElementById('editUserModal').classList.add('hidden');document.getElementById('editUserModal').classList.remove('flex')" class="flex-1 py-3 rounded-lg font-bold border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">انصراف</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

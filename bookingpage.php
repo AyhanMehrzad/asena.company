@@ -122,13 +122,13 @@ $booked_slots_json = json_encode($booked_slots);
                     <div class="doctor-card min-w-[280px] bg-white border border-outline-variant rounded-xl p-4 snap-start hover:shadow-md transition-all group cursor-pointer hover:-translate-y-1 duration-300"
                          data-id="<?php echo $doctor['id']; ?>"
                          data-name="<?php echo htmlspecialchars($doctor['name']); ?>"
-                         data-image="<?php echo htmlspecialchars($doctor['image_url']); ?>"
+                         data-image="<?php echo htmlspecialchars($doctor['image_url'] ?: 'https://via.placeholder.com/300x200?text=' . urlencode($doctor['name'])); ?>"
                          data-price="<?php echo $doctor['price']; ?>"
                          data-schedule="<?php echo htmlspecialchars($doctor['schedule_info'] ?? '{}'); ?>"
                          onclick="selectDoctor(this)">
                         
                         <div class="relative mb-4">
-                            <img class="w-full h-48 object-cover rounded-lg" src="<?php echo htmlspecialchars($doctor['image_url']); ?>" alt="<?php echo htmlspecialchars($doctor['name']); ?>"/>
+                            <img class="w-full h-48 object-cover rounded-lg" src="<?php echo htmlspecialchars($doctor['image_url'] ?: 'https://via.placeholder.com/300x200?text=' . urlencode($doctor['name'])); ?>" alt="<?php echo htmlspecialchars($doctor['name']); ?>"/>
                             <?php if($index === 0): ?>
                             <div class="absolute top-2 left-2 bg-status-active text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1">
                                 <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
