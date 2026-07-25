@@ -25,6 +25,25 @@ try {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
 
+    // Create Dashboard Events Table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS dashboard_events (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        event_time VARCHAR(5) NOT NULL,
+        color VARCHAR(20) DEFAULT 'primary',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
+
+    // Create Order Logs Table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS order_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        order_id INT NOT NULL,
+        old_status VARCHAR(50) NOT NULL,
+        new_status VARCHAR(50) NOT NULL,
+        changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+    )");
+
     // Seed Data
     $stmt = $pdo->query("SELECT COUNT(*) FROM products");
     if ($stmt->fetchColumn() == 0) {
@@ -55,6 +74,13 @@ try {
     $stmt = $pdo->query("SELECT COUNT(*) FROM users WHERE role='admin'");
     if ($stmt->fetchColumn() == 0) {
         $pdo->exec("INSERT INTO users (phone, name, role) VALUES ('09123456789', 'مدیر سیستم', 'admin')");
+    }
+
+    // Seed dashboard events
+    $stmt = $pdo->query("SELECT COUNT(*) FROM dashboard_events");
+    if ($stmt->fetchColumn() == 0) {
+        $pdo->exec("INSERT INTO dashboard_events (title, event_time, color) VALUES ('شروع شیفت کلینیک', '08:00', 'primary')");
+        $pdo->exec("INSERT INTO dashboard_events (title, event_time, color) VALUES ('بررسی سفارشات', '12:00', 'secondary')");
     }
 
     echo "Database setup completed successfully!";

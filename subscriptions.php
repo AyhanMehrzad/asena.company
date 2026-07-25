@@ -1,4 +1,9 @@
-<?php include 'includes/header.php'; ?>
+<?php 
+require_once 'includes/header.php'; 
+
+$stmt = $pdo->query("SELECT * FROM autoship_plans ORDER BY interval_months ASC");
+$plans = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 
 <main class="max-w-container-max mx-auto overflow-hidden py-16 px-margin-desktop">
     <!-- Hero Subscription -->
@@ -77,6 +82,23 @@
             </div>
             
             <button class="mt-12 bg-secondary-container text-on-secondary-container px-8 py-4 rounded-xl font-bold btn-premium w-full sm:w-auto">شروع اشتراک هوشمند</button>
+        </div>
+    </div>
+
+    <!-- Available Plans -->
+    <div class="mb-16">
+        <h2 class="text-headline-lg text-primary text-center mb-12">پلن‌های اشتراکی موجود</h2>
+        <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <?php foreach($plans as $plan): ?>
+            <div class="bg-white border border-outline-variant rounded-[2rem] p-8 text-center flex flex-col hover:shadow-2xl hover:-translate-y-2 transition-all">
+                <h3 class="text-title-lg font-bold text-on-surface mb-2"><?php echo htmlspecialchars($plan['name']); ?></h3>
+                <p class="text-body-md text-on-surface-variant mb-6">ارسال هر <?php echo $plan['interval_months']; ?> ماه یک‌بار</p>
+                <div class="text-display-sm font-black text-primary mb-2 persian-number"><?php echo $plan['discount_percent']; ?>٪</div>
+                <p class="text-label-sm text-on-surface-variant mb-8">تخفیف روی تمامی محصولات</p>
+                
+                <button onclick="window.location.href='shop.php?autoship=1&plan=<?php echo $plan['id']; ?>'" class="mt-auto bg-primary-container text-white py-4 rounded-xl font-bold hover:bg-primary transition-colors">انتخاب و شروع خرید</button>
+            </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </main>

@@ -37,10 +37,27 @@ $stmt = $pdo->prepare("
 $stmt->execute([$user_id]);
 $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch recent orders
+// Fetch recent orders WITH their line items
 $stmt = $pdo->prepare("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
 $stmt->execute([$user_id]);
 $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Attach order items to each order
+if (!empty($orders)) {
+    $order_ids   = array_column($orders, 'id');
+    $ph          = implode(',', array_fill(0, count($order_ids), '?'));
+    $itemsStmt   = $pdo->prepare("SELECT * FROM order_items WHERE order_id IN ($ph)");
+    $itemsStmt->execute($order_ids);
+    $all_items   = $itemsStmt->fetchAll(PDO::FETCH_ASSOC);
+    $items_by_order = [];
+    foreach ($all_items as $item) {
+        $items_by_order[$item['order_id']][] = $item;
+    }
+    foreach ($orders as &$order) {
+        $order['items'] = $items_by_order[$order['id']] ?? [];
+    }
+    unset($order);
+}
 
 // Fetch active subscriptions
 $stmt = $pdo->prepare("
@@ -52,6 +69,11 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute([$user_id]);
 $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Date Formatter for Jalali
+$fmtDate = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter::FULL, IntlDateFormatter::NONE, 'Asia/Tehran', IntlDateFormatter::TRADITIONAL, 'yyyy/MM/dd');
+$fmtDateTime = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter::FULL, IntlDateFormatter::FULL, 'Asia/Tehran', IntlDateFormatter::TRADITIONAL, 'd MMMM YYYY - HH:mm');
+$fmtDateText = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter::FULL, IntlDateFormatter::NONE, 'Asia/Tehran', IntlDateFormatter::TRADITIONAL, 'd MMMM YYYY');
 ?>
 <?php require_once 'includes/header.php'; ?>
 <style>
@@ -71,23 +93,27 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <p class="text-xs text-on-surface-variant">خدمات حرفه‌ای حیوانات خانگی</p>
 </div>
 <nav class="flex-1 flex flex-col gap-1">
-<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-white rounded-xl font-bold transition-all" href="#">
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-white rounded-xl font-bold transition-all" href="profile.php">
 <span class="material-symbols-outlined">dashboard</span>
 <span class="text-sm">پیشخوان</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="#">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="profile.php">
 <span class="material-symbols-outlined">calendar_today</span>
 <span class="text-sm">نوبت‌های من</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="#">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="subscriptions.php">
 <span class="material-symbols-outlined">event_repeat</span>
 <span class="text-sm">اشتراک‌های فعال</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="#">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="profile.php">
 <span class="material-symbols-outlined">history</span>
 <span class="text-sm">تاریخچه سفارشات</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="#">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="wishlist.php">
+<span class="material-symbols-outlined">favorite</span>
+<span class="text-sm">علاقه‌مندی‌ها</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="profile.php">
 <span class="material-symbols-outlined">medical_services</span>
 <span class="text-sm">سوابق پزشکی</span>
 </a>
@@ -156,8 +182,8 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <span class="material-symbols-outlined text-sm">calendar_month</span>
 <?php if (!empty($appointments)): ?>
     <p class="text-base font-bold persian-number"><?php 
-        $next_date = new DateTime($appointments[0]['appointment_date']);
-        echo IntlDateFormatter::formatObject($next_date, 'd MMMM', 'fa') . ' - ' . substr($appointments[0]['appointment_time'], 0, 5); 
+        $next_date = new DateTime($appointments[0]['appointment_date'] . ' ' . $appointments[0]['appointment_time']);
+        echo $fmtDateTime->format($next_date); 
     ?></p>
 <?php else: ?>
     <p class="text-base font-bold">ندارید</p>
@@ -216,8 +242,7 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="flex items-center gap-1.5 text-on-surface-variant">
         <span class="material-symbols-outlined text-base">calendar_today</span>
         <span><?php 
-            $apt_date = new DateTime($apt['appointment_date']);
-            echo IntlDateFormatter::formatObject($apt_date, 'd MMMM YYYY', 'fa'); 
+            echo $fmtDateText->format(new DateTime($apt['appointment_date'])); 
         ?></span>
         </div>
         <div class="flex items-center gap-1.5 text-on-surface-variant">
@@ -226,15 +251,32 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
         </div>
         <?php if ($apt['status'] == 'approved'): ?>
-            <button class="w-full bg-primary-container text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all">
+            <button class="w-full bg-primary-container text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all mb-2">
             <span class="material-symbols-outlined text-lg">videocam</span>
                                             ورود به اتاق مشاوره
                                         </button>
         <?php else: ?>
-            <button class="w-full border-2 border-primary-container text-primary-container py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-primary-container hover:text-white transition-all">
-            <span class="material-symbols-outlined text-lg">map</span>
-                                            مشاهده آدرس کلینیک
-                                        </button>
+            <div class="mb-2">
+                <button onclick="document.getElementById('clinic_addr_<?= $apt['id'] ?>').classList.toggle('hidden')" class="w-full border-2 border-primary-container text-primary-container py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-primary-container hover:text-white transition-all">
+                <span class="material-symbols-outlined text-lg">map</span>
+                                                مشاهده آدرس کلینیک
+                </button>
+                <div id="clinic_addr_<?= $apt['id'] ?>" class="hidden mt-2 p-3 bg-surface-container-low text-on-surface text-sm rounded-lg border border-outline-variant/30 text-center font-bold">
+                    تهران، ونک، خیابان ملاصدرا، پلاک ۱۲، کلینیک دامپزشکی پت‌شاپ
+                </div>
+            </div>
+        <?php endif; ?>
+        
+        <?php if(in_array($apt['status'], ['pending', 'در انتظار', 'approved'])): ?>
+            <form action="actions/profile_action.php" method="POST" onsubmit="return confirm('آیا از لغو این نوبت اطمینان دارید؟');" class="m-0">
+                <?php echo csrf_field(); ?>
+                <input type="hidden" name="action" value="cancel_appointment">
+                <input type="hidden" name="appointment_id" value="<?php echo $apt['id']; ?>">
+                <button type="submit" class="w-full bg-error/10 text-error py-2.5 rounded-xl text-sm font-bold hover:bg-error hover:text-white transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-lg">cancel</span>
+                    لغو نوبت
+                </button>
+            </form>
         <?php endif; ?>
         </div>
     <?php endforeach; ?>
@@ -268,11 +310,19 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php else: ?>
     <?php foreach($orders as $order): ?>
     <tr class="hover:bg-primary-container/5 transition-colors">
-    <td class="px-6 py-5 font-bold text-primary">#PC-<?php echo $order['id']; ?></td>
+    <td class="px-6 py-5 font-bold text-primary">
+        #PC-<?php echo $order['id']; ?>
+        <?php if (!empty($order['items'])): ?>
+            <ul class="text-xs text-on-surface-variant mt-2 space-y-1 font-normal">
+                <?php foreach($order['items'] as $item): ?>
+                    <li><?= htmlspecialchars($item['product_name_snapshot']) ?> × <?= $item['quantity'] ?> — <?= number_format($item['price_at_purchase']) ?> تومان</li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+    </td>
     <td class="px-6 py-5 text-on-surface-variant">
         <?php 
-        $order_date = new DateTime($order['created_at']);
-        echo IntlDateFormatter::formatObject($order_date, 'Y/MM/dd', 'fa'); 
+        echo $fmtDate->format(new DateTime($order['created_at'])); 
         ?>
     </td>
     <td class="px-6 py-5">
@@ -293,7 +343,19 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php echo $status_label; ?>
         </span>
     </td>
-    <td class="px-6 py-5 font-bold text-on-surface"><?php echo number_format($order['total_amount']); ?> تومان</td>
+    <td class="px-6 py-5 font-bold text-on-surface flex items-center gap-3 justify-end">
+        <?php echo number_format($order['total_amount']); ?> تومان
+        <?php if(in_array($order['status'], ['pending_payment', 'processing'])): ?>
+            <form action="actions/profile_action.php" method="POST" class="inline m-0" onsubmit="return confirm('آیا از لغو این سفارش اطمینان دارید؟');">
+                <?php echo csrf_field(); ?>
+                <input type="hidden" name="action" value="cancel_order">
+                <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                <button type="submit" class="text-error bg-error/10 hover:bg-error/20 p-1.5 rounded-md text-[10px] font-bold" title="لغو سفارش">
+                    لغو
+                </button>
+            </form>
+        <?php endif; ?>
+    </td>
     </tr>
     <?php endforeach; ?>
 <?php endif; ?>
@@ -326,11 +388,18 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="mt-2 flex items-center gap-1.5 text-status-active font-bold text-xs persian-number">
     <span class="material-symbols-outlined text-[16px]">local_shipping</span>
                                         ارسال بعدی: <?php 
-        $next_del = new DateTime($sub['next_delivery_date']);
-        echo IntlDateFormatter::formatObject($next_del, 'd MMMM YYYY', 'fa'); 
+        echo $fmtDateText->format(new DateTime($sub['next_delivery_date'])); 
         ?>
                                     </div>
     </div>
+    <form action="actions/profile_action.php" method="POST" class="ml-2" onsubmit="return confirm('آیا از لغو این اشتراک اطمینان دارید؟');">
+        <?php echo csrf_field(); ?>
+        <input type="hidden" name="action" value="cancel_subscription">
+        <input type="hidden" name="subscription_id" value="<?php echo $sub['id']; ?>">
+        <button type="submit" class="text-error bg-error/10 hover:bg-error hover:text-white transition-colors px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap">
+            لغو اشتراک
+        </button>
+    </form>
     </div>
     <?php endforeach; ?>
 <?php endif; ?>
@@ -369,6 +438,7 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="flex gap-2">
             <span onclick="openEditPetModal(<?php echo $pet['id']; ?>, '<?php echo addslashes(htmlspecialchars($pet['name'])); ?>', '<?php echo addslashes(htmlspecialchars($pet['type'])); ?>', '<?php echo addslashes(htmlspecialchars($pet['race'])); ?>', '<?php echo addslashes(htmlspecialchars($pet['gender'] ?? '')); ?>', '<?php echo addslashes(htmlspecialchars($pet['age'] ?? '')); ?>')" class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">edit</span>
             <form action="actions/profile_action.php" method="POST" onsubmit="return confirm('آیا از حذف این حیوان خانگی اطمینان دارید؟');" class="inline">
+                <?php echo csrf_field(); ?>
                 <input type="hidden" name="action" value="delete_pet">
                 <input type="hidden" name="pet_id" value="<?php echo $pet['id']; ?>">
                 <button type="submit" class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-error bg-transparent border-0 p-0 m-0 flex items-center">delete</button>
@@ -431,6 +501,7 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <button onclick="document.getElementById('addPetModal').classList.add('hidden')" class="absolute top-4 left-4 text-on-surface-variant hover:text-error"><span class="material-symbols-outlined">close</span></button>
         <h2 class="text-xl font-bold text-primary mb-6">ثبت حیوان جدید</h2>
         <form action="actions/profile_action.php" method="POST" class="space-y-4">
+            <?php echo csrf_field(); ?>
             <input type="hidden" name="action" value="add_pet">
             <div>
                 <label class="block text-sm font-bold mb-1">نام حیوان</label>
@@ -476,6 +547,7 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <button onclick="document.getElementById('editPetModal').classList.add('hidden')" class="absolute top-4 left-4 text-on-surface-variant hover:text-error"><span class="material-symbols-outlined">close</span></button>
         <h2 class="text-xl font-bold text-primary mb-6">ویرایش حیوان خانگی</h2>
         <form action="actions/profile_action.php" method="POST" class="space-y-4">
+            <?php echo csrf_field(); ?>
             <input type="hidden" name="action" value="edit_pet">
             <input type="hidden" name="pet_id" id="edit_pet_id" value="">
             <div>
@@ -522,6 +594,7 @@ $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <button onclick="document.getElementById('addDocModal').classList.add('hidden')" class="absolute top-4 left-4 text-on-surface-variant hover:text-error"><span class="material-symbols-outlined">close</span></button>
         <h2 class="text-xl font-bold text-primary mb-6">آپلود سند جدید</h2>
         <form action="actions/profile_action.php" method="POST" enctype="multipart/form-data" class="space-y-4">
+            <?php echo csrf_field(); ?>
             <input type="hidden" name="action" value="upload_document">
             <div>
                 <label class="block text-sm font-bold mb-1">حیوان مربوطه</label>

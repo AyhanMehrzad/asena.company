@@ -183,6 +183,7 @@ require_once 'includes/header.php';
 <?php endif; ?>
 <!-- Section 1: Account Information -->
 <form method="POST" action="actions/settings_action.php" class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden settings-card">
+    <?php echo csrf_field(); ?>
 <input type="hidden" name="action" value="update_account">
 <div class="p-6 border-b border-outline-variant bg-surface-alt">
 <h2 class="font-title-lg text-title-lg text-primary flex items-center gap-2">
@@ -229,6 +230,7 @@ require_once 'includes/header.php';
 </form>
 <!-- Section 2: Shipping Address -->
 <form method="POST" action="actions/settings_action.php" class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden settings-card">
+    <?php echo csrf_field(); ?>
 <input type="hidden" name="action" value="update_address">
 <div class="p-6 border-b border-outline-variant bg-surface-alt">
 <h2 class="font-title-lg text-title-lg text-primary flex items-center gap-2">

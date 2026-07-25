@@ -229,6 +229,7 @@ require_once 'includes/header.php';
                 </p>
             </div>
             <form method="POST" action="actions/rewards_action.php">
+                <?php echo csrf_field(); ?>
                 <input type="hidden" name="action" value="redeem">
                 <input type="hidden" name="cost" value="<?php echo $r['cost']; ?>">
                 <input type="hidden" name="discount" value="<?php echo $r['discount']; ?>">

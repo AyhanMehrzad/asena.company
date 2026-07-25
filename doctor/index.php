@@ -1,13 +1,22 @@
 <?php
+require_once '../includes/db.php';
 $currentPage = 'dashboard';
-require_once 'includes/doctor_header.php';
+
+// Fetch doctor profile data early for POST handlers
+if (isset($_SESSION['user_id'])) {
+    $stmt = $pdo->prepare("SELECT * FROM doctors WHERE user_id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $doctorProfile = $stmt->fetch();
+    $doctorId = $doctorProfile['id'] ?? 0;
+} else {
+    header("Location: ../login.php");
+    exit;
+}
 
 $success = '';
 $error = '';
 
-$doctorId = $doctorProfile['id'];
-
-// Handle POST actions
+// Handle POST actions BEFORE headers are sent
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $action = $_POST['action'];
     
@@ -17,10 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         foreach ($days as $day) {
             if (!empty($_POST["day_$day"])) { // checkbox is checked
                 $schedule_data[$day] = [
-                    'm_start' => $_POST["{$day}_m_start"] ?? '',
-                    'm_end'   => $_POST["{$day}_m_end"] ?? '',
-                    'a_start' => $_POST["{$day}_a_start"] ?? '',
-                    'a_end'   => $_POST["{$day}_a_end"] ?? '',
+                    'm_active' => isset($_POST["{$day}_m_active"]) ? true : false,
+                    'm_start'  => $_POST["{$day}_m_start"] ?? '',
+                    'm_end'    => $_POST["{$day}_m_end"] ?? '',
+                    'a_active' => isset($_POST["{$day}_a_active"]) ? true : false,
+                    'a_start'  => $_POST["{$day}_a_start"] ?? '',
+                    'a_end'    => $_POST["{$day}_a_end"] ?? '',
                 ];
             }
         }
@@ -74,6 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
 }
 
+require_once 'includes/doctor_header.php';
+
 // Income Calculation (Completed/Approved)
 $stmt = $pdo->prepare("SELECT COUNT(*) as total_visits FROM appointments WHERE doctor_id = ? AND status IN ('completed', 'approved')");
 $stmt->execute([$doctorId]);
@@ -85,7 +98,7 @@ $stmt = $pdo->prepare("
     SELECT a.*, u.name as user_name, u.phone 
     FROM appointments a 
     JOIN users u ON a.user_id = u.id 
-    WHERE a.doctor_id = ? AND a.appointment_date = CURDATE() AND a.status NOT IN ('completed', 'cancelled')
+    WHERE a.doctor_id = ? AND a.appointment_date = CURDATE()
     ORDER BY a.appointment_time ASC
 ");
 $stmt->execute([$doctorId]);
@@ -96,7 +109,7 @@ $stmt = $pdo->prepare("
     SELECT a.*, u.name as user_name, u.phone 
     FROM appointments a 
     JOIN users u ON a.user_id = u.id 
-    WHERE a.doctor_id = ? AND a.appointment_date > CURDATE() AND a.status NOT IN ('completed', 'cancelled')
+    WHERE a.doctor_id = ? AND a.appointment_date > CURDATE()
     ORDER BY a.appointment_date ASC, a.appointment_time ASC
 ");
 $stmt->execute([$doctorId]);
@@ -107,7 +120,7 @@ $stmt = $pdo->prepare("
     SELECT a.*, u.name as user_name, u.phone 
     FROM appointments a 
     JOIN users u ON a.user_id = u.id 
-    WHERE a.doctor_id = ? AND (a.status IN ('completed', 'cancelled') OR a.appointment_date < CURDATE())
+    WHERE a.doctor_id = ? AND a.appointment_date < CURDATE()
     ORDER BY a.appointment_date DESC, a.appointment_time DESC LIMIT 50
 ");
 $stmt->execute([$doctorId]);
@@ -135,6 +148,13 @@ if (isset($_GET['view_pet_history'])) {
     $stmt->execute([$histPetId, $doctorId]);
     $petPastAppts = $stmt->fetchAll();
 }
+
+$fmtDate = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter::FULL, IntlDateFormatter::NONE, 'Asia/Tehran', IntlDateFormatter::TRADITIONAL, 'yyyy/MM/dd');
+
+foreach ($todayAppts as &$appt) { $appt['jalali_date'] = $fmtDate->format(new DateTime($appt['appointment_date'])); }
+foreach ($upcomingAppts as &$appt) { $appt['jalali_date'] = $fmtDate->format(new DateTime($appt['appointment_date'])); }
+foreach ($historyAppts as &$appt) { $appt['jalali_date'] = $fmtDate->format(new DateTime($appt['appointment_date'])); }
+unset($appt);
 
 ?>
 
@@ -242,17 +262,16 @@ if (isset($_GET['view_pet_history'])) {
                                 <tr><td colspan="4" class="px-6 py-8 text-center text-on-surface-variant">هیچ نوبتی برای امروز ثبت نشده است.</td></tr>
                             <?php else: ?>
                                 <?php foreach ($todayAppts as $appt): ?>
-                                    <tr class="hover:bg-surface-container-lowest transition-colors">
+                                    <tr class="hover:bg-surface-container-lowest transition-colors cursor-pointer" onclick="openAppointmentDetails(this)" data-appt="<?= htmlspecialchars(json_encode($appt), ENT_QUOTES, 'UTF-8') ?>">
                                         <td class="px-6 py-4">
                                             <div class="flex items-center gap-3">
                                                 <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
                                                     <span class="material-symbols-outlined text-lg">pets</span>
                                                 </div>
                                                 <div>
-                                                    <p class="font-bold text-primary"><?= htmlspecialchars($appt['pet_name'] ?: 'بدون نام') ?></p>
+                                                    <p class="font-bold text-primary"><?= htmlspecialchars($appt['pet_name'] ?: $appt['pet_type']) ?></p>
                                                     <p class="text-[11px] text-on-surface-variant">
-                                                        <?= htmlspecialchars($appt['pet_type']) ?> 
-                                                        <?= !empty($appt['pet_race']) ? ' - ' . htmlspecialchars($appt['pet_race']) : '' ?>
+                                                        <?= !empty($appt['pet_race']) ? htmlspecialchars($appt['pet_race']) : 'نژاد نامشخص' ?>
                                                         <br>
                                                         <?= !empty($appt['pet_gender']) ? htmlspecialchars($appt['pet_gender']) : '' ?> 
                                                         <?= !empty($appt['pet_age']) ? ' | ' . htmlspecialchars($appt['pet_age']) : '' ?>
@@ -268,22 +287,31 @@ if (isset($_GET['view_pet_history'])) {
                                         <td class="px-6 py-4">
                                             <div class="flex gap-2 items-center">
                                                 <!-- Status Update Form -->
-                                                <form method="POST" class="flex gap-1">
-                                                    <input type="hidden" name="action" value="update_status">
-                                                    <input type="hidden" name="appointment_id" value="<?= $appt['id'] ?>">
-                                                    <?php if ($appt['status'] === 'pending' || $appt['status'] === 'در انتظار'): ?>
-                                                        <button type="submit" name="status" value="approved" class="px-3 py-1 bg-status-active/10 text-status-active hover:bg-status-active hover:text-white rounded-lg text-xs font-bold transition-colors">تایید</button>
-                                                    <?php else: ?>
-                                                        <button type="submit" name="status" value="completed" class="px-3 py-1 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-lg text-xs font-bold transition-colors">تکمیل</button>
-                                                    <?php endif; ?>
-                                                </form>
+                                                <?php if ($appt['status'] !== 'completed' && $appt['status'] !== 'cancelled'): ?>
+                                                    <form method="POST" class="flex gap-1" onclick="event.stopPropagation();">
+                                                        <input type="hidden" name="action" value="update_status">
+                                                        <input type="hidden" name="appointment_id" value="<?= $appt['id'] ?>">
+                                                        <?php if ($appt['status'] === 'pending' || $appt['status'] === 'در انتظار'): ?>
+                                                            <button type="submit" name="status" value="approved" class="px-3 py-1 bg-status-active/10 text-status-active hover:bg-status-active hover:text-white rounded-lg text-xs font-bold transition-colors">تایید</button>
+                                                        <?php else: ?>
+                                                            <button type="submit" name="status" value="completed" class="px-3 py-1 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-lg text-xs font-bold transition-colors">تکمیل</button>
+                                                        <?php endif; ?>
+                                                        <button type="submit" name="status" value="cancelled" onclick="return confirm('آیا از لغو این نوبت اطمینان دارید؟');" class="px-3 py-1 bg-error/10 text-error hover:bg-error hover:text-white rounded-lg text-xs font-bold transition-colors">لغو</button>
+                                                    </form>
+                                                <?php else: ?>
+                                                    <?php 
+                                                    $badgeClass = $appt['status'] === 'completed' ? 'bg-primary/20 text-primary' : 'bg-error/20 text-error';
+                                                    $statusText = $appt['status'] === 'completed' ? 'تکمیل شده' : 'لغو شده';
+                                                    ?>
+                                                    <span class="px-3 py-1 rounded-lg text-xs font-bold <?= $badgeClass ?>"><?= $statusText ?></span>
+                                                <?php endif; ?>
                                                 
                                                 <!-- Action Buttons -->
                                                 <?php if ($appt['pet_id']): ?>
-                                                    <button onclick="openUploadModal(<?= $appt['pet_id'] ?>, <?= $appt['user_id'] ?>, '<?= htmlspecialchars(addslashes($appt['pet_name'])) ?>')" class="w-8 h-8 rounded-full flex items-center justify-center text-primary bg-primary/5 hover:bg-primary hover:text-white transition-colors" title="آپلود سند بالینی">
+                                                    <button onclick="event.stopPropagation(); openUploadModal(<?= $appt['pet_id'] ?>, <?= $appt['user_id'] ?>, '<?= htmlspecialchars(addslashes($appt['pet_name'] ?: $appt['pet_type'])) ?>')" class="w-8 h-8 rounded-full flex items-center justify-center text-primary bg-primary/5 hover:bg-primary hover:text-white transition-colors" title="آپلود سند بالینی">
                                                         <span class="material-symbols-outlined text-sm">upload_file</span>
                                                     </button>
-                                                    <a href="?view_pet_history=<?= $appt['pet_id'] ?>" class="w-8 h-8 rounded-full flex items-center justify-center text-secondary bg-secondary/5 hover:bg-secondary hover:text-white transition-colors" title="مشاهده تاریخچه">
+                                                    <a href="?view_pet_history=<?= $appt['pet_id'] ?>" onclick="event.stopPropagation();" class="w-8 h-8 rounded-full flex items-center justify-center text-secondary bg-secondary/5 hover:bg-secondary hover:text-white transition-colors" title="مشاهده تاریخچه">
                                                         <span class="material-symbols-outlined text-sm">history</span>
                                                     </a>
                                                 <?php endif; ?>
@@ -312,7 +340,7 @@ if (isset($_GET['view_pet_history'])) {
                                 <th class="px-6 py-3">تاریخ و زمان</th>
                                 <th class="px-6 py-3">حیوان</th>
                                 <th class="px-6 py-3">صاحب حیوان</th>
-                                <th class="px-6 py-3">وضعیت</th>
+                                <th class="px-6 py-3">وضعیت / عملیات</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-outline-variant/10">
@@ -320,21 +348,52 @@ if (isset($_GET['view_pet_history'])) {
                                 <tr><td colspan="4" class="px-6 py-6 text-center text-on-surface-variant">هیچ نوبتی برای روزهای آینده ثبت نشده است.</td></tr>
                             <?php else: ?>
                                 <?php foreach ($upcomingAppts as $appt): ?>
-                                    <tr class="hover:bg-surface-container-lowest transition-colors">
+                                    <tr class="hover:bg-surface-container-lowest transition-colors cursor-pointer" onclick="openAppointmentDetails(this)" data-appt="<?= htmlspecialchars(json_encode($appt), ENT_QUOTES, 'UTF-8') ?>">
                                         <td class="px-6 py-3">
-                                            <p class="font-bold text-primary" dir="ltr"><?= substr($appt['appointment_date'], 0, 10) ?></p>
-                                            <p class="text-[11px] text-on-surface-variant" dir="ltr"><?= htmlspecialchars($appt['appointment_time']) ?></p>
+                                            <div class="flex flex-col gap-1 items-end">
+                                                <span class="font-bold text-primary" dir="ltr"><?= $fmtDate->format(new DateTime($appt['appointment_date'])) ?></span>
+                                                <span class="text-xs text-on-surface-variant bg-surface-container-low px-2 py-0.5 rounded" dir="ltr">ساعت <?= substr($appt['appointment_time'], 0, 5) ?></span>
+                                            </div>
                                         </td>
                                         <td class="px-6 py-3 font-bold text-on-surface">
-                                            <?= htmlspecialchars($appt['pet_name'] ?: 'بدون نام') ?> <span class="text-xs text-on-surface-variant font-normal">(<?= htmlspecialchars($appt['pet_type']) ?>)</span>
+                                            <?= htmlspecialchars($appt['pet_name'] ?: $appt['pet_type']) ?> <span class="text-xs text-on-surface-variant font-normal"><?= !empty($appt['pet_race']) ? '(' . htmlspecialchars($appt['pet_race']) . ')' : '' ?></span>
                                         </td>
                                         <td class="px-6 py-3 text-xs"><?= htmlspecialchars($appt['user_name']) ?></td>
                                         <td class="px-6 py-3">
-                                            <?php if ($appt['status'] === 'pending' || $appt['status'] === 'در انتظار'): ?>
-                                                <span class="px-2 py-1 bg-status-warning/20 text-status-warning rounded-md text-[10px] font-bold">در انتظار</span>
-                                            <?php else: ?>
-                                                <span class="px-2 py-1 bg-status-active/20 text-status-active rounded-md text-[10px] font-bold"><?= htmlspecialchars($appt['status']) ?></span>
-                                            <?php endif; ?>
+                                            <div class="flex items-center gap-2 justify-end">
+                                                <?php if ($appt['status'] === 'pending' || $appt['status'] === 'در انتظار'): ?>
+                                                    <span class="px-2 py-1 bg-status-warning/20 text-status-warning rounded-md text-[10px] font-bold">در انتظار</span>
+                                                <?php else: ?>
+                                                    <?php 
+                                                    $status_fa = $appt['status'];
+                                                    $badgeClass = 'bg-outline-variant/20 text-on-surface-variant';
+                                                    if ($appt['status'] === 'approved') {
+                                                        $status_fa = 'تایید شده';
+                                                        $badgeClass = 'bg-status-active/20 text-status-active';
+                                                    }
+                                                    elseif ($appt['status'] === 'completed') {
+                                                        $status_fa = 'تکمیل شده';
+                                                        $badgeClass = 'bg-primary/20 text-primary';
+                                                    }
+                                                    elseif ($appt['status'] === 'cancelled') {
+                                                        $status_fa = 'لغو شده';
+                                                        $badgeClass = 'bg-error/20 text-error';
+                                                    }
+                                                    ?>
+                                                    <span class="px-2 py-1 <?= $badgeClass ?> rounded-md text-[10px] font-bold"><?= $status_fa ?></span>
+                                                <?php endif; ?>
+                                                
+                                                <?php if ($appt['status'] !== 'completed' && $appt['status'] !== 'cancelled'): ?>
+                                                    <form method="POST" class="flex gap-1 inline m-0" onclick="event.stopPropagation();">
+                                                        <input type="hidden" name="action" value="update_status">
+                                                        <input type="hidden" name="appointment_id" value="<?= $appt['id'] ?>">
+                                                        <?php if ($appt['status'] === 'pending' || $appt['status'] === 'در انتظار'): ?>
+                                                            <button type="submit" name="status" value="approved" class="px-3 py-1 bg-status-active/10 text-status-active hover:bg-status-active hover:text-white rounded-lg text-xs font-bold transition-colors">تایید</button>
+                                                        <?php endif; ?>
+                                                        <button type="submit" name="status" value="cancelled" onclick="return confirm('آیا از لغو این نوبت اطمینان دارید؟');" class="px-3 py-1 bg-error/10 text-error hover:bg-error hover:text-white rounded-lg text-xs font-bold transition-colors">لغو</button>
+                                                    </form>
+                                                <?php endif; ?>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -363,7 +422,7 @@ if (isset($_GET['view_pet_history'])) {
                             <li class="p-6 text-center text-on-surface-variant text-sm">تاریخچه‌ای موجود نیست.</li>
                         <?php else: ?>
                             <?php foreach ($historyAppts as $appt): ?>
-                                <li class="p-4 hover:bg-surface-container-lowest transition-colors flex items-start gap-3">
+                                <li class="p-4 hover:bg-surface-container-lowest transition-colors flex items-start gap-3 cursor-pointer" onclick="openAppointmentDetails(this)" data-appt="<?= htmlspecialchars(json_encode($appt), ENT_QUOTES, 'UTF-8') ?>">
                                     <?php if ($appt['status'] === 'completed'): ?>
                                         <div class="w-8 h-8 rounded-full bg-status-active/10 text-status-active flex items-center justify-center shrink-0">
                                             <span class="material-symbols-outlined text-[18px]">check_circle</span>
@@ -380,16 +439,16 @@ if (isset($_GET['view_pet_history'])) {
                                     
                                     <div class="flex-1 min-w-0">
                                         <p class="font-bold text-sm text-on-surface truncate">
-                                            <?= htmlspecialchars($appt['pet_name'] ?: 'بدون نام') ?> 
+                                            <?= htmlspecialchars($appt['pet_name'] ?: $appt['pet_type']) ?> 
                                             <span class="text-xs text-on-surface-variant font-normal">توسط <?= htmlspecialchars($appt['user_name']) ?></span>
                                         </p>
                                         <p class="text-[11px] text-on-surface-variant mt-1" dir="ltr">
-                                            <?= substr($appt['appointment_date'], 0, 10) ?> <?= substr($appt['appointment_time'], 0, 5) ?>
+                                            <?= $fmtDate->format(new DateTime($appt['appointment_date'])) ?> <?= substr($appt['appointment_time'], 0, 5) ?>
                                         </p>
                                     </div>
                                     
                                     <?php if ($appt['pet_id']): ?>
-                                        <a href="?view_pet_history=<?= $appt['pet_id'] ?>" class="text-primary hover:text-primary-container p-1" title="پرونده">
+                                        <a href="?view_pet_history=<?= $appt['pet_id'] ?>" onclick="event.stopPropagation();" class="text-primary hover:text-primary-container p-1" title="پرونده">
                                             <span class="material-symbols-outlined text-sm">folder_open</span>
                                         </a>
                                     <?php endif; ?>
@@ -567,6 +626,10 @@ if (isset($_GET['view_pet_history'])) {
                 
                 foreach ($daysMap as $key => $faName):
                     $isWorking = isset($currentSchedule[$key]);
+                    // Default to true if not set (for backward compatibility), otherwise use the boolean value
+                    $m_active = $isWorking ? (isset($currentSchedule[$key]['m_active']) ? $currentSchedule[$key]['m_active'] : true) : true;
+                    $a_active = $isWorking ? (isset($currentSchedule[$key]['a_active']) ? $currentSchedule[$key]['a_active'] : true) : true;
+                    
                     $m_start = $isWorking ? $currentSchedule[$key]['m_start'] : '09:00';
                     $m_end = $isWorking ? $currentSchedule[$key]['m_end'] : '13:00';
                     $a_start = $isWorking ? $currentSchedule[$key]['a_start'] : '16:00';
@@ -583,9 +646,12 @@ if (isset($_GET['view_pet_history'])) {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pl-8">
                         <!-- Morning Shift -->
                         <div class="space-y-2">
-                            <span class="text-xs font-bold text-on-surface-variant flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[16px]">light_mode</span> شیفت صبح
-                            </span>
+                            <label class="flex items-center gap-2 cursor-pointer mb-1 text-on-surface-variant hover:text-primary transition-colors w-max">
+                                <input type="checkbox" name="<?= $key ?>_m_active" value="1" <?= $m_active ? 'checked' : '' ?> class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary">
+                                <span class="text-xs font-bold flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px]">light_mode</span> فعال بودن شیفت صبح
+                                </span>
+                            </label>
                             <div class="flex items-center gap-2">
                                 <input type="time" name="<?= $key ?>_m_start" value="<?= $m_start ?>" class="w-full text-sm rounded-lg border-outline-variant focus:ring-primary focus:border-primary" dir="ltr">
                                 <span class="text-sm text-on-surface-variant">تا</span>
@@ -595,9 +661,12 @@ if (isset($_GET['view_pet_history'])) {
                         
                         <!-- Afternoon Shift -->
                         <div class="space-y-2">
-                            <span class="text-xs font-bold text-on-surface-variant flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[16px]">wb_sunny</span> شیفت عصر
-                            </span>
+                            <label class="flex items-center gap-2 cursor-pointer mb-1 text-on-surface-variant hover:text-primary transition-colors w-max">
+                                <input type="checkbox" name="<?= $key ?>_a_active" value="1" <?= $a_active ? 'checked' : '' ?> class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary">
+                                <span class="text-xs font-bold flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px]">wb_sunny</span> فعال بودن شیفت عصر
+                                </span>
+                            </label>
                             <div class="flex items-center gap-2">
                                 <input type="time" name="<?= $key ?>_a_start" value="<?= $a_start ?>" class="w-full text-sm rounded-lg border-outline-variant focus:ring-primary focus:border-primary" dir="ltr">
                                 <span class="text-sm text-on-surface-variant">تا</span>
@@ -616,14 +685,137 @@ if (isset($_GET['view_pet_history'])) {
     </div>
 </div>
 
+<!-- Appointment Details Modal -->
+<div id="appointmentDetailsModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col">
+        <div class="px-6 py-4 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-lowest">
+            <h3 class="font-title-lg text-primary flex items-center gap-2">
+                <span class="material-symbols-outlined">info</span>
+                جزئیات نوبت
+            </h3>
+            <button onclick="document.getElementById('appointmentDetailsModal').classList.add('hidden');document.getElementById('appointmentDetailsModal').classList.remove('flex')" class="text-on-surface-variant hover:text-error transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="p-6 space-y-6 overflow-y-auto">
+            
+            <div class="flex items-center gap-4 pb-6 border-b border-outline-variant/20">
+                <div class="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+                    <span class="material-symbols-outlined text-[32px]">pets</span>
+                </div>
+                <div>
+                    <h4 id="dtl_pet_name" class="font-title-lg text-primary text-xl">نام حیوان</h4>
+                    <p id="dtl_pet_type_race" class="text-sm text-on-surface-variant mt-1">نوع - نژاد</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div class="bg-surface p-3 rounded-lg border border-outline-variant/30">
+                    <p class="text-xs text-on-surface-variant mb-1 font-bold">تاریخ و زمان</p>
+                    <p id="dtl_datetime" class="font-bold text-primary" dir="ltr">--</p>
+                </div>
+                <div class="bg-surface p-3 rounded-lg border border-outline-variant/30">
+                    <p class="text-xs text-on-surface-variant mb-1 font-bold">وضعیت</p>
+                    <div id="dtl_status">--</div>
+                </div>
+                <div class="bg-surface p-3 rounded-lg border border-outline-variant/30">
+                    <p class="text-xs text-on-surface-variant mb-1 font-bold">صاحب حیوان</p>
+                    <p id="dtl_owner_name" class="font-bold text-on-surface">--</p>
+                </div>
+                <div class="bg-surface p-3 rounded-lg border border-outline-variant/30">
+                    <p class="text-xs text-on-surface-variant mb-1 font-bold">تلفن تماس</p>
+                    <p id="dtl_owner_phone" class="font-bold text-on-surface" dir="ltr">--</p>
+                </div>
+                <div class="bg-surface p-3 rounded-lg border border-outline-variant/30">
+                    <p class="text-xs text-on-surface-variant mb-1 font-bold">جنسیت حیوان</p>
+                    <p id="dtl_pet_gender" class="font-bold text-on-surface">--</p>
+                </div>
+                <div class="bg-surface p-3 rounded-lg border border-outline-variant/30">
+                    <p class="text-xs text-on-surface-variant mb-1 font-bold">سن حیوان</p>
+                    <p id="dtl_pet_age" class="font-bold text-on-surface">--</p>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-outline-variant/20 flex flex-wrap gap-2" id="dtl_actions">
+                <!-- Action buttons will be injected here via JS -->
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <script>
 function openUploadModal(petId, userId, petName) {
     document.getElementById('upload_pet_id').value = petId;
     document.getElementById('upload_user_id').value = userId;
     document.getElementById('upload_pet_name').innerText = petName;
     
+    // If opened from details modal, ensure we close the details modal first for clarity
+    document.getElementById('appointmentDetailsModal').classList.add('hidden');
+    document.getElementById('appointmentDetailsModal').classList.remove('flex');
+    
     document.getElementById('uploadDocModal').classList.remove('hidden');
     document.getElementById('uploadDocModal').classList.add('flex');
+}
+
+function openAppointmentDetails(rowElement) {
+    const appt = JSON.parse(rowElement.getAttribute('data-appt'));
+    
+    // Set text contents
+    const pName = appt.pet_name ? appt.pet_name : appt.pet_type;
+    const pRace = appt.pet_race ? appt.pet_race : 'نژاد نامشخص';
+    document.getElementById('dtl_pet_name').innerText = pName;
+    document.getElementById('dtl_pet_type_race').innerText = appt.pet_type + ' - ' + pRace;
+    
+    document.getElementById('dtl_datetime').innerText = appt.jalali_date + ' | ' + appt.appointment_time.substr(0, 5);
+    document.getElementById('dtl_owner_name').innerText = appt.user_name || 'نامشخص';
+    document.getElementById('dtl_owner_phone').innerText = appt.phone || 'نامشخص';
+    document.getElementById('dtl_pet_gender').innerText = appt.pet_gender || 'نامشخص';
+    document.getElementById('dtl_pet_age').innerText = appt.pet_age || 'نامشخص';
+
+    // Set Status
+    let statusFa = appt.status;
+    let badgeClass = 'bg-outline-variant/20 text-on-surface-variant';
+    if(appt.status === 'approved') { statusFa = 'تایید شده'; badgeClass = 'bg-status-active/20 text-status-active'; }
+    else if(appt.status === 'completed') { statusFa = 'تکمیل شده'; badgeClass = 'bg-primary/20 text-primary'; }
+    else if(appt.status === 'cancelled') { statusFa = 'لغو شده'; badgeClass = 'bg-error/20 text-error'; }
+    else if(appt.status === 'pending' || appt.status === 'در انتظار') { statusFa = 'در انتظار'; badgeClass = 'bg-status-warning/20 text-status-warning'; }
+    
+    document.getElementById('dtl_status').innerHTML = `<span class="px-2 py-1 rounded-md text-[10px] font-bold ${badgeClass}">${statusFa}</span>`;
+
+    // Action Buttons
+    const actionsContainer = document.getElementById('dtl_actions');
+    let actionsHtml = '';
+    
+    // Upload & History
+    if(appt.pet_id) {
+        actionsHtml += `<button onclick="openUploadModal(${appt.pet_id}, ${appt.user_id}, '${pName.replace(/'/g, "\\'")}')" class="flex-1 flex justify-center items-center gap-2 py-2 px-3 rounded-lg font-bold bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors text-xs">
+            <span class="material-symbols-outlined text-[18px]">upload_file</span> آپلود سند
+        </button>`;
+        actionsHtml += `<a href="?view_pet_history=${appt.pet_id}" class="flex-1 flex justify-center items-center gap-2 py-2 px-3 rounded-lg font-bold bg-secondary/10 text-secondary hover:bg-secondary hover:text-white transition-colors text-xs">
+            <span class="material-symbols-outlined text-[18px]">history</span> پرونده پزشکی
+        </a>`;
+    }
+    
+    // Status updates
+    if (appt.status !== 'completed' && appt.status !== 'cancelled') {
+        actionsHtml += `<form method="POST" class="w-full flex gap-2 mt-2">
+            <input type="hidden" name="action" value="update_status">
+            <input type="hidden" name="appointment_id" value="${appt.id}">`;
+            
+        if (appt.status === 'pending' || appt.status === 'در انتظار') {
+            actionsHtml += `<button type="submit" name="status" value="approved" class="flex-1 py-2 rounded-lg font-bold bg-status-active/10 text-status-active hover:bg-status-active hover:text-white transition-colors text-xs">تایید نوبت</button>`;
+        } else {
+            actionsHtml += `<button type="submit" name="status" value="completed" class="flex-1 py-2 rounded-lg font-bold bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors text-xs">تکمیل نوبت</button>`;
+        }
+        actionsHtml += `<button type="submit" name="status" value="cancelled" onclick="return confirm('آیا از لغو این نوبت اطمینان دارید؟');" class="flex-1 py-2 rounded-lg font-bold bg-error/10 text-error hover:bg-error hover:text-white transition-colors text-xs">لغو نوبت</button>
+        </form>`;
+    }
+    
+    actionsContainer.innerHTML = actionsHtml;
+
+    document.getElementById('appointmentDetailsModal').classList.remove('hidden');
+    document.getElementById('appointmentDetailsModal').classList.add('flex');
 }
 </script>
 

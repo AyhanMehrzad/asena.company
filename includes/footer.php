@@ -42,5 +42,12 @@
             </div>
         </div>
     </footer>
+
+    <!-- Autoship Web Worker Trigger (Poor Man's Cron) -->
+    <script>
+        // Trigger the autoship worker asynchronously. 
+        // It checks its own lock file so it only actually runs once a day.
+        fetch('actions/autoship_worker.php', { method: 'POST' }).catch(() => {});
+    </script>
 </body>
 </html>

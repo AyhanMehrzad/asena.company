@@ -78,6 +78,14 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $brandsStmt = $pdo->query("SELECT DISTINCT brand FROM products WHERE brand IS NOT NULL AND brand != '' ORDER BY brand ASC");
 $all_brands = $brandsStmt->fetchAll(PDO::FETCH_COLUMN);
 
+// Fetch user wishlist if logged in
+$user_wishlist = [];
+if (isset($_SESSION['user_id'])) {
+    $wishlist_stmt = $pdo->prepare("SELECT product_id FROM wishlist WHERE user_id = ?");
+    $wishlist_stmt->execute([$_SESSION['user_id']]);
+    $user_wishlist = $wishlist_stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+
 // Helper function to keep URL params intact when changing page/category/removing filters
 function buildUrl($updates) {
     $query = $_GET;
@@ -281,6 +289,12 @@ function buildUrlRemoveArrayItem($arrayName, $valueToRemove) {
                     <?php if($product['discount_price']): ?>
                     <div class="absolute top-6 left-6 bg-secondary-container text-on-secondary-container text-label-sm px-3 py-1 rounded-full z-10 font-bold">تخفیف ویژه</div>
                     <?php endif; ?>
+                    
+                    <!-- Wishlist Button -->
+                    <?php $in_wishlist = in_array($product['id'], $user_wishlist); ?>
+                    <button type="button" onclick="toggleWishlist(this, <?php echo $product['id']; ?>)" class="absolute top-6 right-6 z-10 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-on-surface hover:text-error transition-colors shadow-sm">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' <?php echo $in_wishlist ? '1' : '0'; ?>; color: <?php echo $in_wishlist ? '#dc2626' : 'inherit'; ?>;">favorite</span>
+                    </button>
 
                     <div class="aspect-square bg-surface-container-lowest rounded-2xl mb-6 overflow-hidden relative">
                         <img src="<?php echo htmlspecialchars($product['image_url']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="<?php echo htmlspecialchars($product['name']); ?>">
@@ -289,7 +303,7 @@ function buildUrlRemoveArrayItem($arrayName, $valueToRemove) {
                         <div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/60 to-transparent flex justify-center z-20">
                             <!-- Using a form here isn't great because it's inside another form (our main filter form).
                                  We will use JavaScript to submit to actions/cart_action.php via POST or redirect. -->
-                            <button type="button" onclick="window.location.href='actions/cart_action.php?action=add&product_id=<?php echo $product['id']; ?>'" class="bg-primary text-white w-full py-3 rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-primary-container">
+                            <button type="button" onclick="addToCart(this, <?php echo $product['id']; ?>)" class="bg-primary text-white w-full py-3 rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-primary-container">
                                 <span class="material-symbols-outlined">add_shopping_cart</span>
                                 افزودن به سبد
                             </button>
@@ -300,7 +314,7 @@ function buildUrlRemoveArrayItem($arrayName, $valueToRemove) {
                             <?php echo htmlspecialchars($product['category']); ?>
                             <?php if(!empty($product['brand'])) echo ' • <span class="text-primary font-bold">' . htmlspecialchars($product['brand']) . '</span>'; ?>
                         </p>
-                        <h3 class="text-title-lg font-bold text-on-surface mb-4 line-clamp-2 hover:text-primary transition-colors cursor-pointer"><?php echo htmlspecialchars($product['name']); ?></h3>
+                        <a href="product_details.php?id=<?php echo $product['id']; ?>"><h3 class="text-title-lg font-bold text-on-surface mb-4 line-clamp-2 hover:text-primary transition-colors cursor-pointer"><?php echo htmlspecialchars($product['name']); ?></h3></a>
                         <div class="mt-auto flex justify-between items-center">
                             <div class="flex flex-col">
                                 <?php if($product['discount_price']): ?>
@@ -351,5 +365,77 @@ function buildUrlRemoveArrayItem($arrayName, $valueToRemove) {
         </section>
     </form>
 </main>
+
+<script>
+function toggleWishlist(btn, productId) {
+    // Prevent form submission if it's inside the filter form
+    if(event) event.preventDefault();
+    
+    fetch('actions/wishlist_action.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'product_id=' + productId
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const icon = btn.querySelector('.material-symbols-outlined');
+            if (data.action === 'added') {
+                icon.style.fontVariationSettings = "'FILL' 1";
+                icon.style.color = '#dc2626'; // tailwind red-600
+            } else {
+                icon.style.fontVariationSettings = "'FILL' 0";
+                icon.style.color = 'inherit';
+            }
+        } else {
+            alert(data.message || 'خطایی رخ داد.');
+            if (data.message === 'ابتدا وارد حساب کاربری شوید.') {
+                window.location.href = 'login.php';
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function addToCart(btn, productId) {
+    if(event) event.preventDefault();
+    
+    // show loading state on button
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> در حال افزودن...';
+    
+    fetch('actions/cart_action.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'action=add&ajax=1&csrf_token=<?php echo csrf_token(); ?>&product_id=' + productId
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> اضافه شد';
+            btn.classList.add('bg-status-active');
+            
+            // Revert after 2 seconds
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('bg-status-active');
+            }, 2000);
+        } else {
+            alert('خطا در افزودن به سبد خرید');
+            btn.innerHTML = originalText;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        btn.innerHTML = originalText;
+    });
+}
+</script>
 
 <?php include 'includes/footer.php'; ?>

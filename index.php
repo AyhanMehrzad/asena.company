@@ -247,26 +247,32 @@ include 'includes/header.php';
             </div>
         </section>
 
-        <!-- Section 4: App Promo -->
+        <!-- Section 4: AI Assistant Promo -->
         <section class="py-32 px-margin-desktop">
-            <div class="bg-secondary-container rounded-[4rem] p-12 lg:p-24 flex flex-col lg:flex-row items-center gap-20 overflow-hidden relative">
-                <div class="lg:w-1/2 text-on-secondary-container relative z-10">
-                    <h2 class="text-display-lg mb-8 leading-tight">پت‌کر در جیب شما؛<br>همیشه و همه‌جا</h2>
-                    <p class="text-body-lg mb-12 opacity-90">با اپلیکیشن اختصاصی پت‌کر ایران، تاریخچه درمانی، یادآور داروها و دستیار هوشمند را همیشه همراه داشته باشید.</p>
+            <div class="bg-primary-container rounded-[4rem] p-12 lg:p-24 flex flex-col lg:flex-row items-center gap-20 overflow-hidden relative">
+                <div class="lg:w-1/2 text-white relative z-10">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 rounded-full text-sm font-bold mb-6 backdrop-blur-sm">
+                        <span class="material-symbols-outlined text-status-warning text-sm" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                        هوش مصنوعی پت‌کر
+                    </div>
+                    <h2 class="text-display-lg mb-8 leading-tight">دستیار هوشمند شما؛<br>پاسخگو در هر لحظه</h2>
+                    <p class="text-body-lg mb-12 opacity-90">با استفاده از هوش مصنوعی اختصاصی ما، پاسخ سوالات مربوط به تغذیه، سلامت و نگهداری پت خود را در سریع‌ترین زمان ممکن بیابید. همچنین در صورت نیاز به سرعت به ادمین متصل شوید.</p>
                     <div class="flex flex-wrap gap-4">
-                        <button class="bg-primary text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-3 btn-premium">
-                            <span class="material-symbols-outlined">download</span>
-                            <span class="">دانلود از کافه بازار</span>
-                        </button>
-                        <button class="bg-white text-primary px-8 py-4 rounded-2xl font-bold flex items-center gap-3 btn-premium">
-                            <span class="material-symbols-outlined" data-original-icon="apple">circle</span>
-                            <span class="">دانلود نسخه iOS</span>
+                        <button onclick="window.location.href='chat.php?mode=ai'" class="bg-white text-primary px-8 py-4 rounded-2xl font-bold flex items-center gap-3 btn-premium">
+                            <span class="material-symbols-outlined text-status-warning" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+                            <span class="">شروع گفتگو با هوش مصنوعی</span>
                         </button>
                     </div>
                 </div>
                 <div class="lg:w-1/2 relative">
-                    <div class="relative z-10 scale-110 lg:translate-y-20">
-                        <img class="max-w-xs mx-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAK09JKJoAW8IDlEV62F6EhK_ZclTl0BOOrqKrLEW2LdmMUUKCgKaCvd8029q_FyH4ymM-2SVcFZw8N6Tqlj4EciX67Lnru9OKtRYzJWuMG1JfxHDb1KG63NJhXaCCSPJy3-B8E6WONsDmYn3gcGkjf_DWLfzgdMEfrKTfzso9ieBYc79JWN-ecwZOylLr38UcA5MDun5xS5Oyqn8Fcl5bFUF1ulD53gmeDWIy9gB_-vJmbWN35nXzR" alt="App Mockup">
+                    <div class="relative z-10 scale-110 lg:translate-y-10 flex justify-center">
+                        <div class="w-64 h-64 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/20 shadow-2xl relative">
+                             <!-- Glowing orbit effect -->
+                             <div class="absolute inset-0 rounded-full border border-white/30 animate-[spin_10s_linear_infinite] border-t-white"></div>
+                             <div class="absolute inset-[-20px] rounded-full border border-white/10 animate-[spin_15s_linear_infinite_reverse] border-b-white"></div>
+                             
+                             <span class="material-symbols-outlined text-9xl text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+                        </div>
                     </div>
                     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/20 rounded-full blur-3xl"></div>
                 </div>

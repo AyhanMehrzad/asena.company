@@ -12,6 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($phone) || empty($password)) {
         $error = 'لطفاً تمامی فیلدها را پر کنید.';
     } else {
+        require_once 'includes/functions.php';
+        check_rate_limit($pdo, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', $phone);
+        
         if ($mode === 'signup') {
             $name = trim($_POST['name'] ?? '');
             
@@ -25,8 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare("INSERT INTO users (phone, name, password, loyalty_points) VALUES (?, ?, ?, 50)");
                 if ($stmt->execute([$phone, $name, $hash])) {
                     $user_id = $pdo->lastInsertId();
+                    session_regenerate_id(true);
                     $_SESSION['user_id'] = $user_id;
                     $_SESSION['user_role'] = 'user';
+                    
+                    // Clear login attempts for this IP/user after success
+                    $pdo->prepare("DELETE FROM login_attempts WHERE ip_address = ?")->execute([$_SERVER['REMOTE_ADDR'] ?? '127.0.0.1']);
+                    
                     header("Location: index.php");
                     exit;
                 }
@@ -37,15 +45,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
             // For admin seeded user which didn't have password, we can bypass or wait for them to re-register
-            if ($user && $user['password'] && password_verify($password, $user['password'])) {
+            if ($user && !empty($user['password']) && password_verify($password, $user['password'])) {
+                session_regenerate_id(true);
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_role'] = $user['role'];
-                header("Location: index.php");
-                exit;
-            } elseif ($user && empty($user['password']) && $password === 'admin') {
-                 // Fallback for the seeded admin user
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_role'] = $user['role'];
+                
+                // Clear login attempts for this IP/user after success
+                $pdo->prepare("DELETE FROM login_attempts WHERE ip_address = ?")->execute([$_SERVER['REMOTE_ADDR'] ?? '127.0.0.1']);
+                
                 header("Location: index.php");
                 exit;
             } else {
@@ -125,7 +132,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <?php if($error): ?>
-    <div class="bg-error/10 text-error p-4 rounded-lg mb-6 text-sm font-bold border border-error/20"><?php echo htmlspecialchars($error); ?></div>
+    <div class="flex items-start gap-3 bg-red-50/80 border border-red-200 text-red-800 p-4 rounded-2xl shadow-sm mb-6 backdrop-blur-sm transition-all">
+        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-red-100 flex items-center justify-center mt-0.5">
+            <span class="material-symbols-outlined text-red-600 text-[18px]">error</span>
+        </div>
+        <div class="flex-1">
+            <h4 class="font-bold text-sm text-red-900">خطا در ورود</h4>
+            <p class="text-xs opacity-90 mt-1 leading-relaxed"><?php echo htmlspecialchars($error); ?></p>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if(isset($_SESSION['login_success'])): ?>
+    <div class="flex items-start gap-3 bg-emerald-50/80 border border-emerald-200 text-emerald-800 p-4 rounded-2xl shadow-sm mb-6 backdrop-blur-sm transition-all">
+        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center mt-0.5">
+            <span class="material-symbols-outlined text-emerald-600 text-[18px]">check_circle</span>
+        </div>
+        <div class="flex-1">
+            <h4 class="font-bold text-sm text-emerald-900">عملیات موفق</h4>
+            <p class="text-xs opacity-90 mt-1 leading-relaxed"><?php echo htmlspecialchars($_SESSION['login_success']); unset($_SESSION['login_success']); ?></p>
+        </div>
+    </div>
 <?php endif; ?>
 
 <!-- Input Fields -->
@@ -162,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <input class="rounded border-outline-variant text-primary focus:ring-primary-container w-4 h-4" type="checkbox"/>
 <span class="font-bold text-sm text-on-surface-variant group-hover:text-on-surface transition-colors">مرا به خاطر بسپار</span>
 </label>
-<a class="font-bold text-sm text-secondary hover:underline" href="#">فراموشی رمز عبور؟</a>
+<a class="font-bold text-sm text-secondary hover:underline" href="forgot_password.php">فراموشی رمز عبور؟</a>
 </div>
 
 <button type="submit" class="w-full h-12 bg-primary-container text-white rounded-lg font-bold text-lg hover:bg-primary transition-all active:scale-[0.98] shadow-lg shadow-primary-container/20">
@@ -178,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!-- Social Logins -->
 <div class="grid grid-cols-2 gap-4">
-<button class="flex items-center justify-center gap-3 h-12 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-all font-bold text-sm text-on-surface">
+<a href="actions/oauth_callback.php?provider=google" class="flex items-center justify-center gap-3 h-12 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-all font-bold text-sm text-on-surface cursor-pointer">
 <svg class="w-5 h-5" viewbox="0 0 24 24">
 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
@@ -186,13 +213,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 12-4.53z" fill="#EA4335"></path>
 </svg>
                         گوگل
-                    </button>
-<button class="flex items-center justify-center gap-3 h-12 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-all font-bold text-sm text-on-surface">
+                    </a>
+<a href="actions/oauth_callback.php?provider=apple" class="flex items-center justify-center gap-3 h-12 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-all font-bold text-sm text-on-surface cursor-pointer">
 <svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24">
 <path d="M17.05 20.28c-.96.95-2.06 1.72-3.32 1.72-1.18 0-1.6-.74-2.95-.74-1.37 0-1.87.72-2.96.72-1.2 0-2.2-.76-3.19-1.72-2.01-1.96-3.53-5.54-3.53-8.8 0-3.3 1.6-5.06 3.19-5.06 1.03 0 1.83.6 2.65.6.83 0 1.4-.6 2.62-.6 1.34 0 2.5.76 3.1 1.72-2.73 1.65-2.28 5.6.43 6.7-.6 1.43-1.35 2.83-2.54 3.76zm-3.54-15.65c.6-.73 1-1.74 1-2.75 0-.14-.02-.28-.04-.41-.95.04-2.1.64-2.78 1.43-.6.7-.85 1.65-.85 2.65 0 .15.02.3.06.41.05 0 .1 0 .15 0 .9 0 1.9-.45 2.46-1.33z"></path>
 </svg>
                         اپل
-                    </button>
+                    </a>
 </div>
 </div>
 <!-- Footer Links -->

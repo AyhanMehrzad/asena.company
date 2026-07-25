@@ -28,6 +28,22 @@ foreach ($pet_distribution as $pet) {
     $total_pets += $pet['count'];
 }
 
+// Monthly revenue for current year (real data)
+$stmt = $pdo->query("
+    SELECT MONTH(created_at) as month_num, SUM(total_amount) as revenue
+    FROM orders
+    WHERE YEAR(created_at) = YEAR(NOW()) AND status NOT IN ('cancelled', 'pending_payment')
+    GROUP BY MONTH(created_at)
+    ORDER BY month_num ASC
+");
+$monthly_revenue_raw = [];
+foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+    $monthly_revenue_raw[(int)$row['month_num']] = (int)$row['revenue'];
+}
+$months_fa  = [1=>'فروردین',2=>'اردیبهشت',3=>'خرداد',4=>'تیر',5=>'مرداد',6=>'شهریور',
+               7=>'مهر',8=>'آبان',9=>'آذر',10=>'دی',11=>'بهمن',12=>'اسفند'];
+$max_rev    = max(array_merge([1], array_values($monthly_revenue_raw)));
+
 $colors = ['bg-primary', 'bg-secondary-container', 'bg-tertiary-fixed', 'bg-secondary'];
 ?>
 
@@ -126,51 +142,37 @@ $colors = ['bg-primary', 'bg-secondary-container', 'bg-tertiary-fixed', 'bg-seco
             </div>
         </div>
 
-        <!-- Revenue Trend Chart -->
+        <!-- Real Revenue Chart -->
         <div class="lg:col-span-2 bento-card bg-white p-8 rounded-xl border border-outline-variant shadow-sm">
             <div class="flex justify-between items-center mb-8">
                 <div>
-                    <h4 class="font-title-lg text-title-lg text-primary">گزارش فرضی رشد درآمد</h4>
-                    <p class="font-body-md text-body-md text-on-surface-variant">نمایشی از نمودار درآمد سالانه</p>
+                    <h4 class="font-title-lg text-title-lg text-primary">درآمد ماهانه (سال جاری)</h4>
+                    <p class="font-body-md text-body-md text-on-surface-variant">بر اساس سفارش‌های تکمیل‌شده</p>
                 </div>
+                <span class="text-label-sm text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">
+                    <?= number_format(array_sum($monthly_revenue_raw)) ?> تومان کل
+                </span>
             </div>
-            <div class="h-64 chart-container flex items-end justify-between gap-4 px-4 border-b border-outline-variant pb-2">
-                <div class="flex-1 flex flex-col gap-2 items-center group">
-                    <div class="w-full flex gap-1 items-end justify-center h-full">
-                        <div class="w-4 bg-primary rounded-t-sm h-[60%] group-hover:h-[65%] transition-all duration-300"></div>
+            <div class="h-64 flex items-end justify-between gap-2 px-2 border-b border-outline-variant pb-2">
+                <?php for ($m = 1; $m <= 12; $m++):
+                    $rev    = $monthly_revenue_raw[$m] ?? 0;
+                    $pct    = $max_rev > 0 ? max(4, round(($rev / $max_rev) * 100)) : 4;
+                    $active = $rev > 0;
+                ?>
+                <div class="flex-1 flex flex-col items-center gap-2 group relative">
+                    <!-- Tooltip -->
+                    <?php if ($active): ?>
+                    <div class="absolute bottom-full mb-2 hidden group-hover:block bg-on-surface text-surface text-[10px] px-2 py-1 rounded whitespace-nowrap z-10">
+                        <?= number_format($rev) ?> تومان
                     </div>
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">فروردین</span>
-                </div>
-                <div class="flex-1 flex flex-col gap-2 items-center group">
-                    <div class="w-full flex gap-1 items-end justify-center h-full">
-                        <div class="w-4 bg-primary rounded-t-sm h-[80%] group-hover:h-[85%] transition-all duration-300"></div>
+                    <?php endif; ?>
+                    <div class="w-full flex items-end justify-center h-full">
+                        <div class="w-4 <?= $active ? 'bg-primary' : 'bg-outline-variant/30' ?> rounded-t-sm transition-all duration-500"
+                             style="height: <?= $pct ?>%"></div>
                     </div>
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">اردیبهشت</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant text-[9px] text-center"><?= $months_fa[$m] ?></span>
                 </div>
-                <div class="flex-1 flex flex-col gap-2 items-center group">
-                    <div class="w-full flex gap-1 items-end justify-center h-full">
-                        <div class="w-4 bg-primary rounded-t-sm h-[70%] group-hover:h-[75%] transition-all duration-300"></div>
-                    </div>
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">خرداد</span>
-                </div>
-                <div class="flex-1 flex flex-col gap-2 items-center group">
-                    <div class="w-full flex gap-1 items-end justify-center h-full">
-                        <div class="w-4 bg-primary rounded-t-sm h-[90%] group-hover:h-[95%] transition-all duration-300"></div>
-                    </div>
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">تیر</span>
-                </div>
-                <div class="flex-1 flex flex-col gap-2 items-center group">
-                    <div class="w-full flex gap-1 items-end justify-center h-full">
-                        <div class="w-4 bg-primary rounded-t-sm h-[50%] group-hover:h-[55%] transition-all duration-300"></div>
-                    </div>
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">مرداد</span>
-                </div>
-                <div class="flex-1 flex flex-col gap-2 items-center group">
-                    <div class="w-full flex gap-1 items-end justify-center h-full">
-                        <div class="w-4 bg-primary rounded-t-sm h-[75%] group-hover:h-[80%] transition-all duration-300"></div>
-                    </div>
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">شهریور</span>
-                </div>
+                <?php endfor; ?>
             </div>
         </div>
     </div>

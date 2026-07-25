@@ -4,23 +4,27 @@ require_once 'includes/admin_header.php';
 
 // Handle Add/Edit Product
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    if ($_POST['action'] === 'add') {
+    require_once '../includes/functions.php';
+    csrf_verify();
+    
+    $action = $_POST['action'];
+    if ($action === 'add') {
         $stmt = $pdo->prepare("INSERT INTO products (name, category, price, discount_price, image_url, description, stock, brand) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([
-            $_POST['name'], $_POST['category'], $_POST['price'], 
-            $_POST['discount_price'] ?: null, $_POST['image_url'], 
-            $_POST['description'], $_POST['stock'] ?: 10, $_POST['brand']
+            trim($_POST['name']), trim($_POST['category']), (int)$_POST['price'], 
+            empty($_POST['discount_price']) ? null : (int)$_POST['discount_price'], trim($_POST['image_url']), 
+            trim($_POST['description']), (int)($_POST['stock'] ?: 10), trim($_POST['brand'])
         ]);
-    } elseif ($_POST['action'] === 'edit') {
+    } elseif ($action === 'edit') {
         $stmt = $pdo->prepare("UPDATE products SET name=?, category=?, price=?, discount_price=?, image_url=?, description=?, stock=?, brand=? WHERE id=?");
         $stmt->execute([
-            $_POST['name'], $_POST['category'], $_POST['price'], 
-            $_POST['discount_price'] ?: null, $_POST['image_url'], 
-            $_POST['description'], $_POST['stock'] ?: 10, $_POST['brand'], $_POST['product_id']
+            trim($_POST['name']), trim($_POST['category']), (int)$_POST['price'], 
+            empty($_POST['discount_price']) ? null : (int)$_POST['discount_price'], trim($_POST['image_url']), 
+            trim($_POST['description']), (int)($_POST['stock'] ?: 10), trim($_POST['brand']), (int)$_POST['product_id']
         ]);
-    } elseif ($_POST['action'] === 'delete') {
+    } elseif ($action === 'delete') {
         $stmt = $pdo->prepare("DELETE FROM products WHERE id=?");
-        $stmt->execute([$_POST['product_id']]);
+        $stmt->execute([(int)$_POST['product_id']]);
     }
     header("Location: inventory.php");
     exit;
@@ -140,7 +144,8 @@ $lowStock = count(array_filter($products, fn($p) => $p['stock'] > 0 && $p['stock
                                 <button onclick='openModal("edit", <?= json_encode($product) ?>)' class="p-2 text-on-surface-variant hover:text-primary transition-colors" title="ویرایش">
                                     <span class="material-symbols-outlined text-lg">edit</span>
                                 </button>
-                                <form method="POST" onsubmit="return confirm('آیا از حذف این محصول اطمینان دارید؟');" class="inline">
+                                <form method="POST" onsubmit="return confirm('آیا از حذف این محصول اطمینان دارید؟');" class="inline m-0">
+                                    <?= csrf_field() ?>
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
                                     <button type="submit" class="p-2 text-on-surface-variant hover:text-error transition-colors" title="حذف">
@@ -167,9 +172,10 @@ $lowStock = count(array_filter($products, fn($p) => $p['stock'] > 0 && $p['stock
             </button>
         </div>
         <div class="p-6 overflow-y-auto">
-            <form id="productForm" method="POST" class="space-y-4">
-                <input type="hidden" name="action" id="formAction" value="add">
-                <input type="hidden" name="product_id" id="productId" value="">
+            <form id="productForm" method="POST" class="flex flex-col flex-1 h-full">
+                <?= csrf_field() ?>
+                <input type="hidden" name="action" id="form_action" value="add">
+                <input type="hidden" name="product_id" id="form_product_id" value="">
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1">
@@ -230,8 +236,8 @@ function openModal(mode, product = null) {
     
     if (mode === 'edit' && product) {
         title.innerText = 'ویرایش محصول';
-        document.getElementById('formAction').value = 'edit';
-        document.getElementById('productId').value = product.id;
+        document.getElementById('form_action').value = 'edit';
+        document.getElementById('form_product_id').value = product.id;
         document.getElementById('productName').value = product.name;
         document.getElementById('productCategory').value = product.category;
         document.getElementById('productBrand').value = product.brand || '';
@@ -243,8 +249,8 @@ function openModal(mode, product = null) {
     } else {
         title.innerText = 'افزودن محصول جدید';
         form.reset();
-        document.getElementById('formAction').value = 'add';
-        document.getElementById('productId').value = '';
+        document.getElementById('form_action').value = 'add';
+        document.getElementById('form_product_id').value = '';
     }
     
     modal.classList.remove('hidden');

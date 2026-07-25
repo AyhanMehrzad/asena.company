@@ -7,11 +7,14 @@ $error = '';
 
 // Handle Actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    require_once '../includes/functions.php';
+    csrf_verify();
+
     $action = $_POST['action'];
     
     if ($action === 'add_doctor') {
         $user_id = (int)$_POST['user_id'];
-        $specialty = trim($_POST['specialty']);
+        $specialty = trim(strip_tags($_POST['specialty']));
         $price = (int)$_POST['price'];
         
         // Fetch user info to get name
@@ -43,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
     } elseif ($action === 'edit_doctor') {
         $doc_id = (int)$_POST['doctor_id'];
-        $specialty = trim($_POST['specialty']);
+        $specialty = trim(strip_tags($_POST['specialty']));
         $price = (int)$_POST['price'];
         
         $image_url = null;
@@ -176,7 +179,8 @@ $pendingAppointments = count(array_filter($appointments, fn($a) => $a['status'] 
                                     <button onclick="openEditDoctorModal(<?= $doctor['id'] ?>, '<?= htmlspecialchars($doctor['specialty'], ENT_QUOTES) ?>', <?= $doctor['price'] ?>)" class="w-8 h-8 rounded bg-surface-container-low text-primary flex items-center justify-center hover:bg-primary-container hover:text-on-primary-container transition-colors">
                                         <span class="material-symbols-outlined text-sm">edit</span>
                                     </button>
-                                    <form method="POST" onsubmit="return confirm('آیا از حذف این پزشک اطمینان دارید؟');" class="inline">
+                                    <form method="POST" onsubmit="return confirm('آیا از حذف این پزشک اطمینان دارید؟');" class="inline m-0">
+                                        <?= csrf_field() ?>
                                         <input type="hidden" name="action" value="delete_doctor">
                                         <input type="hidden" name="doctor_id" value="<?= $doctor['id'] ?>">
                                         <button type="submit" class="w-8 h-8 rounded bg-surface-container-low text-error flex items-center justify-center hover:bg-error-container hover:text-on-error-container transition-colors">
@@ -310,6 +314,7 @@ $pendingAppointments = count(array_filter($appointments, fn($a) => $a['status'] 
         </div>
         
         <form method="POST" class="flex flex-col flex-1" enctype="multipart/form-data">
+            <?= csrf_field() ?>
             <input type="hidden" name="action" value="add_doctor">
             
             <div class="p-6 overflow-y-auto space-y-4">
@@ -363,6 +368,7 @@ $pendingAppointments = count(array_filter($appointments, fn($a) => $a['status'] 
         </div>
         
         <form method="POST" class="flex flex-col flex-1" enctype="multipart/form-data">
+            <?= csrf_field() ?>
             <input type="hidden" name="action" value="edit_doctor">
             <input type="hidden" name="doctor_id" id="edit_doctor_id">
             

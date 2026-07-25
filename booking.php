@@ -102,6 +102,7 @@ $booked_slots_json = json_encode($booked_slots);
 
     <!-- Booking Form -->
     <form action="actions/booking_action.php" method="POST" id="booking-form" class="flex flex-col lg:flex-row-reverse gap-8">
+        <?php echo csrf_field(); ?>
         
         <!-- Hidden Inputs to store selections -->
         <input type="hidden" name="doctor_id" id="input_doctor_id" value="">
@@ -429,8 +430,8 @@ $booked_slots_json = json_encode($booked_slots);
         let daySched = selectedDoctorSchedule[dayKey];
         if (!daySched) return;
         
-        let morningSlots = generateTimeSlots(daySched.m_start, daySched.m_end);
-        let afternoonSlots = generateTimeSlots(daySched.a_start, daySched.a_end);
+        let morningSlots = (daySched.m_active !== false) ? generateTimeSlots(daySched.m_start, daySched.m_end) : [];
+        let afternoonSlots = (daySched.a_active !== false) ? generateTimeSlots(daySched.a_start, daySched.a_end) : [];
         
         let bookedForDate = (bookedSlots[selectedDoctorId] && bookedSlots[selectedDoctorId][dateStr]) ? bookedSlots[selectedDoctorId][dateStr] : [];
 
@@ -461,8 +462,17 @@ $booked_slots_json = json_encode($booked_slots);
             return html;
         };
         
-        timesList.innerHTML += buildSection(`صبح (${daySched.m_start} - ${daySched.m_end})`, 'light_mode', morningSlots, 'صبح');
-        timesList.innerHTML += buildSection(`بعد از ظهر (${daySched.a_start} - ${daySched.a_end})`, 'wb_sunny', afternoonSlots, 'عصر');
+        if (morningSlots.length > 0) {
+            timesList.innerHTML += buildSection(`صبح (${daySched.m_start} - ${daySched.m_end})`, 'light_mode', morningSlots, 'صبح');
+        } else if (daySched.m_active === false) {
+            timesList.innerHTML += `<div class="text-on-surface-variant text-sm py-2 px-2 opacity-80"><span class="material-symbols-outlined text-[16px] align-text-bottom ml-1">info</span>پزشک در شیفت صبح حضور ندارد.</div>`;
+        }
+
+        if (afternoonSlots.length > 0) {
+            timesList.innerHTML += buildSection(`بعد از ظهر (${daySched.a_start} - ${daySched.a_end})`, 'wb_sunny', afternoonSlots, 'عصر');
+        } else if (daySched.a_active === false) {
+            timesList.innerHTML += `<div class="text-on-surface-variant text-sm py-2 px-2 opacity-80"><span class="material-symbols-outlined text-[16px] align-text-bottom ml-1">info</span>پزشک در شیفت عصر حضور ندارد.</div>`;
+        }
     }
 
     function selectTime(btn, timeValue, label) {

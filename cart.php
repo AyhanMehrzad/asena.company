@@ -38,6 +38,19 @@ $final_price = $total_price - $total_discount;
         <p class="text-body-lg text-on-surface-variant">محصولات انتخاب شده جهت تسویه حساب</p>
     </div>
 
+    <?php if(isset($_SESSION['profile_error'])): ?>
+        <div class="bg-error/10 text-error p-4 rounded-xl mb-8 font-bold text-sm border border-error/20 flex items-center gap-2">
+            <span class="material-symbols-outlined">error</span>
+            <?php echo $_SESSION['profile_error']; unset($_SESSION['profile_error']); ?>
+        </div>
+    <?php endif; ?>
+    <?php if(isset($_SESSION['profile_success'])): ?>
+        <div class="bg-status-active/10 text-status-active p-4 rounded-xl mb-8 font-bold text-sm border border-status-active/20 flex items-center gap-2">
+            <span class="material-symbols-outlined">check_circle</span>
+            <?php echo $_SESSION['profile_success']; unset($_SESSION['profile_success']); ?>
+        </div>
+    <?php endif; ?>
+
     <?php if (empty($products)): ?>
         <div class="text-center py-20 bg-white rounded-3xl border border-outline-variant/30">
             <span class="material-symbols-outlined text-6xl text-primary/30 mb-4">shopping_cart</span>
@@ -57,6 +70,7 @@ $final_price = $total_price - $total_discount;
                         <div class="flex justify-between items-start mb-2">
                             <h3 class="text-title-lg font-bold text-on-surface"><?php echo htmlspecialchars($prod['name']); ?></h3>
                             <form action="actions/cart_action.php" method="POST">
+                                <?php echo csrf_field(); ?>
                                 <input type="hidden" name="product_id" value="<?php echo $prod['id']; ?>">
                                 <input type="hidden" name="action" value="remove">
                                 <button type="submit" class="text-error hover:bg-error/10 p-2 rounded-lg transition-colors cursor-pointer">
@@ -69,6 +83,7 @@ $final_price = $total_price - $total_discount;
                         <div class="flex justify-between items-center w-full">
                             <div class="flex items-center gap-4 bg-surface-container rounded-xl p-2">
                                 <form action="actions/cart_action.php" method="POST">
+                                    <?php echo csrf_field(); ?>
                                     <input type="hidden" name="product_id" value="<?php echo $prod['id']; ?>">
                                     <input type="hidden" name="action" value="decrease">
                                     <button type="submit" class="w-8 h-8 flex items-center justify-center bg-white rounded-lg shadow-sm hover:text-primary transition-colors cursor-pointer"><span class="material-symbols-outlined text-sm">remove</span></button>
@@ -77,6 +92,7 @@ $final_price = $total_price - $total_discount;
                                 <span class="font-bold w-6 text-center"><?php echo $prod['qty']; ?></span>
                                 
                                 <form action="actions/cart_action.php" method="POST">
+                                    <?php echo csrf_field(); ?>
                                     <input type="hidden" name="product_id" value="<?php echo $prod['id']; ?>">
                                     <input type="hidden" name="action" value="increase">
                                     <button type="submit" class="w-8 h-8 flex items-center justify-center bg-white rounded-lg shadow-sm hover:text-primary transition-colors cursor-pointer"><span class="material-symbols-outlined text-sm">add</span></button>

@@ -1,4 +1,25 @@
 <?php
+require_once '../includes/db.php';
+
+// Handle Event Post Actions
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['action']) && $_POST['action'] === 'add_event') {
+        $title = trim($_POST['title']);
+        $time = trim($_POST['time']);
+        $color = $_POST['color'] ?? 'primary';
+        if (!empty($title) && !empty($time)) {
+            $stmt = $pdo->prepare("INSERT INTO dashboard_events (title, event_time, color) VALUES (?, ?, ?)");
+            $stmt->execute([$title, $time, $color]);
+        }
+    } elseif (isset($_POST['action']) && $_POST['action'] === 'delete_event') {
+        $event_id = (int)$_POST['event_id'];
+        $stmt = $pdo->prepare("DELETE FROM dashboard_events WHERE id = ?");
+        $stmt->execute([$event_id]);
+    }
+    header("Location: index.php");
+    exit;
+}
+
 $currentPage = 'dashboard';
 require_once 'includes/admin_header.php';
 
@@ -31,9 +52,13 @@ $stmt = $pdo->query("
 ");
 $live_appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// 6. Top selling product
-$stmt = $pdo->query("SELECT * FROM products ORDER BY stock ASC LIMIT 1");
+// 6. Top selling / low stock product (Needs attention)
+$stmt = $pdo->query("SELECT * FROM products WHERE stock <= 5 ORDER BY stock ASC LIMIT 1");
 $top_product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// 7. Dashboard Events
+$stmt = $pdo->query("SELECT * FROM dashboard_events ORDER BY event_time ASC");
+$dashboard_events = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!-- Dashboard Content Container -->
 <div class="p-8 space-y-8">
@@ -181,20 +206,29 @@ $top_product = $stmt->fetch(PDO::FETCH_ASSOC);
                     <h2 class="font-title-lg text-title-lg text-primary mb-6">آیتم نیازمند توجه در انبار</h2>
                     <div class="space-y-4">
                         <?php if($top_product): ?>
+                            <?php 
+                            $img_src = $top_product['image_url'];
+                            if (!str_starts_with($img_src, 'http')) {
+                                $img_src = '../' . $img_src;
+                            }
+                            ?>
                             <div class="flex items-center gap-4 group">
                                 <div class="w-12 h-12 rounded bg-surface-container overflow-hidden">
-                                    <img class="w-full h-full object-cover" src="../<?= htmlspecialchars($top_product['image_url']) ?>"/>
+                                    <img class="w-full h-full object-cover" src="<?= htmlspecialchars($img_src) ?>"/>
                                 </div>
                                 <div class="flex-1">
                                     <p class="font-label-lg text-primary"><?= htmlspecialchars($top_product['name']) ?></p>
                                     <p class="text-label-sm text-on-surface-variant"><?= number_format($top_product['price']) ?> تومان</p>
                                 </div>
                                 <div class="text-right">
-                                    <p class="font-label-lg <?= $top_product['stock'] <= 5 ? 'text-error' : 'text-status-active' ?>">موجود: <?= $top_product['stock'] ?></p>
+                                    <p class="font-label-lg text-error">موجود: <?= $top_product['stock'] ?></p>
                                 </div>
                             </div>
                         <?php else: ?>
-                            <p class="text-on-surface-variant">محصولی یافت نشد.</p>
+                            <div class="flex items-center gap-3 text-status-active bg-status-active/10 p-4 rounded-lg">
+                                <span class="material-symbols-outlined">check_circle</span>
+                                <p class="font-bold text-sm">تمامی کالاها دارای موجودی ایمن (بیشتر از ۵ عدد) هستند.</p>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -217,35 +251,94 @@ $top_product = $stmt->fetch(PDO::FETCH_ASSOC);
 
         <!-- Charity Impact (1/3 Column) -->
         <div class="lg:col-span-1 space-y-6">
-            <div class="bg-surface-container-high/50 p-6 rounded-xl border border-outline-variant/20">
-                <div class="flex items-center gap-3 mb-4 text-primary">
-                    <span class="material-symbols-outlined">event_note</span>
-                    <h3 class="font-title-lg text-title-lg">رویدادهای امروز</h3>
+            <div class="bg-surface-container-high/50 p-6 rounded-xl border border-outline-variant/20 relative">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3 text-primary">
+                        <span class="material-symbols-outlined">event_note</span>
+                        <h3 class="font-title-lg text-title-lg">رویدادهای امروز</h3>
+                    </div>
+                    <button onclick="document.getElementById('eventsModal').classList.remove('hidden')" class="text-on-surface-variant hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">edit</span>
+                    </button>
                 </div>
                 <ul class="space-y-4">
-                    <li class="flex gap-4">
-                        <div class="flex flex-col items-center">
-                            <div class="w-2 h-2 rounded-full bg-primary ring-4 ring-primary/10"></div>
-                            <div class="w-0.5 h-full bg-outline-variant/30 mt-1"></div>
-                        </div>
-                        <div>
-                            <p class="font-label-lg text-primary">شروع شیفت کلینیک</p>
-                            <p class="text-label-sm text-on-surface-variant">ساعت ۰۸:۰۰</p>
-                        </div>
-                    </li>
-                    <li class="flex gap-4">
-                        <div class="flex flex-col items-center">
-                            <div class="w-2 h-2 rounded-full bg-secondary ring-4 ring-secondary/10"></div>
-                            <div class="w-0.5 h-full bg-outline-variant/30 mt-1"></div>
-                        </div>
-                        <div>
-                            <p class="font-label-lg text-primary">بررسی سفارشات</p>
-                            <p class="text-label-sm text-on-surface-variant">ساعت ۱۲:۰۰</p>
-                        </div>
-                    </li>
+                    <?php if (empty($dashboard_events)): ?>
+                        <li class="text-sm text-on-surface-variant">هیچ رویدادی ثبت نشده است.</li>
+                    <?php else: ?>
+                        <?php foreach($dashboard_events as $ev): ?>
+                        <li class="flex gap-4">
+                            <div class="flex flex-col items-center">
+                                <div class="w-2 h-2 rounded-full bg-<?= $ev['color'] ?> ring-4 ring-<?= $ev['color'] ?>/10"></div>
+                                <div class="w-0.5 h-full bg-outline-variant/30 mt-1"></div>
+                            </div>
+                            <div>
+                                <p class="font-label-lg text-<?= $ev['color'] ?>"><?= htmlspecialchars($ev['title']) ?></p>
+                                <p class="text-label-sm text-on-surface-variant">ساعت <?= htmlspecialchars($ev['event_time']) ?></p>
+                            </div>
+                        </li>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Manage Events Modal -->
+<div id="eventsModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-xl relative max-h-[90vh] overflow-y-auto">
+        <button onclick="document.getElementById('eventsModal').classList.add('hidden')" class="absolute top-4 left-4 text-on-surface-variant hover:text-error"><span class="material-symbols-outlined">close</span></button>
+        <h2 class="text-xl font-bold text-primary mb-6">مدیریت رویدادهای امروز</h2>
+        
+        <!-- List existing events -->
+        <div class="mb-6 space-y-3">
+            <h3 class="font-bold text-sm text-on-surface-variant mb-2">رویدادهای فعلی:</h3>
+            <?php if (empty($dashboard_events)): ?>
+                <p class="text-sm text-on-surface-variant">رویدادی وجود ندارد.</p>
+            <?php else: ?>
+                <?php foreach($dashboard_events as $ev): ?>
+                    <div class="flex items-center justify-between bg-surface-container-low p-3 rounded-lg border border-outline-variant/30">
+                        <div>
+                            <p class="text-sm font-bold text-<?= $ev['color'] ?>"><?= htmlspecialchars($ev['title']) ?></p>
+                            <p class="text-xs text-on-surface-variant"><?= htmlspecialchars($ev['event_time']) ?></p>
+                        </div>
+                        <form action="index.php" method="POST" class="m-0" onsubmit="return confirm('آیا از حذف این رویداد اطمینان دارید؟');">
+                            <input type="hidden" name="action" value="delete_event">
+                            <input type="hidden" name="event_id" value="<?= $ev['id'] ?>">
+                            <button type="submit" class="text-error hover:bg-error/10 p-1 rounded transition-colors"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                        </form>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+        
+        <hr class="border-outline-variant/30 mb-6">
+        
+        <!-- Add new event form -->
+        <form action="index.php" method="POST" class="space-y-4">
+            <h3 class="font-bold text-sm text-on-surface-variant mb-2">افزودن رویداد جدید:</h3>
+            <input type="hidden" name="action" value="add_event">
+            <div>
+                <label class="block text-xs font-bold mb-1">عنوان رویداد</label>
+                <input type="text" name="title" required class="w-full border border-outline-variant rounded-lg p-2 focus:ring-2 focus:ring-primary outline-none text-sm" placeholder="مثال: استراحت">
+            </div>
+            <div class="flex gap-4">
+                <div class="flex-1">
+                    <label class="block text-xs font-bold mb-1">ساعت (مانند 14:30)</label>
+                    <input type="text" name="time" required class="w-full border border-outline-variant rounded-lg p-2 focus:ring-2 focus:ring-primary outline-none text-sm" placeholder="14:30" dir="ltr">
+                </div>
+                <div class="flex-1">
+                    <label class="block text-xs font-bold mb-1">رنگ نمایشی</label>
+                    <select name="color" class="w-full border border-outline-variant rounded-lg p-2 focus:ring-2 focus:ring-primary outline-none text-sm">
+                        <option value="primary">آبی (اصلی)</option>
+                        <option value="secondary">نارنجی (ثانویه)</option>
+                        <option value="tertiary">سبز (سوم)</option>
+                        <option value="error">قرمز (خطا/مهم)</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="w-full bg-primary-container text-white py-2 rounded-lg font-bold mt-2 hover:bg-primary transition-colors">ثبت رویداد جدید</button>
+        </form>
     </div>
 </div>
 

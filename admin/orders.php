@@ -1,10 +1,63 @@
 <?php
+require_once '../includes/db.php';
+
+// Handle status update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_order_status') {
+    require_once '../includes/functions.php';
+    csrf_verify();
+    
+    $order_id = (int)$_POST['order_id'];
+    $new_status = $_POST['status'];
+    $allowed_statuses = ['pending_payment', 'processing', 'shipped', 'delivered', 'cancelled'];
+    
+    if (in_array($new_status, $allowed_statuses) && $order_id > 0) {
+        // Fetch current status
+        $stmt = $pdo->prepare("SELECT status FROM orders WHERE id = ?");
+        $stmt->execute([$order_id]);
+        $old_status = $stmt->fetchColumn();
+        
+        if ($old_status !== $new_status) {
+            $updateStmt = $pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
+            if ($updateStmt->execute([$new_status, $order_id])) {
+                $logStmt = $pdo->prepare("INSERT INTO order_logs (order_id, old_status, new_status) VALUES (?, ?, ?)");
+                $logStmt->execute([$order_id, $old_status, $new_status]);
+            }
+        }
+    }
+    header("Location: orders.php");
+    exit;
+}
+
 $currentPage = 'orders';
 require_once 'includes/admin_header.php';
+require_once '../includes/functions.php';
 
 // Fetch orders
 $stmt = $pdo->query("SELECT o.*, u.name as user_name FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.created_at DESC LIMIT 50");
 $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch order logs
+$stmt = $pdo->query("SELECT * FROM order_logs ORDER BY changed_at DESC");
+$all_logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$logs_by_order = [];
+foreach($all_logs as $log) {
+    $logs_by_order[$log['order_id']][] = $log;
+}
+
+// Helper to translate status
+function translate_status($status) {
+    $map = [
+        'pending_payment' => 'در انتظار پرداخت',
+        'processing' => 'در حال پردازش',
+        'shipped' => 'در مسیر ارسال',
+        'delivered' => 'تحویل شده',
+        'cancelled' => 'لغو شده'
+    ];
+    return $map[$status] ?? $status;
+}
+
+// Date Formatter for Jalali
+$fmt = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter::FULL, IntlDateFormatter::FULL, 'Asia/Tehran', IntlDateFormatter::TRADITIONAL, 'yyyy/MM/dd HH:mm');
 ?>
 
 <div class="p-8 max-w-[1400px] mx-auto">
@@ -50,22 +103,41 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td class="px-6 py-4 text-on-surface-variant"><?= htmlspecialchars($order['user_name']) ?></td>
                             <td class="px-6 py-4 font-bold"><?= number_format($order['total_amount']) ?></td>
                             <td class="px-6 py-4">
-                                <?php 
-                                $status_class = '';
-                                $status_text = '';
-                                switch($order['status']) {
-                                    case 'pending_payment': $status_class = 'bg-status-warning/20 text-status-warning'; $status_text = 'در انتظار پرداخت'; break;
-                                    case 'processing': $status_class = 'bg-primary-fixed text-on-primary-fixed-variant'; $status_text = 'در حال پردازش'; break;
-                                    case 'shipped': $status_class = 'bg-secondary-fixed text-on-secondary-fixed'; $status_text = 'ارسال شده'; break;
-                                    case 'delivered': $status_class = 'bg-status-active/20 text-status-active'; $status_text = 'تحویل شده'; break;
-                                    case 'cancelled': $status_class = 'bg-error-container text-error'; $status_text = 'لغو شده'; break;
-                                    default: $status_class = 'bg-surface-variant text-on-surface-variant'; $status_text = htmlspecialchars($order['status']); break;
-                                }
-                                ?>
-                                <span class="<?= $status_class ?> px-3 py-1 rounded-full text-[11px] font-bold"><?= $status_text ?></span>
+                                <form action="orders.php" method="POST" class="m-0 p-0">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="action" value="update_order_status">
+                                    <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
+                                    <select name="status" data-current="<?= $order['status'] ?>" onchange="if(confirm('آیا از تغییر وضعیت این سفارش اطمینان دارید؟')){ this.form.submit(); } else { this.value = this.getAttribute('data-current'); }" class="border border-outline-variant/30 rounded-md py-1 px-2 text-[11px] font-bold focus:outline-none focus:ring-1 focus:ring-primary <?php 
+                                        switch($order['status']) {
+                                            case 'pending_payment': echo 'bg-status-warning/20 text-status-warning'; break;
+                                            case 'processing': echo 'bg-primary-fixed text-on-primary-fixed-variant'; break;
+                                            case 'shipped': echo 'bg-secondary-fixed text-on-secondary-fixed'; break;
+                                            case 'delivered': echo 'bg-status-active/20 text-status-active'; break;
+                                            case 'cancelled': echo 'bg-error-container text-error'; break;
+                                            default: echo 'bg-surface-variant text-on-surface-variant'; break;
+                                        }
+                                    ?>">
+                                        <option value="pending_payment" <?= $order['status'] === 'pending_payment' ? 'selected' : '' ?>>در انتظار پرداخت</option>
+                                        <option value="processing" <?= $order['status'] === 'processing' ? 'selected' : '' ?>>در حال پردازش</option>
+                                        <option value="shipped" <?= $order['status'] === 'shipped' ? 'selected' : '' ?>>در مسیر ارسال</option>
+                                        <option value="delivered" <?= $order['status'] === 'delivered' ? 'selected' : '' ?>>تحویل شده</option>
+                                        <option value="cancelled" <?= $order['status'] === 'cancelled' ? 'selected' : '' ?>>لغو شده</option>
+                                    </select>
+                                </form>
                             </td>
-                            <td class="px-6 py-4 text-on-surface-variant text-sm font-body-md" dir="ltr">
-                                <?= $order['created_at'] ?>
+                            <td class="px-6 py-4 text-on-surface-variant text-sm font-body-md persian-number" dir="ltr">
+                                <p><?= $fmt->format(new DateTime($order['created_at'])) ?></p>
+                                <?php if(isset($logs_by_order[$order['id']])): ?>
+                                    <div class="mt-2 text-xs flex flex-col gap-1 border-t border-outline-variant/30 pt-2 text-right w-full" dir="rtl">
+                                        <p class="font-bold text-primary mb-1">تاریخچه تغییرات:</p>
+                                        <?php foreach($logs_by_order[$order['id']] as $log): ?>
+                                            <p class="text-on-surface-variant text-[10px] bg-surface-container-low p-1.5 rounded-lg border border-outline-variant/30">
+                                                تغییر از <strong><?= translate_status($log['old_status']) ?></strong> به <strong><?= translate_status($log['new_status']) ?></strong><br>
+                                                <span class="text-outline persian-number"><?= $fmt->format(new DateTime($log['changed_at'])) ?></span>
+                                            </p>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
                             </td>
                         </tr>
                         <?php endforeach; ?>

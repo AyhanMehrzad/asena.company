@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa" style="">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #002d72;
+            --secondary-container: #fd8100;
+        }
+
+        body {
+            font-family: 'Geist', Tahoma, sans-serif;
+            background-color: #f9f9f9;
+            color: #1a1c1c;
+            overflow-x: hidden;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(0, 45, 114, 0.08);
+        }
+
+        .paw-pattern {
+            background-image: radial-gradient(#002d72 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
+            opacity: 0.03;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #002d72;
+            border-radius: 10px;
+        }
+
+        .workstation-shadow {
+            box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#002d72",
+                        "secondary": "#954a00",
+                        "secondary-container": "#fd8100",
+                        "on-secondary-container": "#5d2c00",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c4c6d2",
+                        "surface-variant": "#e2e2e2",
+                        "tertiary-container": "#133449",
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "margin-desktop": "24px",
+                        "gutter": "24px",
+                        "container-max": "100%"
+                    },
+                    fontFamily: {
+                        "headline-lg": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "label-lg": ["Geist"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-background">
+    <!-- Main Content Canvas - Expanded to Full Width -->
+    <main class="w-full mx-auto px-6 py-8 flex flex-col pt-12 gap-16">
+        <!-- Hero Bento Section - High Density -->
+        <div class="space-y-12">
+            <!-- Brand Header & Stats Rail -->
+            <div class="flex flex-wrap items-center justify-between gap-6">
+                <div class="flex items-center gap-6">
+                    <div class="glass-card px-8 py-4 rounded-2xl">
+                        <span class="text-primary font-bold text-2xl block">PetCare Iran</span>
+                        <p class="text-on-surface-variant text-xs">مرکز جامع خدمات هوشمند حیوانات خانگی در ایران</p>
+                    </div>
+                    <div class="hidden md:flex items-center gap-8">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">favorite</span>
+                            <div>
+                                <div class="text-lg font-bold text-primary">۱۲,۴۰۰+</div>
+                                <div class="text-[10px] text-on-surface-variant uppercase font-bold">فرشته‌های درمان شده
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-secondary-container">emergency</span>
+                            <div>
+                                <div class="text-lg font-bold text-primary">۲۴/۷</div>
+                                <div class="text-[10px] text-on-surface-variant uppercase font-bold">پشتیبانی اورژانس
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button
+                        class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                    <button
+                        class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Premium Slider Container -->
+            <div class="relative h-[600px] rounded-[3rem] overflow-hidden shadow-2xl group">
+                <!-- Slide 1: Autoship (Main Feature) -->
+                <div class="absolute inset-0 bg-slate-50 flex items-center">
+                    <div class="absolute inset-0 bg-gradient-to-l from-white via-white/40 to-transparent z-10"></div>
+                    <div class="absolute left-0 top-0 w-1/2 h-full bg-cover bg-center opacity-80"
+                        style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuC7JDe1BNtLZjDeCHhWzxtfKBCiOZOPFtW6_O86c3KFbcxHMmzpzcl9OKEhq_upgdqXesxKl62ccKIhyD95R8red5P9zdTN6Hc-t6JqKIIoNv6zO0I7XeA1GsvBKSAylDVNvj7QYnYBBOEnJ4Yc3X7VAO1iscvaFOm0QSJY5b3AUyRYLStsffV1Vema9m0Rvwq-PSaZQ6YUs3zdvo86p4LRzaB9ZrncOkuur75P3VtGOL-nGYspCz3WnYuhUyEQHI7KKqls2avYE-k&quot;);">
+                    </div>
+                    <div class="relative z-20 mr-auto ml-24 max-w-xl space-y-8">
+                        <div
+                            class="inline-flex items-center gap-3 px-4 py-2 bg-secondary-container/10 text-secondary-container rounded-full font-bold text-sm">
+                            <span class="material-symbols-outlined text-sm">autorenew</span>
+                            سرویس تحویل خودکار (Autoship)
+                        </div>
+                        <h2 class="text-5xl font-bold text-primary leading-tight">اشتراک هوشمند؛<br>همیشه در دسترس،
+                            همیشه با تخفیف</h2>
+                        <p class="text-xl text-on-surface-variant leading-relaxed font-light">برنامه غذایی و دارویی پت
+                            شما هرگز متوقف نمی‌شود. با فعال‌سازی اشتراک، از ۱۵٪ تخفیف دائمی و ارسال رایگان بهره‌مند
+                            شوید.</p>
+                        <div class="flex items-center gap-6">
+                            <button
+                                class="bg-primary text-white px-10 py-4 rounded-full font-bold shadow-xl hover:bg-primary/90 transition-all transform hover:-translate-y-1">
+                                فعال‌سازی اشتراک هوشمند
+                            </button>
+                            <div class="flex -space-x-3 space-x-reverse">
+                                <div class="w-12 h-12 rounded-full border-2 border-white bg-slate-200 shadow-md"></div>
+                                <div class="w-12 h-12 rounded-full border-2 border-white bg-slate-300 shadow-md"></div>
+                                <div class="w-12 h-12 rounded-full border-2 border-white bg-slate-400 shadow-md"></div>
+                                <div
+                                    class="w-12 h-12 rounded-full border-2 border-white bg-primary flex items-center justify-center text-white text-xs font-bold">
+                                    +۵۰۰</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Slider Navigation Indicators -->
+                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-3">
+                    <div class="w-12 h-1.5 bg-primary rounded-full"></div>
+                    <div class="w-12 h-1.5 bg-primary/20 rounded-full"></div>
+                    <div class="w-12 h-1.5 bg-primary/20 rounded-full"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Smart Care Cycle - Refined Icons -->
+        <section class="space-y-8">
+            <div class="flex items-center gap-6">
+                <h2 class="text-2xl font-bold text-primary shrink-0">چرخه کامل مراقبت هوشمند</h2>
+                <div class="flex-1 h-px bg-outline-variant/30"></div>
+                <div class="flex gap-3">
+                    <button
+                        class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all shadow-sm">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                    <button
+                        class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all shadow-sm">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-gutter">
+                <!-- Feature Cards with Enhanced depth -->
+                <div class="group cursor-pointer">
+                    <div
+                        class="bg-white rounded-2xl flex flex-col items-center justify-center p-10 text-center space-y-6 border border-outline-variant/10 shadow-sm hover:shadow-2xl hover:border-primary/20 transition-all transform hover:-translate-y-2">
+                        <div
+                            class="w-20 h-20 bg-surface-container-low rounded-3xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors rotate-3 group-hover:rotate-0">
+                            <span class="material-symbols-outlined text-4xl">stethoscope</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">چک‌آپ دوره‌ای</h3>
+                            <p class="text-xs text-on-surface-variant mt-2">یادآوری هوشمند معاینات بر اساس سن و نژاد</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="group cursor-pointer">
+                    <div
+                        class="bg-white rounded-2xl flex flex-col items-center justify-center p-10 text-center space-y-6 border border-outline-variant/10 shadow-sm hover:shadow-2xl hover:border-primary/20 transition-all transform hover:-translate-y-2">
+                        <div
+                            class="w-20 h-20 bg-surface-container-low rounded-3xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors -rotate-3 group-hover:rotate-0">
+                            <span class="material-symbols-outlined text-4xl">nutrition</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">تغذیه اختصاصی</h3>
+                            <p class="text-xs text-on-surface-variant mt-2">آنالیز و تنظیم رژیم غذایی ایده‌آل</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="group cursor-pointer">
+                    <div
+                        class="bg-white rounded-2xl flex flex-col items-center justify-center p-10 text-center space-y-6 border border-outline-variant/10 shadow-sm hover:shadow-2xl hover:border-primary/20 transition-all transform hover:-translate-y-2">
+                        <div
+                            class="w-20 h-20 bg-surface-container-low rounded-3xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors rotate-6 group-hover:rotate-0">
+                            <span class="material-symbols-outlined text-4xl">vaccines</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">واکسیناسیون</h3>
+                            <p class="text-xs text-on-surface-variant mt-2">مدیریت خودکار پرونده سلامت دیجیتال</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="group cursor-pointer">
+                    <div
+                        class="bg-white rounded-2xl flex flex-col items-center justify-center p-10 text-center space-y-6 border border-outline-variant/10 shadow-sm hover:shadow-2xl hover:border-primary/20 transition-all transform hover:-translate-y-2">
+                        <div
+                            class="w-20 h-20 bg-surface-container-low rounded-3xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors -rotate-6 group-hover:rotate-0">
+                            <span class="material-symbols-outlined text-4xl">medication</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">داروخانه آنلاین</h3>
+                            <p class="text-xs text-on-surface-variant mt-2">تامین و ارسال سریع نسخه‌های تخصصی</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- AI Clinical Assistant Workstation - Balanced Density -->
+        <section
+            class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center bg-white/50 rounded-[3rem] p-8 xl:p-12 border border-outline-variant/20">
+            <div class="lg:col-span-5 space-y-8">
+                <div
+                    class="inline-flex items-center gap-3 px-4 py-2 bg-primary/10 text-primary rounded-full font-bold text-sm">
+                    <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                    تکنولوژی نسل بعد
+                </div>
+                <h2 class="text-4xl font-bold text-primary leading-tight">تشخیص اولیه هوشمند؛<br>قبل از مراجعه به کلینیک
+                </h2>
+                <p class="text-lg text-on-surface-variant leading-relaxed font-light">دستیار هوش مصنوعی ما با دسترسی به
+                    پایگاه داده‌ای از هزاران پرونده پزشکی مشابه، به شما در درک بهتر علائم پت‌تان کمک می‌کند. زمان طلایی
+                    را برای درمان نجات دهید.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="flex items-center gap-4 p-5 rounded-2xl glass-card">
+                        <div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white">
+                            <span class="material-symbols-outlined">verified</span>
+                        </div>
+                        <div>
+                            <div class="font-bold text-primary text-sm">پروتکل پزشکی</div>
+                            <div class="text-[11px] text-on-surface-variant">تایید شده توسط متخصصین</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-5 rounded-2xl glass-card">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-white">
+                            <span class="material-symbols-outlined">bolt</span>
+                        </div>
+                        <div>
+                            <div class="font-bold text-secondary-container text-sm">پاسخگویی آنی</div>
+                            <div class="text-[11px] text-on-surface-variant">تحلیل علائم در ۵ ثانیه</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="lg:col-span-7 workstation-shadow rounded-3xl overflow-hidden bg-white border border-outline-variant/30 flex flex-col h-[550px]">
+                <div class="bg-primary p-6 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-secondary-container flex items-center justify-center shadow-lg">
+                            <span class="material-symbols-outlined text-3xl"
+                                style="font-variation-settings: &quot;FILL&quot; 1;">smart_toy</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg">دستیار هوشمند کلینیکال</h3>
+                            <p class="text-xs opacity-70">آنالیز زنده وضعیت سلامت (نسخه بتای محدود)</p>
+                        </div>
+                    </div>
+                    <div class="hidden sm:flex items-center gap-3 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
+                        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                        <span class="text-xs font-bold uppercase">Online System</span>
+                    </div>
+                </div>
+                <div class="flex-1 p-8 space-y-6 overflow-y-auto custom-scrollbar bg-slate-50/50">
+                    <!-- Chat Bubbles -->
+                    <div class="flex gap-4 max-w-[85%] animate-in fade-in slide-in-from-bottom-4">
+                        <div
+                            class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+                            <span class="material-symbols-outlined text-primary">robot_2</span>
+                        </div>
+                        <div
+                            class="bg-white p-5 rounded-2xl rounded-tr-none shadow-sm text-sm leading-relaxed border border-outline-variant/10">
+                            سلام! من آماده‌ام تا علائم حیوان خانگی‌تان را آنالیز کنم. لطفاً جزئیات را بنویسید.
+                        </div>
+                    </div>
+                    <div
+                        class="flex gap-4 max-w-[85%] ml-auto flex-row-reverse animate-in fade-in slide-in-from-bottom-4">
+                        <div
+                            class="w-10 h-10 rounded-full bg-secondary-container/10 flex items-center justify-center shrink-0 border border-secondary-container/20">
+                            <span class="material-symbols-outlined text-secondary-container">person</span>
+                        </div>
+                        <div
+                            class="bg-secondary-container text-white p-5 rounded-2xl rounded-tl-none shadow-lg text-sm leading-relaxed">
+                            سگم از صبح بی‌حال شده و اصلاً غذا نمی‌خوره. نگرانم.
+                        </div>
+                    </div>
+                    <div class="flex gap-4 max-w-[85%] animate-in fade-in slide-in-from-bottom-4">
+                        <div
+                            class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+                            <span class="material-symbols-outlined text-primary">robot_2</span>
+                        </div>
+                        <div
+                            class="bg-white p-5 rounded-2xl rounded-tr-none shadow-sm text-sm border border-outline-variant/10 space-y-4">
+                            <p class="">بی‌اشتهایی ناگهانی می‌تواند علائم متفاوتی داشته باشد. لطفاً چک کنید:</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div
+                                    class="p-3 bg-slate-50 rounded-xl border border-dashed border-outline-variant text-[11px] text-center">
+                                    شکم سفت است؟</div>
+                                <div
+                                    class="p-3 bg-slate-50 rounded-xl border border-dashed border-outline-variant text-[11px] text-center">
+                                    تب دارد؟</div>
+                            </div>
+                            <div
+                                class="p-4 bg-red-50 border-r-4 border-red-500 rounded-lg text-red-700 text-xs font-bold flex items-start gap-3">
+                                <span class="material-symbols-outlined text-sm">warning</span>
+                                پیشنهاد: با توجه به بی‌حالی مفرط، همین حالا با اورژانس تماس بگیرید.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6 border-t border-outline-variant/20 bg-white">
+                    <div class="relative group">
+                        <input
+                            class="w-full bg-surface-container-low border-2 border-transparent rounded-2xl px-6 py-4 focus:ring-0 focus:border-primary transition-all text-sm"
+                            placeholder="وضعیت پت خود را توصیف کنید..." type="text">
+                        <button
+                            class="absolute left-3 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-xl hover:bg-primary/90 transition-colors shadow-lg">
+                            <span class="material-symbols-outlined">send</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Charity Section - Cohesive Transition -->
+        <section class="bg-primary rounded-[3rem] p-12 lg:p-16 relative overflow-hidden text-white shadow-2xl">
+            <div class="paw-pattern absolute inset-0"></div>
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <div
+                        class="flex items-center gap-3 text-secondary-container font-bold bg-white/10 w-fit px-5 py-2 rounded-full backdrop-blur-md border border-white/10">
+                        <span class="material-symbols-outlined"
+                            style="font-variation-settings: &quot;FILL&quot; 1;">favorite</span>
+                        خیریه پت‌کر ایران
+                    </div>
+                    <h2 class="text-4xl font-bold leading-tight">غذارسانی به فرشته‌های خیابان؛<br>مسئولیت اجتماعی ما و
+                        شما</h2>
+                    <p class="text-xl text-white/80 font-light leading-relaxed">با هر خرید شما از فروشگاه پت‌کر، ما بخشی
+                        از سود را به طور مستقیم به تامین غذای سگ‌ها و گربه‌های بی‌سرپرست اختصاص می‌دهیم. پلتفرم ما پلی
+                        است برای ساختن دنیایی مهربان‌تر.</p>
+                    <div class="flex gap-6 pt-4">
+                        <button
+                            class="bg-secondary-container text-white px-10 py-4 rounded-full font-bold shadow-xl hover:scale-105 transition-transform">حمایت
+                            مستقیم</button>
+                        <button
+                            class="border border-white/30 text-white px-10 py-4 rounded-full font-bold hover:bg-white/10 transition-all backdrop-blur-sm">مشاهده
+                            گزارش‌های شفافیت</button>
+                    </div>
+                </div>
+                <!-- Charity Progress Card -->
+                <div class="glass-card !bg-white/10 !border-white/20 rounded-[2.5rem] p-1 shadow-2xl">
+                    <div class="bg-white rounded-[2.2rem] overflow-hidden text-primary">
+                        <div class="h-64 bg-cover bg-center"
+                            style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuDoc0762tHSFBfBv1K4IZHhv0c4teOyQqtU4JBSg90EZWAsgBikVH1FHG7NqU3J8IGI5hGSezuQ8ZJYmkjxQlw1H9iXXR-l0rIYIVn_bZ8W9hgmRtn51cESd69rnfAHZVyFf3Cs24GBLsdMowu-wI9qy7HIkyysU3ab6l0aynpcohWmbwzcniMHJ_6Qs0mu-Rb9bBInnnqpT_8NX3eny015G3WjyvTqtnOx2gGLh9mCTsJ0HVd6PAxXQ9BQEIizwTUbN-TJzdxuXQ0&quot;);">
+                        </div>
+                        <div class="p-8 space-y-6">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold">کمپین زمستان گرم (۱۴۰۳)</h3>
+                                <span
+                                    class="bg-green-500 text-white text-[10px] px-3 py-1 rounded-full font-bold uppercase animate-pulse">Live</span>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="w-full bg-slate-100 h-4 rounded-full overflow-hidden p-1 shadow-inner">
+                                    <div class="bg-gradient-to-l from-secondary-container to-orange-400 h-full rounded-full transition-all duration-1000"
+                                        style="width: 75%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs font-bold">
+                                    <span class="text-on-surface-variant">هدف: ۵۰۰ کیسه غذای با کیفیت</span>
+                                    <span class="text-primary">۳۷۵ کیسه تامین شده</span>
+                                </div>
+                            </div>
+                            <div class="pt-6 border-t border-slate-100 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex -space-x-3 space-x-reverse">
+                                        <div
+                                            class="w-10 h-10 rounded-full border-2 border-white bg-slate-200 shadow-md">
+                                        </div>
+                                        <div
+                                            class="w-10 h-10 rounded-full border-2 border-white bg-slate-300 shadow-md">
+                                        </div>
+                                        <div
+                                            class="w-10 h-10 rounded-full border-2 border-white bg-slate-400 shadow-md">
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-bold text-on-surface-variant">۱,۲۰۰+ مشارکت فعال</span>
+                                </div>
+                                <span class="text-primary font-bold text-sm">۷۵٪ پیشرفت</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Community & Heroes -->
+        <section class="space-y-12">
+            <div class="text-center space-y-4">
+                <h2 class="text-3xl font-bold text-primary">قهرمانان جامعه پت‌کر</h2>
+                <p class="text-on-surface-variant max-w-2xl mx-auto">ما به داشتن چنین همراهانی افتخار می‌کنیم؛ فعال‌ترین
+                    کاربران و حامیان ماه گذشته</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-12">
+                <div class="flex flex-col items-center space-y-4 text-center group cursor-pointer">
+                    <div class="relative">
+                        <div
+                            class="w-24 h-24 rounded-full border-4 border-secondary-container p-1.5 shadow-xl transition-all group-hover:rotate-12">
+                            <div class="w-full h-full rounded-full bg-cover bg-center"
+                                style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCKepGrR8mFuL2hU5YGkA9Wl-hbWlntqKmFD0CHDZaIbSmvMDtMbt-X47mFw3f9KWiOFUelnSnZyMX-ep6JOs02iQS8lXAUVfhtvyjZEDQPBn9S728GsP5mnWjfse8d6QO5vVcR3LEKz1NMRTGv-zeedxU_poPBzyOGr7Ua-2dRyQ46M7-sHfr0pSGmaO3YxfDMZQurPGY_ZslUjsdzG9VS8KVokVE6PVya7y1_8FRV4L644DhCasy93X5AFTDLxDAanyCbLEy3DJY&quot;);">
+                            </div>
+                        </div>
+                        <div
+                            class="absolute -bottom-1 -right-1 bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                            <span class="material-symbols-outlined text-lg">workspace_premium</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="font-bold text-primary text-lg">مریم ستوده</div>
+                        <div class="text-xs text-on-surface-variant font-bold">حامی برتر فرشته‌ها</div>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center space-y-4 text-center group cursor-pointer">
+                    <div class="relative">
+                        <div
+                            class="w-24 h-24 rounded-full border-4 border-primary p-1.5 shadow-xl transition-all group-hover:-rotate-12">
+                            <div class="w-full h-full rounded-full bg-cover bg-center"
+                                style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCNxTx8Y6cwW8_uDHfy907i8SXfuVGtvs5ulqIm86vI5q6LfOKb9hOSGoZgIvapD_JRnPz90S-3BQ8d7Wotuey8q9pXi4h8TdlnIh-rgE84jsEW9GzH6uUPzFMQDt51ssEMvf3NsVDcCE2T31H5HhzuTsevYURsqR8PPSHEBTTyGjyR_RcHkr_9rc3YWEUOHOmINcYBxQrdOaMH63JhjLrXNPoKrVpiOfwvHWF6dhU__6rb531gPN0HszB_k4B41O7KhRZbHEM6ejk&quot;);">
+                            </div>
+                        </div>
+                        <div
+                            class="absolute -bottom-1 -right-1 bg-secondary-container text-white w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                            <span class="material-symbols-outlined text-lg">stars</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="font-bold text-primary text-lg">امیررضا علوی</div>
+                        <div class="text-xs text-on-surface-variant font-bold">بیشترین پاسخ مفید</div>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center justify-center space-y-4 text-center group cursor-pointer">
+                    <div
+                        class="w-24 h-24 rounded-full border-2 border-dashed border-outline-variant flex items-center justify-center group-hover:border-primary transition-all group-hover:bg-primary/5 shadow-sm">
+                        <span
+                            class="material-symbols-outlined text-3xl text-outline-variant group-hover:text-primary">add</span>
+                    </div>
+                    <div class="font-bold text-on-surface-variant group-hover:text-primary transition-colors text-lg">
+                        شما هم بپیوندید</div>
+                </div>
+            </div>
+        </section>
+        <!-- Shop & Premium Products - Refined Visuals -->
+        <div
+            class="bg-gradient-to-l from-secondary-container/10 to-transparent rounded-xl p-3 px-8 border-r-4 border-secondary-container py-6">
+            <p class="text-sm font-bold text-primary flex items-center gap-2 text-base">
+                <span class="material-symbols-outlined text-secondary-container text-lg text-xl">percent</span>
+                با فعال‌سازی اشتراک، ۱۵٪ در تمامی سفارش‌ها صرفه‌جویی کنید.
+            </p>
+        </div>
+        <section class="space-y-12 pb-24">
+            <div class="flex items-end justify-between border-b border-outline-variant/20 pb-6">
+                <div class="space-y-2">
+                    <h2 class="text-3xl font-bold text-primary">انتخاب بر اساس نیاز</h2>
+                    <p class="text-on-surface-variant">محصولات منتخب از برترین برندهای جهانی با ضمانت اصالت</p>
+                </div>
+                <a class="bg-primary/5 text-primary px-6 py-3 rounded-full font-bold flex items-center gap-2 hover:bg-primary hover:text-white transition-all shadow-sm"
+                    href="#">
+                    مشاهده کل فروشگاه
+                    <span class="material-symbols-outlined">arrow_left</span>
+                </a>
+            </div>
+            <!-- Enhanced Category Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-gutter">
+                <div class="group cursor-pointer text-center space-y-4">
+                    <div
+                        class="aspect-square bg-white rounded-3xl flex items-center justify-center shadow-md border border-outline-variant/10 group-hover:shadow-2xl transition-all group-hover:-translate-y-2 group-hover:bg-primary">
+                        <span
+                            class="material-symbols-outlined text-5xl text-primary group-hover:text-white transition-colors"
+                            style="font-variation-settings: &quot;FILL&quot; 1;">restaurant</span>
+                    </div>
+                    <span class="text-sm font-bold block text-primary">غذای خشک</span>
+                </div>
+                <div class="group cursor-pointer text-center space-y-4">
+                    <div
+                        class="aspect-square bg-white rounded-3xl flex items-center justify-center shadow-md border border-outline-variant/10 group-hover:shadow-2xl transition-all group-hover:-translate-y-2 group-hover:bg-primary">
+                        <span
+                            class="material-symbols-outlined text-5xl text-primary group-hover:text-white transition-colors">medication</span>
+                    </div>
+                    <span class="text-sm font-bold block text-primary">مکمل و دارو</span>
+                </div>
+                <div class="group cursor-pointer text-center space-y-4">
+                    <div
+                        class="aspect-square bg-white rounded-3xl flex items-center justify-center shadow-md border border-outline-variant/10 group-hover:shadow-2xl transition-all group-hover:-translate-y-2 group-hover:bg-primary">
+                        <span
+                            class="material-symbols-outlined text-5xl text-primary group-hover:text-white transition-colors">toys</span>
+                    </div>
+                    <span class="text-sm font-bold block text-primary">اسباب‌بازی</span>
+                </div>
+                <div class="group cursor-pointer text-center space-y-4">
+                    <div
+                        class="aspect-square bg-white rounded-3xl flex items-center justify-center shadow-md border border-outline-variant/10 group-hover:shadow-2xl transition-all group-hover:-translate-y-2 group-hover:bg-primary">
+                        <span
+                            class="material-symbols-outlined text-5xl text-primary group-hover:text-white transition-colors">cleaning_services</span>
+                    </div>
+                    <span class="text-sm font-bold block text-primary">بهداشتی</span>
+                </div>
+                <div class="group cursor-pointer text-center space-y-4">
+                    <div
+                        class="aspect-square bg-white rounded-3xl flex items-center justify-center shadow-md border border-outline-variant/10 group-hover:shadow-2xl transition-all group-hover:-translate-y-2 group-hover:bg-primary">
+                        <span
+                            class="material-symbols-outlined text-5xl text-primary group-hover:text-white transition-colors">house</span>
+                    </div>
+                    <span class="text-sm font-bold block text-primary">جای خواب</span>
+                </div>
+                <div class="group cursor-pointer text-center space-y-4">
+                    <div
+                        class="aspect-square bg-white rounded-3xl flex items-center justify-center shadow-md border border-outline-variant/10 group-hover:shadow-2xl transition-all group-hover:-translate-y-2 group-hover:bg-primary">
+                        <span
+                            class="material-symbols-outlined text-5xl text-primary group-hover:text-white transition-colors">grid_view</span>
+                    </div>
+                    <span class="text-sm font-bold block text-primary">بیشتر...</span>
+                </div>
+            </div>
+            <!-- Premium Products - Expanded Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+                <!-- Product Card 1 -->
+                <div
+                    class="bg-white rounded-2xl border border-outline-variant/20 overflow-hidden group shadow-sm hover:shadow-2xl transition-all">
+                    <div class="relative h-72 overflow-hidden">
+                        <div
+                            class="absolute top-4 right-4 z-10 bg-secondary-container text-white text-[11px] px-3 py-1 rounded-full font-bold shadow-lg">
+                            ویژه اشتراک</div>
+                        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                            style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuAQ6OyGGa3lG81tupixqnDwx8nrFU95WNI-Y6w06gl3YvNGqC9OF3CsEXkgOaVzSchwgNooK-JkAhNE7BuKIZbcs_JVhXghple89fWfaSLyt2QOiC9LbzxvrwTGl9S8kd43HjQXxqDKWviaoSAHjZUd8QIpIdwHGTzS_WtgTuIybppqZ5CzM-1CyOsCOEkirdxowN3sN9ElH_iNQnG81vgVXneglyQWLxlJEkvQVqXw81bhWMml7aQrOena-GKylZktYnoI7lNrGCk&quot;);">
+                        </div>
+                        <button
+                            class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md p-3 rounded-2xl text-primary shadow-xl hover:bg-primary hover:text-white transition-all transform hover:rotate-12">
+                            <span class="material-symbols-outlined text-2xl">add_shopping_cart</span>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-3">
+                        <div class="flex items-center gap-1.5 text-yellow-500">
+                            <span class="material-symbols-outlined text-sm"
+                                style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+                            <span class="text-xs font-bold text-on-surface-variant">۴.۸ (۱۲۰ نظر)</span>
+                        </div>
+                        <h4 class="font-bold text-primary text-lg truncate">رویال کنین Mini Adult</h4>
+                        <p class="text-xs text-on-surface-variant line-clamp-1">غذای خشک تخصصی سگ‌های نژاد کوچک</p>
+                        <div class="flex items-center justify-between pt-2">
+                            <div class="text-primary font-bold text-xl">۱,۲۸۰,۰۰۰ <span class="text-xs">تومان</span>
+                            </div>
+                            <div class="text-xs text-on-surface-variant line-through opacity-50">۱,۴۰۰,۰۰۰</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product Card 2 -->
+                <div
+                    class="bg-white rounded-2xl border border-outline-variant/20 overflow-hidden group shadow-sm hover:shadow-2xl transition-all">
+                    <div class="relative h-72 overflow-hidden">
+                        <div
+                            class="absolute top-4 right-4 z-10 bg-primary text-white text-[11px] px-3 py-1 rounded-full font-bold shadow-lg">
+                            پرفروش</div>
+                        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                            style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCOBGjjCOUP59UUgdRGA0dfyYbkshrE1PimZGqTf2PPUIk94-omf7OBl8D8ncxVEJ-hZivK7Pj75eM5wCyKYUK7Yxm2E1xN_QH5Er3caebcsruMDxeYI5n-NNGLt507f_fSqQnOmq6USH_-Du1B0G40V0pMlO11NjbbYbKqb5FSJH-naAM7dRuayQW-rgqwJrDM_Nl4Uj76DfsgbIaJFwz3wlhhRiLLEA8ZgmkK7SErTcABVg6edrdhG6ijlTe9graYNrf3LfXcUwc&quot;);">
+                        </div>
+                        <button
+                            class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md p-3 rounded-2xl text-primary shadow-xl hover:bg-primary hover:text-white transition-all transform hover:rotate-12">
+                            <span class="material-symbols-outlined text-2xl">add_shopping_cart</span>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-3">
+                        <div class="flex items-center gap-1.5 text-yellow-500">
+                            <span class="material-symbols-outlined text-sm"
+                                style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+                            <span class="text-xs font-bold text-on-surface-variant">۴.۹ (۸۵ نظر)</span>
+                        </div>
+                        <h4 class="font-bold text-primary text-lg truncate">اسکرچر مدرن Modern Cat</h4>
+                        <p class="text-xs text-on-surface-variant line-clamp-1">طراحی مینیمال و ارگونومیک برای گربه</p>
+                        <div class="flex items-center justify-between pt-2">
+                            <div class="text-primary font-bold text-xl">۳,۴۵۰,۰۰۰ <span class="text-xs">تومان</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product Card 3 -->
+                <div
+                    class="bg-white rounded-2xl border border-outline-variant/20 overflow-hidden group shadow-sm hover:shadow-2xl transition-all">
+                    <div class="relative h-72 overflow-hidden">
+                        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                            style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuARY-N7whIz0TkDk0643no2uEzb7KtGvZ0rDv-XZEe1nQ848FSqF8ey71xmhcQi4xJ4Oqj6hYZ9VkWplwEGA_bY4F7E2FIJ2iLfl_aSG9LRrvbKEk-QSBtPPv_z26jo-rmhOmUN_ELtNg_2eSzfGXDMDJMZsgLUhwQGDJU7340ZnnfnfaGvgUiJ8z7UUd04Pbq9c65lN412NLYy4-HzABnSziZ5fIx5aeXm8S83Zcgb0vaKzk_k0WwyT9PpKlkxnPCJJpbQ3TjGS5w&quot;);">
+                        </div>
+                        <button
+                            class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md p-3 rounded-2xl text-primary shadow-xl hover:bg-primary hover:text-white transition-all transform hover:rotate-12">
+                            <span class="material-symbols-outlined text-2xl">add_shopping_cart</span>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-3">
+                        <div class="flex items-center gap-1.5 text-yellow-500">
+                            <span class="material-symbols-outlined text-sm"
+                                style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+                            <span class="text-xs font-bold text-on-surface-variant">۴.۷ (۴۲ نظر)</span>
+                        </div>
+                        <h4 class="font-bold text-primary text-lg truncate">ست برس حرفه‌ای گرو‌مینگ</h4>
+                        <p class="text-xs text-on-surface-variant line-clamp-1">مناسب برای موهای بلند و گره‌خورده</p>
+                        <div class="flex items-center justify-between pt-2">
+                            <div class="text-primary font-bold text-xl">۵۸۰,۰۰۰ <span class="text-xs">تومان</span></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product Card 4 -->
+                <div
+                    class="bg-white rounded-2xl border border-outline-variant/20 overflow-hidden group shadow-sm hover:shadow-2xl transition-all">
+                    <div class="relative h-72 overflow-hidden">
+                        <div
+                            class="absolute top-4 right-4 z-10 bg-green-500 text-white text-[11px] px-3 py-1 rounded-full font-bold shadow-lg">
+                            جدید</div>
+                        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                            style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCHfHgJCw59qyO-kQDwqJa5npFaOY0iR4hwYpvUcgPzdaJiKH1cwpEixyN1Vw8qhELSlGzU7HiFqOFShMPbOB08F5Mv6Q6f7ixCB8a9EegeWE_GTTNSq-PfbsUzc6tkjj5l-7P1vzsd8DlVcfxUH3ZhBd2lhPlqh2GZfiVeXmyYNwOMxFOrvQBK-T5S2Lx7nPNRGnauAkgN-xsMG3KC32rIRGv-nfAcJceUQo3FU4pdlF_hlQ3S-_d8cYEyDCwU8QYoJFXuuEEmHHA&quot;);">
+                        </div>
+                        <button
+                            class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md p-3 rounded-2xl text-primary shadow-xl hover:bg-primary hover:text-white transition-all transform hover:rotate-12">
+                            <span class="material-symbols-outlined text-2xl">add_shopping_cart</span>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-3">
+                        <div class="flex items-center gap-1.5 text-yellow-500">
+                            <span class="material-symbols-outlined text-sm"
+                                style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+                            <span class="text-xs font-bold text-on-surface-variant">۵.۰ (۱۹ نظر)</span>
+                        </div>
+                        <h4 class="font-bold text-primary text-lg truncate">آبنما هوشمند SmartFlow Pro</h4>
+                        <p class="text-xs text-on-surface-variant line-clamp-1">سیستم استریلیزاسیون UV و کارکرد بی‌صدا
+                        </p>
+                        <div class="flex items-center justify-between pt-2">
+                            <div class="text-primary font-bold text-xl">۲,۱۰۰,۰۰۰ <span class="text-xs">تومان</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Floating Actions - Enhanced Glassmorphism -->
+    <div class="fixed bottom-10 left-10 flex flex-col gap-5 z-50">
+        <button
+            class="w-16 h-16 bg-secondary-container text-white rounded-[1.5rem] shadow-2xl flex items-center justify-center hover:scale-110 hover:rotate-6 transition-all group relative">
+            <span class="material-symbols-outlined text-3xl">chat_bubble</span>
+            <span
+                class="absolute right-20 glass-card text-primary px-5 py-2 rounded-xl text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">چت
+                با پشتیبانی آنلاین</span>
+        </button>
+        <button
+            class="w-16 h-16 bg-primary text-white rounded-[1.5rem] shadow-2xl flex items-center justify-center hover:scale-110 hover:-rotate-6 transition-all group relative">
+            <span class="material-symbols-outlined text-3xl">emergency_share</span>
+            <span
+                class="absolute right-20 glass-card text-primary px-5 py-2 rounded-xl text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">تماس
+                فوری اورژانس (۲۴ ساعته)</span>
+        </button>
+    </div>
+    <script>
+        // Smooth hover states and micro-interactions
+        document.querySelectorAll('.group').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                // Potential for triggered events
+            });
+        });
+    </script>
+
+
+</body>
+
+</html>
