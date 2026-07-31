@@ -242,13 +242,25 @@ $pendingAppointments = count(array_filter($appointments, fn($a) => $a['status'] 
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-2">
-                                            <?php if ($appt['status'] === 'pending' || $appt['status'] === 'در انتظار'): ?>
-                                                <div class="w-2 h-2 rounded-full bg-status-warning"></div>
-                                                <span class="text-xs font-label-sm text-status-warning">در انتظار تایید</span>
-                                            <?php else: ?>
-                                                <div class="w-2 h-2 rounded-full bg-status-active"></div>
-                                                <span class="text-xs font-label-sm text-status-active"><?= htmlspecialchars($appt['status']) ?></span>
-                                            <?php endif; ?>
+                                            <?php 
+                                            $st = strtolower($appt['status']);
+                                            if ($st === 'pending' || $st === 'در انتظار') {
+                                                echo '<div class="w-2 h-2 rounded-full bg-status-warning"></div>';
+                                                echo '<span class="text-xs font-label-sm text-status-warning">در انتظار تایید</span>';
+                                            } elseif ($st === 'cancelled' || $st === 'لغو شده' || $st === 'canceled') {
+                                                echo '<div class="w-2 h-2 rounded-full bg-error"></div>';
+                                                echo '<span class="text-xs font-label-sm text-error">لغو شده</span>';
+                                            } elseif ($st === 'completed' || $st === 'انجام شده') {
+                                                echo '<div class="w-2 h-2 rounded-full bg-status-active"></div>';
+                                                echo '<span class="text-xs font-label-sm text-status-active">انجام شده</span>';
+                                            } elseif ($st === 'confirmed' || $st === 'تایید شده') {
+                                                echo '<div class="w-2 h-2 rounded-full bg-status-active"></div>';
+                                                echo '<span class="text-xs font-label-sm text-status-active">تایید شده</span>';
+                                            } else {
+                                                echo '<div class="w-2 h-2 rounded-full bg-surface-variant"></div>';
+                                                echo '<span class="text-xs font-label-sm text-on-surface-variant">' . htmlspecialchars($appt['status']) . '</span>';
+                                            }
+                                            ?>
                                         </div>
                                     </td>
                                 </tr>

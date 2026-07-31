@@ -1,106 +1,204 @@
-<?php 
-require_once 'includes/header.php'; 
-
-$stmt = $pdo->query("SELECT * FROM autoship_plans ORDER BY interval_months ASC");
-$plans = $stmt->fetchAll(PDO::FETCH_ASSOC);
+<?php
+include 'includes/header.php';
 ?>
 
-<main class="max-w-container-max mx-auto overflow-hidden py-16 px-margin-desktop">
-    <!-- Hero Subscription -->
-    <div class="bg-gradient-to-br from-primary to-primary-container rounded-[3rem] p-12 lg:p-20 text-white flex flex-col items-center text-center relative overflow-hidden mb-24">
-        <div class="absolute inset-0 bg-white/5 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-30 mix-blend-overlay"></div>
-        
-        <span class="bg-status-warning text-on-surface px-4 py-2 rounded-full font-bold text-label-sm mb-6 relative z-10 animate-bounce">۲۰٪ تخفیف روی تمام سفارشات</span>
-        <h1 class="text-display-lg font-black mb-6 relative z-10">اشتراک هوشمند پت‌کر</h1>
-        <p class="text-body-lg opacity-90 max-w-2xl relative z-10 mb-10">ارسال خودکار غذا و ملزومات پت شما در بازه‌های زمانی دلخواه. بدون نگرانی از تمام شدن آذوقه، با ارسال رایگان و تخفیف دائمی.</p>
-        
-        <div class="flex flex-col sm:flex-row gap-4 relative z-10">
-            <button class="bg-white text-primary px-8 py-4 rounded-xl font-bold btn-premium">ساخت پلن شخصی</button>
-            <button class="bg-primary-fixed/20 border border-white/30 text-white px-8 py-4 rounded-xl font-bold hover:bg-white/10 transition-colors">مشاهده ویدیو معرفی</button>
-        </div>
-    </div>
+<!-- Add glowing effects to root if needed -->
+<style>
+.subscription-card-glow {
+    box-shadow: 0px 4px 40px rgba(0, 45, 114, 0.08);
+}
+</style>
 
-    <!-- Features -->
-    <div class="text-center mb-16">
-        <h2 class="text-headline-lg text-primary mb-4">چرا اشتراک هوشمند؟</h2>
-        <p class="text-body-lg text-on-surface-variant">مزایایی که زندگی شما و پت عزیزتان را راحت‌تر می‌کند</p>
-    </div>
-    
-    <div class="grid md:grid-cols-3 gap-8 mb-32">
-        <div class="bg-surface-container-lowest border border-outline-variant/30 p-8 rounded-[2rem] text-center hover:shadow-xl transition-all group">
-            <div class="w-20 h-20 bg-primary/10 rounded-2xl mx-auto flex items-center justify-center text-primary mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all">
-                <span class="material-symbols-outlined text-4xl">savings</span>
-            </div>
-            <h3 class="text-title-lg font-bold mb-4">تخفیف دائمی</h3>
-            <p class="text-body-md text-on-surface-variant">با فعال‌سازی اشتراک خودکار، همیشه و روی تمامی محصولات ۲۰٪ تخفیف می‌گیرید.</p>
-        </div>
-        <div class="bg-surface-container-lowest border border-outline-variant/30 p-8 rounded-[2rem] text-center hover:shadow-xl transition-all group">
-            <div class="w-20 h-20 bg-primary/10 rounded-2xl mx-auto flex items-center justify-center text-primary mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all">
-                <span class="material-symbols-outlined text-4xl">local_shipping</span>
-            </div>
-            <h3 class="text-title-lg font-bold mb-4">ارسال رایگان</h3>
-            <p class="text-body-md text-on-surface-variant">تمام سفارشات اشتراکی، بدون در نظر گرفتن مبلغ، به صورت کاملاً رایگان ارسال می‌شوند.</p>
-        </div>
-        <div class="bg-surface-container-lowest border border-outline-variant/30 p-8 rounded-[2rem] text-center hover:shadow-xl transition-all group">
-            <div class="w-20 h-20 bg-primary/10 rounded-2xl mx-auto flex items-center justify-center text-primary mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all">
-                <span class="material-symbols-outlined text-4xl">edit_calendar</span>
-            </div>
-            <h3 class="text-title-lg font-bold mb-4">لغو و تغییر آسان</h3>
-            <p class="text-body-md text-on-surface-variant">هر زمان که خواستید بازه زمانی را تغییر دهید یا بدون هیچ هزینه‌ای اشتراک را لغو کنید.</p>
-        </div>
-    </div>
+<div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary-container/10 blur-[120px]"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-secondary-container/10 blur-[150px]"></div>
+</div>
 
-    <!-- How it works -->
-    <div class="bg-surface-container-low rounded-[4rem] p-12 lg:p-24 flex flex-col lg:flex-row items-center gap-16 mb-16">
-        <div class="lg:w-1/2">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj" class="w-full rounded-[3rem] shadow-2xl" alt="Pet Delivery">
-        </div>
-        <div class="lg:w-1/2">
-            <h2 class="text-display-lg text-primary mb-12">چگونه کار می‌کند؟</h2>
-            <div class="space-y-8 relative before:content-[''] before:absolute before:right-[23px] before:top-4 before:bottom-4 before:w-[2px] before:bg-primary/20">
-                <div class="flex gap-6 relative">
-                    <div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shrink-0 z-10 shadow-lg font-bold">۱</div>
-                    <div>
-                        <h4 class="text-title-lg font-bold mb-2">انتخاب محصولات</h4>
-                        <p class="text-body-md text-on-surface-variant">غذا، مکمل یا هر محصولی که پت شما به صورت دوره‌ای نیاز دارد را انتخاب کنید.</p>
+<main class="py-24">
+<!-- Hero Section -->
+        <section class="max-w-4xl mx-auto px-margin-mobile md:px-margin-desktop mb-24 text-center">
+            <h1 class="font-headline-lg text-headline-lg md:text-display-lg text-primary mb-6 font-bold">برنامه‌های
+                اشتراک هوشمند پت‌کر</h1>
+            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                با عضویت در برنامه‌های اشتراک ما، نه تنها ۱۵٪ در هزینه‌ها صرفه‌جویی می‌کنید، بلکه خیالتان از بابت تامین
+                همیشگی نیازهای حیوان خانگی‌تان راحت خواهد بود.
+            </p>
+        </section>
+        <!-- Subscription Cards Section -->
+        <section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+                <!-- 3-Month Plan -->
+                <div class="bg-primary-container rounded-[2.5rem] p-10 text-white flex flex-col space-y-10 shadow-xl hover:-translate-y-2 transition-transform">
+                    <div class="flex justify-between items-start">
+                        <div class="bg-white/10 backdrop-blur-md px-5 py-2 rounded-full text-xs font-bold">۳ ماهه</div>
+                        <div class="w-10 h-10 rounded-full border-2 border-white/20 flex items-center justify-center">
+                            <div class="w-4 h-4 rounded-full bg-white/10"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <h3 class="text-2xl font-bold">اشتراک پایه</h3>
+                        <div class="flex items-baseline gap-1 mb-2">
+                            <span class="text-3xl font-bold">۲,۵۰۰,۰۰۰</span>
+                            <span class="text-xs opacity-70">تومان / ماهانه</span>
+                        </div>
+                        <ul class="space-y-4 text-white/70 text-sm">
+                            <li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary-container text-lg">check_circle</span>ارسال رایگان دوره‌ای</li>
+                            <li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary-container text-lg">check_circle</span>۵٪ تخفیف روی تمامی محصولات</li>
+                            <li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary-container text-lg">check_circle</span>یک نوبت ویزیت چک‌آپ رایگان</li>
+                        </ul>
+                    </div>
+                    <a href="subscription_checkout.php?plan=3_months" class="block text-center w-full bg-white text-primary-container py-4 rounded-2xl font-bold hover:bg-secondary-container hover:text-white transition-colors mt-auto">انتخاب اشتراک</a>
+                </div>
+                <!-- 6-Month Plan -->
+                <div class="bg-primary-container rounded-[2.5rem] p-10 text-white flex flex-col space-y-10 shadow-2xl border-4 border-secondary-container relative transform scale-105 z-10">
+                    <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-secondary-container text-white px-8 py-2 rounded-full text-xs font-bold shadow-lg">بهترین ارزش</div>
+                    <div class="flex justify-between items-start">
+                        <div class="bg-white/10 backdrop-blur-md px-5 py-2 rounded-full text-xs font-bold">۶ ماهه</div>
+                        <div class="w-12 h-12 rounded-full border-2 border-white flex items-center justify-center">
+                            <div class="w-6 h-6 rounded-full bg-white"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <h3 class="text-3xl font-bold">اشتراک ویژه</h3>
+                        <div class="flex items-baseline gap-1 mb-2">
+                            <span class="text-4xl font-bold">۲,۱۰۰,۰۰۰</span>
+                            <span class="text-xs opacity-70">تومان / ماهانه</span>
+                        </div>
+                        <ul class="space-y-4 text-white/90 text-sm">
+                            <li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary-container text-xl">check_circle</span>ارسال رایگان فوری (اکسپرس)</li>
+                            <li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary-container text-xl">check_circle</span>۱۰٪ تخفیف روی تمامی محصولات</li>
+                            <li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary-container text-xl">check_circle</span>پشتیبانی اختصاصی ۲۴ ساعته</li>
+                            <li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary-container text-xl">check_circle</span>دو نوبت چک‌آپ و واکسیناسیون</li>
+                        </ul>
+                    </div>
+                    <a href="subscription_checkout.php?plan=6_months" class="block text-center w-full bg-secondary-container text-white py-5 rounded-2xl font-bold shadow-lg hover:shadow-2xl transition-all mt-auto">خرید بهترین گزینه</a>
+                </div>
+                <!-- 12-Month Plan -->
+                <div class="bg-primary-container rounded-[2.5rem] p-10 text-white flex flex-col space-y-10 shadow-xl hover:-translate-y-2 transition-transform">
+                    <div class="flex justify-between items-start">
+                        <div class="bg-white/10 backdrop-blur-md px-5 py-2 rounded-full text-xs font-bold">۱۲ ماهه</div>
+                        <div class="w-10 h-10 rounded-full border-2 border-white/20 flex items-center justify-center">
+                            <div class="w-4 h-4 rounded-full bg-white/10"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <h3 class="text-2xl font-bold">اشتراک طلایی</h3>
+                        <div class="flex items-baseline gap-1 mb-2">
+                            <span class="text-3xl font-bold">۱,۸۵۰,۰۰۰</span>
+                            <span class="text-xs opacity-70">تومان / ماهانه</span>
+                        </div>
+                        <ul class="space-y-4 text-white/70 text-sm">
+                            <li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary-container text-lg">check_circle</span>ارسال رایگان بدون محدودیت</li>
+                            <li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary-container text-lg">check_circle</span>۱۵٪ تخفیف ثابت سالانه</li>
+                            <li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary-container text-lg">check_circle</span>بسته سلامت سالانه رایگان</li>
+                        </ul>
+                    </div>
+                    <a href="subscription_checkout.php?plan=12_months" class="block text-center w-full bg-white text-primary-container py-4 rounded-2xl font-bold hover:bg-secondary-container hover:text-white transition-colors mt-auto">انتخاب اشتراک</a>
+                </div>
+            </div>
+        </section>
+        <!-- How it Works Section -->
+        <section class="mt-32 py-24 border-y border-outline-variant/30">
+            <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+                <h2 class="font-headline-md text-headline-md text-center text-primary mb-16">اشتراک هوشمند چگونه کار
+                    می‌کند؟</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12">
+                    <div
+                        class="bg-white/60 backdrop-blur-xl border border-white/20 rounded-lg p-8 flex flex-col subscription-card-glow hover:scale-105 hover:border-primary/40 transition-all duration-300 cursor-pointer">
+                        <div
+                            class="w-20 h-20 bg-surface-container-lowest rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm border border-outline-variant group-hover:border-primary group-hover:bg-primary/5 transition-all duration-300">
+                            <span class="material-symbols-outlined text-primary text-3xl">fact_check</span>
+                        </div>
+                        <h4 class="font-title-lg text-title-lg mb-3">انتخاب برنامه</h4>
+                        <p class="text-body-md text-on-surface-variant leading-relaxed">برنامه زمانی مناسب با نیازهای پت
+                            خود را انتخاب کنید.</p>
+                    </div>
+                    <div class="text-center group">
+                        <div
+                            class="w-20 h-20 bg-surface-container-lowest rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm border border-outline-variant group-hover:border-primary group-hover:bg-primary/5 transition-all duration-300">
+                            <span class="material-symbols-outlined text-primary text-3xl">add_shopping_cart</span>
+                        </div>
+                        <h4 class="font-title-lg text-title-lg mb-3">افزودن محصولات</h4>
+                        <p class="text-body-md text-on-surface-variant leading-relaxed">کالاها و برندهای محبوبتان را به
+                            لیست دوره اضافه کنید.</p>
+                    </div>
+                    <div class="text-center group">
+                        <div
+                            class="w-20 h-20 bg-surface-container-lowest rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm border border-outline-variant group-hover:border-primary group-hover:bg-primary/5 transition-all duration-300">
+                            <span class="material-symbols-outlined text-secondary text-3xl">savings</span>
+                        </div>
+                        <h4 class="font-title-lg text-title-lg mb-3">ذخیره ۱۵ درصدی</h4>
+                        <p class="text-body-md text-on-surface-variant leading-relaxed">تخفیف ویژه اشتراک به‌صورت خودکار
+                            اعمال خواهد شد.</p>
+                    </div>
+                    <div class="text-center group">
+                        <div
+                            class="w-20 h-20 bg-surface-container-lowest rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm border border-outline-variant group-hover:border-primary group-hover:bg-primary/5 transition-all duration-300">
+                            <span class="material-symbols-outlined text-primary text-3xl">sentiment_satisfied</span>
+                        </div>
+                        <h4 class="font-title-lg text-title-lg mb-3">آرامش کامل</h4>
+                        <p class="text-body-md text-on-surface-variant leading-relaxed">ما سر وقت همه‌چیز را درب منزل
+                            تحویل می‌دهیم.</p>
                     </div>
                 </div>
-                <div class="flex gap-6 relative">
-                    <div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shrink-0 z-10 shadow-lg font-bold">۲</div>
-                    <div>
-                        <h4 class="text-title-lg font-bold mb-2">تنظیم بازه زمانی</h4>
-                        <p class="text-body-md text-on-surface-variant">مشخص کنید هر چند روز (مثلا هر ۳۰ یا ۴۵ روز) نیاز به ارسال مجدد دارید.</p>
-                    </div>
-                </div>
-                <div class="flex gap-6 relative">
-                    <div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shrink-0 z-10 shadow-lg font-bold">۳</div>
-                    <div>
-                        <h4 class="text-title-lg font-bold mb-2">ارسال و پرداخت خودکار</h4>
-                        <p class="text-body-md text-on-surface-variant">ما قبل از ارسال به شما اطلاع می‌دهیم و با کسر از کیف پول، سفارش ارسال می‌شود.</p>
-                    </div>
-                </div>
             </div>
-            
-            <button class="mt-12 bg-secondary-container text-on-secondary-container px-8 py-4 rounded-xl font-bold btn-premium w-full sm:w-auto">شروع اشتراک هوشمند</button>
-        </div>
-    </div>
-
-    <!-- Available Plans -->
-    <div class="mb-16">
-        <h2 class="text-headline-lg text-primary text-center mb-12">پلن‌های اشتراکی موجود</h2>
-        <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <?php foreach($plans as $plan): ?>
-            <div class="bg-white border border-outline-variant rounded-[2rem] p-8 text-center flex flex-col hover:shadow-2xl hover:-translate-y-2 transition-all">
-                <h3 class="text-title-lg font-bold text-on-surface mb-2"><?php echo htmlspecialchars($plan['name']); ?></h3>
-                <p class="text-body-md text-on-surface-variant mb-6">ارسال هر <?php echo $plan['interval_months']; ?> ماه یک‌بار</p>
-                <div class="text-display-sm font-black text-primary mb-2 persian-number"><?php echo $plan['discount_percent']; ?>٪</div>
-                <p class="text-label-sm text-on-surface-variant mb-8">تخفیف روی تمامی محصولات</p>
-                
-                <button onclick="window.location.href='shop.php?autoship=1&plan=<?php echo $plan['id']; ?>'" class="mt-auto bg-primary-container text-white py-4 rounded-xl font-bold hover:bg-primary transition-colors">انتخاب و شروع خرید</button>
+        </section>
+        <!-- FAQ Section -->
+        <section class="max-w-3xl mx-auto px-margin-mobile md:px-margin-desktop mt-32">
+            <h2 class="font-headline-md text-headline-md text-center text-primary mb-12">سوالات متداول</h2>
+            <div class="space-y-4">
+                <details
+                    class="group bg-white/40 backdrop-blur-sm border border-outline-variant/20 rounded-lg overflow-hidden transition-all duration-300"
+                    open="">
+                    <summary
+                        class="flex justify-between items-center p-6 cursor-pointer list-none hover:bg-surface-container-lowest transition-colors">
+                        <span class="font-title-lg text-title-lg">آیا می‌توانم اشتراک خود را لغو کنم؟</span>
+                        <span
+                            class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+                    </summary>
+                    <div
+                        class="p-6 pt-0 text-body-lg text-on-surface-variant border-t border-outline-variant/30 leading-relaxed">
+                        بله، شما در هر زمان می‌توانید اشتراک خود را از طریق پنل کاربری لغو یا متوقف کنید. هیچ جریمه‌ای
+                        برای لغو اشتراک وجود ندارد.
+                    </div>
+                </details>
+                <details
+                    class="group bg-white/40 backdrop-blur-sm border border-outline-variant/20 rounded-lg overflow-hidden transition-all duration-300">
+                    <summary
+                        class="flex justify-between items-center p-6 cursor-pointer list-none hover:bg-surface-container-lowest transition-colors">
+                        <span class="font-title-lg text-title-lg">تغییر محصولات در دوره اشتراک امکان‌پذیر است؟</span>
+                        <span
+                            class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+                    </summary>
+                    <div
+                        class="p-6 pt-0 text-body-lg text-on-surface-variant border-t border-outline-variant/30 leading-relaxed">
+                        بله، تا ۴۸ ساعت قبل از موعد ارسال بعدی، شما می‌توانید لیست محصولات خود را ویرایش کنید.
+                    </div>
+                </details>
+                <details
+                    class="group bg-white/40 backdrop-blur-sm border border-outline-variant/20 rounded-lg overflow-hidden transition-all duration-300">
+                    <summary
+                        class="flex justify-between items-center p-6 cursor-pointer list-none hover:bg-surface-container-lowest transition-colors">
+                        <span class="font-title-lg text-title-lg">هزینه ارسال چگونه محاسبه می‌شود؟</span>
+                        <span
+                            class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+                    </summary>
+                    <div
+                        class="p-6 pt-0 text-body-lg text-on-surface-variant border-t border-outline-variant/30 leading-relaxed">
+                        تمامی برنامه‌های اشتراک PetCare شامل ارسال رایگان برای تمامی خریدهای دوره‌ای می‌باشند.
+                    </div>
+                </details>
             </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
+        </section>
 </main>
-
-<?php include 'includes/footer.php'; ?>
+<script>
+    // Smooth hover interactions for buttons
+    document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('mousedown', () => btn.classList.add('scale-95'));
+        btn.addEventListener('mouseup', () => btn.classList.remove('scale-95'));
+        btn.addEventListener('mouseleave', () => btn.classList.remove('scale-95'));
+    });
+</script>
+<?php
+include 'includes/footer.php';
+?>

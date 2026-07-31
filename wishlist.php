@@ -42,6 +42,11 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         افزودن به سبد
                     </button>
                 </div>
+                
+                <!-- Mobile Quick Add to Cart -->
+                <button type="button" onclick="window.location.href='actions/cart_action.php?action=add&product_id=<?php echo $product['id']; ?>'" class="lg:hidden absolute bottom-4 left-4 z-30 w-10 h-10 bg-primary/90 backdrop-blur-md text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform border border-white/20">
+                    <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+                </button>
             </div>
             <div class="flex-1 flex flex-col">
                 <p class="text-label-sm text-on-surface-variant mb-1"><?php echo htmlspecialchars($product['category']); ?></p>

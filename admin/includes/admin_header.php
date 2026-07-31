@@ -118,18 +118,27 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
 </head>
 <body class="bg-surface text-on-surface selection:bg-secondary-container/30">
 
+<!-- Mobile Backdrop -->
+<div id="admin-backdrop" class="fixed inset-0 bg-black/50 z-[60] hidden lg:hidden backdrop-blur-sm transition-opacity opacity-0" onclick="toggleAdminSidebar()"></div>
+
 <!-- SideNavBar -->
-<aside class="fixed inset-y-0 right-0 w-64 bg-tertiary dark:bg-tertiary-container flex flex-col z-40 rtl shadow-lg">
+<aside id="admin-sidebar" class="fixed inset-y-0 right-0 w-64 bg-tertiary dark:bg-tertiary-container flex flex-col z-[70] lg:z-40 rtl shadow-lg transition-transform duration-300 translate-x-full lg:translate-x-0 overflow-y-auto">
     <div class="p-6 flex flex-col gap-2">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center">
-                <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">pets</span>
+        <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">pets</span>
+                </div>
+                <div>
+                    <h1 class="text-xl text-tertiary-fixed font-bold leading-tight">پت‌کر ایران</h1>
+                    <p class="text-sm text-on-tertiary-container/70">کنسول مدیریت</p>
+                </div>
             </div>
-            <div>
-                <h1 class="text-xl text-tertiary-fixed font-bold leading-tight">پت‌کر ایران</h1>
-                <p class="text-sm text-on-tertiary-container/70">کنسول مدیریت</p>
-            </div>
+            <button onclick="toggleAdminSidebar()" class="lg:hidden text-on-tertiary-container hover:text-white transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
         </div>
+
     </div>
 
     <nav class="flex-1 px-4 mt-4 space-y-1">
@@ -142,6 +151,8 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
             'clinic' => ['icon' => 'medical_services', 'title' => 'مدیریت کلینیک', 'url' => 'clinic_management.php'],
             'inventory' => ['icon' => 'shopping_bag', 'title' => 'انبار و فروشگاه', 'url' => 'inventory.php'],
             'users' => ['icon' => 'group', 'title' => 'مدیریت کاربران', 'url' => 'user_management.php'],
+            'subscriptions' => ['icon' => 'event_repeat', 'title' => 'مدیریت اشتراک‌ها', 'url' => 'subscriptions.php'],
+            'tickets' => ['icon' => 'support_agent', 'title' => 'تیکت و پشتیبانی', 'url' => 'tickets.php'],
             'analytics' => ['icon' => 'analytics', 'title' => 'تحلیل و آمار', 'url' => 'analytics.php']
         ];
 
@@ -174,11 +185,14 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
 </aside>
 
 <!-- Main Content Wrapper -->
-<main class="mr-64 min-h-screen">
+<main class="lg:mr-64 mr-0 min-h-screen transition-all duration-300">
     <!-- TopAppBar -->
-    <header class="sticky top-0 z-50 flex justify-between items-center h-16 px-6 bg-surface dark:bg-surface-dim shadow-sm border-b border-outline-variant/20">
-        <div class="flex items-center gap-6">
-            <div class="relative w-96">
+    <header class="sticky top-0 z-40 flex justify-between items-center h-16 px-4 lg:px-6 bg-surface dark:bg-surface-dim shadow-sm border-b border-outline-variant/20">
+        <div class="flex items-center gap-2 lg:gap-6 flex-1">
+            <button onclick="toggleAdminSidebar()" class="lg:hidden w-10 h-10 flex shrink-0 items-center justify-center rounded-lg hover:bg-surface-container transition-colors text-primary">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            <div class="relative w-full max-w-sm hidden md:block">
                 <span class="absolute inset-y-0 right-3 flex items-center text-outline">
                     <span class="material-symbols-outlined">search</span>
                 </span>
@@ -199,3 +213,22 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
             </div>
         </div>
     </header>
+
+<script>
+function toggleAdminSidebar() {
+    const sidebar = document.getElementById('admin-sidebar');
+    const backdrop = document.getElementById('admin-backdrop');
+    
+    if (sidebar.classList.contains('translate-x-full')) {
+        sidebar.classList.remove('translate-x-full');
+        backdrop.classList.remove('hidden');
+        setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
+        document.body.style.overflow = 'hidden';
+    } else {
+        sidebar.classList.add('translate-x-full');
+        backdrop.classList.add('opacity-0');
+        setTimeout(() => backdrop.classList.add('hidden'), 300);
+        document.body.style.overflow = '';
+    }
+}
+</script>

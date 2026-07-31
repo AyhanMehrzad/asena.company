@@ -37,10 +37,42 @@ $stmt = $pdo->prepare("
 $stmt->execute([$user_id]);
 $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch recent orders WITH their line items
-$stmt = $pdo->prepare("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
-$stmt->execute([$user_id]);
+// Fetch order history
+$stmt = $pdo->prepare("
+    SELECT * FROM orders 
+    WHERE user_id = ? 
+    ORDER BY created_at DESC 
+    LIMIT 5
+");
+$stmt->execute([$_SESSION['user_id']]);
 $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch user subscriptions
+$stmt = $pdo->prepare("
+    SELECT * FROM user_subscriptions 
+    WHERE user_id = ? 
+    ORDER BY created_at DESC
+");
+$stmt->execute([$_SESSION['user_id']]);
+$user_subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Attach deliveries to each subscription
+if (!empty($user_subscriptions)) {
+    $sub_ids   = array_column($user_subscriptions, 'id');
+    $ph        = implode(',', array_fill(0, count($sub_ids), '?'));
+    $delStmt   = $pdo->prepare("SELECT * FROM subscription_deliveries WHERE subscription_id IN ($ph) ORDER BY delivery_month ASC");
+    $delStmt->execute($sub_ids);
+    $all_dels  = $delStmt->fetchAll(PDO::FETCH_ASSOC);
+    $dels_by_sub = [];
+    foreach ($all_dels as $del) {
+        $dels_by_sub[$del['subscription_id']][] = $del;
+    }
+    
+    foreach ($user_subscriptions as &$sub) {
+        $sub['deliveries'] = $dels_by_sub[$sub['id']] ?? [];
+    }
+}
+
 
 // Attach order items to each order
 if (!empty($orders)) {
@@ -61,11 +93,10 @@ if (!empty($orders)) {
 
 // Fetch active subscriptions
 $stmt = $pdo->prepare("
-    SELECT s.*, p.name as product_name, p.image_url as product_image 
-    FROM subscriptions s 
-    JOIN products p ON s.product_id = p.id 
-    WHERE s.user_id = ? AND s.status = 'active'
-    ORDER BY s.next_delivery_date ASC
+    SELECT * 
+    FROM user_subscriptions 
+    WHERE user_id = ? AND status = 'active'
+    ORDER BY created_at DESC
 ");
 $stmt->execute([$user_id]);
 $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -86,11 +117,20 @@ $fmtDateText = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter
         border: 1px solid rgba(255, 255, 255, 0.3);
     }
 </style>
+
+<!-- Mobile Backdrop -->
+<div id="profile-backdrop" class="fixed inset-0 bg-black/50 z-[60] hidden lg:hidden backdrop-blur-sm transition-opacity opacity-0" onclick="toggleProfileSidebar()"></div>
+
 <!-- SideNavBar -->
-<aside class="fixed right-0 top-16 bottom-0 w-64 p-6 flex flex-col bg-surface-container-lowest border-l border-outline-variant hidden md:flex">
-<div class="mb-10">
+<aside id="profile-sidebar" class="fixed right-0 top-0 lg:top-16 bottom-0 w-64 p-6 flex flex-col bg-surface-container-lowest border-l border-outline-variant z-[70] lg:z-40 transition-transform duration-300 translate-x-full lg:translate-x-0">
+<div class="mb-10 flex justify-between items-center">
+<div>
 <h2 class="text-lg font-bold text-primary">پنل کاربری</h2>
 <p class="text-xs text-on-surface-variant">خدمات حرفه‌ای حیوانات خانگی</p>
+</div>
+<button onclick="toggleProfileSidebar()" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-full bg-surface-container hover:bg-error/10 hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
 </div>
 <nav class="flex-1 flex flex-col gap-1">
 <a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-white rounded-xl font-bold transition-all" href="profile.php">
@@ -129,9 +169,9 @@ $fmtDateText = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter
 <span class="material-symbols-outlined">settings</span>
 <span class="text-sm">تنظیمات</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="#">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="user_tickets.php">
 <span class="material-symbols-outlined">help</span>
-<span class="text-sm">پشتیبانی</span>
+<span class="text-sm">پشتیبانی و تیکت‌ها</span>
 </a>
 <a class="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-all" href="logout.php">
 <span class="material-symbols-outlined">logout</span>
@@ -140,8 +180,24 @@ $fmtDateText = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter
 </div>
 </aside>
 <!-- Main Content -->
-<main class="mr-64 mt-16 p-8 min-h-screen">
-<div class="max-w-[1200px] mx-auto space-y-8">
+<main class="lg:mr-64 mr-0 mt-16 p-4 md:p-8 min-h-screen transition-all duration-300">
+<div class="max-w-[1200px] mx-auto space-y-6 md:space-y-8">
+
+<!-- Mobile Header Toggle -->
+<div class="lg:hidden flex justify-between items-center bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant shadow-sm mb-4">
+    <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-primary-container text-white flex items-center justify-center font-bold text-lg">
+            <?php echo mb_substr(htmlspecialchars($user['name'] ?? 'ک'), 0, 1, 'UTF-8'); ?>
+        </div>
+        <div>
+            <h1 class="font-bold text-primary text-sm">پنل کاربری شما</h1>
+            <p class="text-[11px] text-on-surface-variant">مشاهده و مدیریت اطلاعات</p>
+        </div>
+    </div>
+    <button onclick="toggleProfileSidebar()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors">
+        <span class="material-symbols-outlined">menu_open</span>
+    </button>
+</div>
 <?php if ($success): ?>
     <div class="bg-status-active/10 text-status-active p-4 rounded-xl flex items-center gap-3 border border-status-active/20">
         <span class="material-symbols-outlined">check_circle</span>
@@ -283,6 +339,102 @@ $fmtDateText = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter
 <?php endif; ?>
 </div>
 </div>
+<!-- My Subscriptions -->
+<div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden mb-8">
+<div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center">
+<h3 class="text-lg font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">event_repeat</span>
+                            اشتراک‌های من
+                        </h3>
+<a href="subscriptions.php" class="text-sm font-bold text-primary-container hover:underline">خرید اشتراک جدید</a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-right text-sm">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-bold border-b border-outline-variant">
+<th class="px-6 py-4">پلن اشتراک</th>
+<th class="px-6 py-4">مبلغ (تومان)</th>
+<th class="px-6 py-4">وضعیت</th>
+<th class="px-6 py-4">تاریخ خرید</th>
+<th class="px-6 py-4">زمان ارسال بعدی</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/50">
+<?php if (empty($user_subscriptions)): ?>
+    <tr>
+        <td colspan="5" class="px-6 py-8 text-center text-on-surface-variant font-bold">شما در حال حاضر اشتراک فعالی ندارید.</td>
+    </tr>
+<?php else: ?>
+    <?php foreach ($user_subscriptions as $sub): ?>
+    <tr class="hover:bg-surface-container-low/50 transition-colors group">
+        <td class="px-6 py-4 font-bold text-primary"><?php echo htmlspecialchars($sub['plan_name']); ?></td>
+        <td class="px-6 py-4 font-bold persian-number"><?php echo number_format($sub['amount']); ?></td>
+        <td class="px-6 py-4">
+            <span class="px-3 py-1 text-xs font-bold rounded-full <?php
+                if($sub['status'] == 'active') echo 'bg-primary-container/20 text-primary-container';
+                elseif($sub['status'] == 'ended') echo 'bg-surface-variant text-on-surface-variant';
+                elseif($sub['status'] == 'cancelled') echo 'bg-error/20 text-error';
+                else echo 'bg-surface-container text-on-surface';
+            ?>">
+                <?php 
+                    $status_map = ['active'=>'فعال', 'ended'=>'پایان یافته', 'cancelled'=>'لغو شده'];
+                    echo $status_map[$sub['status']] ?? $sub['status']; 
+                ?>
+            </span>
+        </td>
+        <td class="px-6 py-4 text-on-surface-variant persian-number text-xs" dir="ltr">
+            <?php echo $fmtDateTime->format(new DateTime($sub['created_at'])); ?>
+        </td>
+        <td class="px-6 py-4 font-bold text-secondary-container persian-number">
+            <?php echo $sub['next_delivery_date'] ? $fmtDateText->format(new DateTime($sub['next_delivery_date'])) : 'نامشخص'; ?>
+        </td>
+    </tr>
+    <?php if (!empty($sub['deliveries'])): ?>
+    <tr class="bg-surface-container-lowest border-b border-outline-variant/30">
+        <td colspan="5" class="p-4">
+            <div class="space-y-2 pl-4 max-w-2xl text-right">
+                <h4 class="font-bold text-primary text-xs mb-2">زمان‌بندی ارسال‌ها:</h4>
+                <?php foreach($sub['deliveries'] as $del): ?>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between bg-surface-container-low border border-outline-variant/20 p-2.5 rounded-lg text-xs gap-3">
+                        <div class="flex items-center gap-3">
+                            <span class="font-black text-on-surface-variant persian-number bg-white px-2 py-1 rounded-md shadow-sm">ماه <?php echo $del['delivery_month']; ?></span>
+                            <span class="text-outline persian-number"><?php echo $del['scheduled_date'] ? $fmtDateText->format(new DateTime($del['scheduled_date'])) : ''; ?></span>
+                            
+                            <?php 
+                            $statusText = '';
+                            switch($del['status']) {
+                                case 'pending': $statusText = '<span class="text-status-warning bg-status-warning/10 px-2 py-0.5 rounded-full font-bold">در انتظار</span>'; break;
+                                case 'shipped': $statusText = '<span class="text-primary-fixed bg-primary-fixed-dim/20 px-2 py-0.5 rounded-full font-bold">ارسال شده</span>'; break;
+                                case 'delivered': $statusText = '<span class="text-status-active bg-status-active/10 px-2 py-0.5 rounded-full font-bold">دریافت شده</span>'; break;
+                                case 'not_received': $statusText = '<span class="text-error bg-error/10 px-2 py-0.5 rounded-full font-bold">گزارش عدم دریافت</span>'; break;
+                            }
+                            echo $statusText;
+                            ?>
+                        </div>
+                        <?php if ($del['status'] === 'shipped'): ?>
+                            <div class="flex items-center gap-2 bg-secondary-container/30 px-3 py-1.5 rounded-lg">
+                                <span class="font-bold text-primary mr-2">بسته این ماه را دریافت کردید؟</span>
+                                <form action="actions/subscription_action.php" method="POST" class="m-0 inline">
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" name="action" value="confirm_delivery">
+                                    <input type="hidden" name="delivery_id" value="<?php echo $del['id']; ?>">
+                                    <button type="submit" name="received" value="1" class="bg-status-active text-white px-3 py-1 rounded-md shadow-sm hover:opacity-90 font-bold transition-opacity">بله</button>
+                                    <button type="submit" name="received" value="0" class="bg-error text-white px-3 py-1 rounded-md shadow-sm hover:opacity-90 font-bold transition-opacity">خیر</button>
+                                </form>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </td>
+    </tr>
+    <?php endif; ?>
+    <?php endforeach; ?>
+<?php endif; ?>
+</tbody>
+</table>
+</div>
+</div>
 <!-- Order History (Clean Table) -->
 <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
 <div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center">
@@ -380,26 +532,18 @@ $fmtDateText = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter
 <?php else: ?>
     <?php foreach($subscriptions as $sub): ?>
     <div class="p-4 border border-outline-variant rounded-2xl flex items-center gap-4 hover:border-primary-container transition-all group relative overflow-hidden bg-white shadow-sm">
-    <div class="absolute top-0 right-0 bg-secondary text-white px-3 py-0.5 text-[9px] font-bold rounded-bl-xl">ارسال خودکار</div>
-    <img alt="Product" class="w-16 h-16 object-contain rounded-lg p-1 border border-outline-variant" src="<?php echo htmlspecialchars($sub['product_image']); ?>"/>
-    <div class="flex-1">
-    <h4 class="text-sm font-bold text-on-surface"><?php echo htmlspecialchars($sub['product_name']); ?></h4>
-    <p class="text-[11px] text-on-surface-variant persian-number mt-0.5">تکرار: هر <?php echo $sub['frequency_days']; ?> روز یک‌بار</p>
-    <div class="mt-2 flex items-center gap-1.5 text-status-active font-bold text-xs persian-number">
-    <span class="material-symbols-outlined text-[16px]">local_shipping</span>
-                                        ارسال بعدی: <?php 
-        echo $fmtDateText->format(new DateTime($sub['next_delivery_date'])); 
-        ?>
-                                    </div>
-    </div>
-    <form action="actions/profile_action.php" method="POST" class="ml-2" onsubmit="return confirm('آیا از لغو این اشتراک اطمینان دارید؟');">
-        <?php echo csrf_field(); ?>
-        <input type="hidden" name="action" value="cancel_subscription">
-        <input type="hidden" name="subscription_id" value="<?php echo $sub['id']; ?>">
-        <button type="submit" class="text-error bg-error/10 hover:bg-error hover:text-white transition-colors px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap">
-            لغو اشتراک
-        </button>
-    </form>
+        <div class="absolute top-0 right-0 bg-secondary text-white px-3 py-0.5 text-[9px] font-bold rounded-bl-xl">فعال</div>
+        <div class="w-16 h-16 bg-primary-container/20 rounded-lg flex items-center justify-center border border-primary/20">
+            <span class="material-symbols-outlined text-primary text-3xl">local_mall</span>
+        </div>
+        <div class="flex-1">
+            <h4 class="text-sm font-bold text-on-surface"><?php echo htmlspecialchars($sub['plan_name']); ?></h4>
+            <p class="text-[11px] text-on-surface-variant persian-number mt-0.5"><?php echo number_format($sub['amount']); ?> تومان</p>
+            <div class="mt-2 flex items-center gap-1.5 text-status-active font-bold text-xs persian-number">
+                <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+                تاریخ خرید: <?php echo $fmtDateText->format(new DateTime($sub['created_at'])); ?>
+            </div>
+        </div>
     </div>
     <?php endforeach; ?>
 <?php endif; ?>
@@ -620,7 +764,7 @@ $fmtDateText = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter
 <!-- Floating Chat Button -->
 <button class="fixed bottom-8 left-8 w-14 h-14 bg-primary-container text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
 <span class="material-symbols-outlined text-[28px]">chat_bubble</span>
-<span class="absolute right-16 bg-white text-primary-container px-4 py-2 rounded-xl shadow-xl border border-outline-variant font-bold text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+<span class="absolute left-16 bg-white text-primary-container px-4 py-2 rounded-xl shadow-xl border border-outline-variant font-bold text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
         پشتیبانی آنلاین پت‌کر
     </span>
 </button>
@@ -635,7 +779,6 @@ $fmtDateText = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter
         document.getElementById('editPetModal').classList.remove('hidden');
     }
 
-    // Micro-interactions and initialization
     window.addEventListener('load', () => {
         document.querySelectorAll('.glass-card, .rounded-2xl').forEach((el, index) => {
             el.style.opacity = '0';
@@ -647,5 +790,22 @@ $fmtDateText = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter
             }, index * 100);
         });
     });
+
+    function toggleProfileSidebar() {
+        const sidebar = document.getElementById('profile-sidebar');
+        const backdrop = document.getElementById('profile-backdrop');
+        
+        if (sidebar.classList.contains('translate-x-full')) {
+            sidebar.classList.remove('translate-x-full');
+            backdrop.classList.remove('hidden');
+            setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
+            document.body.style.overflow = 'hidden';
+        } else {
+            sidebar.classList.add('translate-x-full');
+            backdrop.classList.add('opacity-0');
+            setTimeout(() => backdrop.classList.add('hidden'), 300);
+            document.body.style.overflow = '';
+        }
+    }
 </script>
 </body></html>

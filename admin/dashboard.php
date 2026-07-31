@@ -498,7 +498,7 @@
 <!-- Floating Action Button (FAB) - Suppression logic: rendered only for Home/Dashboard -->
 <button class="fixed bottom-8 left-8 w-14 h-14 bg-secondary-container text-white rounded-full shadow-2xl flex items-center justify-center active:scale-95 transition-transform z-50 group">
 <span class="material-symbols-outlined text-[28px] group-hover:rotate-90 transition-transform duration-300">add</span>
-<span class="absolute right-16 bg-primary text-white text-label-lg px-4 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+<span class="absolute left-16 bg-primary text-white text-label-lg px-4 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
             ثبت پرونده یا کالای جدید
         </span>
 </button>

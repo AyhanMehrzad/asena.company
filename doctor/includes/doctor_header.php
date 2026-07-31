@@ -133,17 +133,25 @@ if (!$doctorProfile) {
 </head>
 <body class="bg-surface text-on-surface selection:bg-secondary-container/30">
 
+<!-- Mobile Backdrop -->
+<div id="doctor-backdrop" class="fixed inset-0 bg-black/50 z-[60] hidden lg:hidden backdrop-blur-sm transition-opacity opacity-0" onclick="toggleDoctorSidebar()"></div>
+
 <!-- SideNavBar -->
-<aside class="fixed inset-y-0 right-0 w-64 bg-tertiary dark:bg-tertiary-container flex flex-col z-40 rtl shadow-lg">
+<aside id="doctor-sidebar" class="fixed inset-y-0 right-0 w-64 bg-tertiary dark:bg-tertiary-container flex flex-col z-[70] lg:z-40 rtl shadow-lg transition-transform duration-300 translate-x-full lg:translate-x-0 overflow-y-auto">
     <div class="p-6 flex flex-col gap-2">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center">
-                <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+                </div>
+                <div>
+                    <h1 class="text-xl text-tertiary-fixed font-bold leading-tight">پت‌کر ایران</h1>
+                    <p class="text-sm text-on-tertiary-container/70">پنل پزشکان</p>
+                </div>
             </div>
-            <div>
-                <h1 class="text-xl text-tertiary-fixed font-bold leading-tight">پت‌کر ایران</h1>
-                <p class="text-sm text-on-tertiary-container/70">پنل پزشکان</p>
-            </div>
+            <button onclick="toggleDoctorSidebar()" class="lg:hidden text-on-tertiary-container hover:text-white transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
         </div>
     </div>
 
@@ -184,10 +192,13 @@ if (!$doctorProfile) {
 </aside>
 
 <!-- Main Content Wrapper -->
-<main class="mr-64 min-h-screen">
+<main class="lg:mr-64 mr-0 min-h-screen transition-all duration-300">
     <!-- TopAppBar -->
-    <header class="sticky top-0 z-50 flex justify-between items-center h-16 px-6 bg-surface dark:bg-surface-dim shadow-sm border-b border-outline-variant/20">
-        <div class="flex items-center gap-6">
+    <header class="sticky top-0 z-40 flex justify-between items-center h-16 px-4 lg:px-6 bg-surface dark:bg-surface-dim shadow-sm border-b border-outline-variant/20">
+        <div class="flex items-center gap-2 lg:gap-6">
+            <button onclick="toggleDoctorSidebar()" class="lg:hidden w-10 h-10 flex shrink-0 items-center justify-center rounded-lg hover:bg-surface-container transition-colors text-primary">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
         </div>
         
         <div class="flex items-center gap-4">
@@ -207,3 +218,22 @@ if (!$doctorProfile) {
             </div>
         </div>
     </header>
+
+<script>
+function toggleDoctorSidebar() {
+    const sidebar = document.getElementById('doctor-sidebar');
+    const backdrop = document.getElementById('doctor-backdrop');
+    
+    if (sidebar.classList.contains('translate-x-full')) {
+        sidebar.classList.remove('translate-x-full');
+        backdrop.classList.remove('hidden');
+        setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
+        document.body.style.overflow = 'hidden';
+    } else {
+        sidebar.classList.add('translate-x-full');
+        backdrop.classList.add('opacity-0');
+        setTimeout(() => backdrop.classList.add('hidden'), 300);
+        document.body.style.overflow = '';
+    }
+}
+</script>

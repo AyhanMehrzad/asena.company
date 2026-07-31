@@ -22,11 +22,12 @@ if ($status !== 'OK' || empty($authority)) {
 // ── Gate 3: Authority must match session — prevents authority injection ────────
 $pending = $_SESSION['pending_order'] ?? null;
 $is_booking = ($pending['type'] ?? '') === 'booking';
+$is_subscription = ($pending['type'] ?? '') === 'subscription';
 
 if (!$pending
     || ($pending['authority'] ?? '') !== $authority
     || empty($pending['total_amount'])
-    || (!$is_booking && empty($pending['items']))
+    || (!$is_booking && !$is_subscription && empty($pending['items']))
 ) {
     unset($_SESSION['pending_order']);
     $_SESSION['profile_error'] = 'اطلاعات سفارش نامعتبر یا منقضی شده است.';
@@ -53,9 +54,30 @@ try {
 
     $user_id      = (int)$_SESSION['user_id'];
     $total_amount = (int)$pending['total_amount'];
-    $items        = $pending['items'];
+    $items        = $pending['items'] ?? [];
 
-    // 1. Create order with real amount and ref_id
+    if ($is_subscription) {
+        $months = intval($pending['plan_id'] ?? 1);
+        if ($months < 1) $months = 1;
+
+        $subStmt = $pdo->prepare(
+            "INSERT INTO user_subscriptions (user_id, plan_name, amount, status, next_delivery_date)
+             VALUES (?, ?, ?, 'active', DATE_ADD(CURRENT_DATE, INTERVAL 3 DAY))"
+        );
+        $subStmt->execute([$user_id, $pending['plan_name'], $total_amount]);
+        $sub_id = $pdo->lastInsertId();
+
+        $delStmt = $pdo->prepare("INSERT INTO subscription_deliveries (subscription_id, delivery_month, scheduled_date) VALUES (?, ?, ?)");
+        
+        for ($i = 1; $i <= $months; $i++) {
+            $days = 3 + (($i - 1) * 30);
+            $scheduled = date('Y-m-d', strtotime("+$days days"));
+            $delStmt->execute([$sub_id, $i, $scheduled]);
+        }
+        
+        $order_id = $sub_id; // For the success message below
+    } else {
+        // 1. Create order with real amount and ref_id
     $orderStmt = $pdo->prepare(
         "INSERT INTO orders (user_id, total_amount, status, gateway_ref_id)
          VALUES (?, ?, 'processing', ?)"
@@ -72,7 +94,7 @@ try {
     $order_id = $pdo->lastInsertId();
 
     // 2. Insert order_items and decrement stock
-    if (!$is_booking) {
+    if (!$is_booking && !$is_subscription) {
         $itemStmt  = $pdo->prepare(
             "INSERT INTO order_items (order_id, product_id, quantity, price_at_purchase, product_name_snapshot)
              VALUES (?, ?, ?, ?, ?)"
@@ -102,7 +124,8 @@ try {
             ]);
             $stockStmt->execute([$qty, $pid, $qty]);
         }
-    }
+        }
+    } // End of else block for regular orders
 
     // 3. Loyalty points and booking approval
     if ($is_booking && !empty($pending['booking_id'])) {
@@ -119,8 +142,14 @@ try {
 
     // 4. Clean up session
     unset($_SESSION['cart'], $_SESSION['pending_order']);
-    $_SESSION['profile_success'] =
-        "پرداخت موفق! سفارش #PC-{$order_id} ثبت شد. کد رهگیری: {$ref_id}";
+    
+    if ($is_subscription) {
+        $_SESSION['profile_success'] =
+            "پرداخت موفق! اشتراک «{$pending['plan_name']}» با موفقیت فعال شد. کد رهگیری: {$ref_id}";
+    } else {
+        $_SESSION['profile_success'] =
+            "پرداخت موفق! سفارش #PC-{$order_id} ثبت شد. کد رهگیری: {$ref_id}";
+    }
     header('Location: ../profile.php');
     exit;
 

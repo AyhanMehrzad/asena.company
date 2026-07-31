@@ -41,3 +41,50 @@
 .overlay-shade {
     background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%);
 }
+
+/* New Homepage Styles */
+.glass-card {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 24px -1px rgba(0, 45, 114, 0.03);
+}
+
+.workstation-module {
+    background: #ffffff;
+    border: 1px solid #eeeeee;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.workstation-module:hover {
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.08);
+    border-color: var(--primary-container, #002d72);
+}
+
+.paw-pattern {
+    background-image: radial-gradient(#002d72 0.5px, transparent 0.5px);
+    background-size: 32px 32px;
+    opacity: 0.04;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.blurred-orb {
+    position: absolute;
+    filter: blur(120px);
+    z-index: -1;
+    opacity: 0.12;
+    border-radius: 9999px;
+}
+
+.mask-fade-l {
+    mask-image: linear-gradient(to right, transparent, black 40%);
+}

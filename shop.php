@@ -11,6 +11,7 @@ $category = isset($_GET['category']) ? $_GET['category'] : '';
 $search = isset($_GET['q']) ? trim($_GET['q']) : '';
 $selected_brands = isset($_GET['brands']) && is_array($_GET['brands']) ? $_GET['brands'] : [];
 $price_ranges = isset($_GET['price_ranges']) && is_array($_GET['price_ranges']) ? $_GET['price_ranges'] : [];
+$in_stock = isset($_GET['in_stock']) ? $_GET['in_stock'] : '';
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'relevant';
 
 // Build query
@@ -18,8 +19,8 @@ $where = [];
 $params = [];
 
 if ($category) {
-    $where[] = "category = ?";
-    $params[] = $category;
+    $where[] = "category LIKE ?";
+    $params[] = "%$category%";
 }
 
 if ($search) {
@@ -51,6 +52,11 @@ if (!empty($price_ranges)) {
     if (!empty($price_conditions)) {
         $where[] = "(" . implode(" OR ", $price_conditions) . ")";
     }
+}
+
+// In-stock filtering
+if ($in_stock) {
+    $where[] = "stock > 0";
 }
 
 $whereClause = count($where) > 0 ? "WHERE " . implode(" AND ", $where) : "";
@@ -116,11 +122,12 @@ function buildUrlRemoveArrayItem($arrayName, $valueToRemove) {
 <!-- Secondary Nav Bar (Chewy Style) -->
 <div class="bg-primary text-white border-t border-white/20 hidden md:block">
    <div class="max-w-container-max mx-auto px-margin-desktop flex gap-8 text-label-lg font-bold">
-       <a href="#" class="py-3 hover:underline">فروش ویژه</a>
-       <a href="#" class="py-3 hover:underline">برندها</a>
-       <a href="#" class="py-3 hover:underline">داروخانه دامپزشکی</a>
-       <a href="#" class="py-3 hover:underline text-secondary-fixed">خرید اشتراکی (Autoship)</a>
-       <a href="#" class="py-3 hover:underline">خدمات مشتریان</a>
+       <a href="shop.php?category=سگ" class="py-3 hover:underline">سگ</a>
+       <a href="shop.php?category=گربه" class="py-3 hover:underline">گربه</a>
+       <a href="shop.php?category=پرنده" class="py-3 hover:underline">پرنده</a>
+       <a href="shop.php?category=جونده" class="py-3 hover:underline">جوندگان</a>
+       <a href="shop.php?category=آبزیان" class="py-3 hover:underline">آبزیان</a>
+       <a href="shop.php?category=خزنده" class="py-3 hover:underline">خزندگان</a>
    </div>
 </div>
 
@@ -144,14 +151,32 @@ function buildUrlRemoveArrayItem($arrayName, $valueToRemove) {
             <input type="hidden" name="category" value="<?php echo htmlspecialchars($category); ?>">
         <?php endif; ?>
 
+        <!-- Mobile Filter Toggle Button -->
+        <button type="button" onclick="toggleFilters()" class="md:hidden w-full flex items-center justify-center gap-2 bg-surface-container-low border border-outline-variant rounded-xl py-3 font-bold text-primary mb-6 active:scale-95 transition-transform">
+            <span class="material-symbols-outlined">tune</span>
+            فیلترها و مرتب‌سازی
+        </button>
+
+        <!-- Mobile Backdrop -->
+        <div id="filter-backdrop" class="fixed inset-0 bg-black/50 z-[60] hidden md:hidden backdrop-blur-sm transition-opacity opacity-0" onclick="toggleFilters()"></div>
+
         <!-- Sidebar Facets -->
-        <aside class="w-full md:w-1/4 lg:w-1/5 flex-shrink-0">
-           <h2 class="text-title-lg font-bold mb-4">فیلترها</h2>
+        <aside id="filter-sidebar" class="fixed inset-y-0 right-0 w-72 md:w-1/4 lg:w-1/5 bg-surface-container-lowest md:bg-transparent z-[70] md:z-0 md:relative flex-shrink-0 flex flex-col shadow-2xl md:shadow-none transition-transform duration-300 translate-x-full md:translate-x-0 overflow-y-auto md:overflow-visible">
+           <div class="p-6 md:p-0">
+               <div class="flex items-center justify-between mb-6 md:hidden">
+                   <h2 class="text-title-lg font-bold text-primary">فیلترها</h2>
+                   <button type="button" onclick="toggleFilters()" class="text-on-surface-variant hover:text-error transition-colors">
+                       <span class="material-symbols-outlined">close</span>
+                   </button>
+               </div>
+               <h2 class="text-title-lg font-bold mb-4 hidden md:block">فیلترها</h2>
            
            <!-- Categories Filter -->
            <div class="border-t border-outline-variant/30 py-4">
-               <h3 class="font-bold text-on-surface mb-3 flex justify-between items-center cursor-pointer">دسته‌بندی‌ها <span class="material-symbols-outlined">expand_more</span></h3>
-               <ul class="space-y-3 text-body-md text-on-surface-variant pr-2">
+               <h3 class="font-bold text-on-surface mb-3 flex justify-between items-center cursor-pointer select-none" onclick="this.nextElementSibling.classList.toggle('hidden'); const icon = this.querySelector('.material-symbols-outlined'); icon.innerText = icon.innerText === 'expand_less' ? 'expand_more' : 'expand_less';">
+                   دسته‌بندی‌ها <span class="material-symbols-outlined">expand_less</span>
+               </h3>
+               <ul class="space-y-3 text-body-md text-on-surface-variant pr-2 transition-all duration-300 origin-top">
                    <li>
                         <a href="<?php echo buildUrl(['category' => null, 'page' => 1]); ?>" class="flex items-center gap-2 <?php echo $category == '' ? 'font-bold text-primary' : 'hover:text-primary'; ?>">
                             همه محصولات
@@ -185,10 +210,25 @@ function buildUrlRemoveArrayItem($arrayName, $valueToRemove) {
                </ul>
            </div>
 
+           <!-- Availability Filter -->
+           <div class="border-t border-outline-variant/30 py-4">
+               <h3 class="font-bold text-on-surface mb-3 flex justify-between items-center cursor-pointer select-none" onclick="this.nextElementSibling.classList.toggle('hidden'); const icon = this.querySelector('.material-symbols-outlined'); icon.innerText = icon.innerText === 'expand_less' ? 'expand_more' : 'expand_less';">
+                   وضعیت کالا <span class="material-symbols-outlined">expand_less</span>
+               </h3>
+               <div class="space-y-3 text-body-md text-on-surface-variant pr-2 transition-all duration-300 origin-top">
+                   <label class="flex items-center gap-3 cursor-pointer hover:text-primary">
+                       <input type="checkbox" name="in_stock" value="1" <?php echo $in_stock ? 'checked' : ''; ?> onchange="this.form.submit()" class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4">
+                       فقط کالاهای موجود
+                   </label>
+               </div>
+           </div>
+
            <!-- Dynamic Brand Filter -->
            <div class="border-t border-outline-variant/30 py-4">
-               <h3 class="font-bold text-on-surface mb-3 flex justify-between items-center cursor-pointer">برندها <span class="material-symbols-outlined">expand_more</span></h3>
-               <div class="space-y-3 text-body-md text-on-surface-variant pr-2 max-h-60 overflow-y-auto hide-scrollbar">
+               <h3 class="font-bold text-on-surface mb-3 flex justify-between items-center cursor-pointer select-none" onclick="this.nextElementSibling.classList.toggle('hidden'); const icon = this.querySelector('.material-symbols-outlined'); icon.innerText = icon.innerText === 'expand_less' ? 'expand_more' : 'expand_less';">
+                   برندها <span class="material-symbols-outlined">expand_less</span>
+               </h3>
+               <div class="space-y-3 text-body-md text-on-surface-variant pr-2 max-h-60 overflow-y-auto hide-scrollbar transition-all duration-300 origin-top">
                    <?php foreach($all_brands as $b): ?>
                        <label class="flex items-center gap-3 cursor-pointer hover:text-primary">
                            <input type="checkbox" name="brands[]" value="<?php echo htmlspecialchars($b); ?>" <?php echo in_array($b, $selected_brands) ? 'checked' : ''; ?> onchange="this.form.submit()" class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4">
@@ -200,8 +240,10 @@ function buildUrlRemoveArrayItem($arrayName, $valueToRemove) {
 
            <!-- Price Filter -->
            <div class="border-t border-outline-variant/30 py-4">
-               <h3 class="font-bold text-on-surface mb-3 flex justify-between items-center cursor-pointer">محدوده قیمت <span class="material-symbols-outlined">expand_more</span></h3>
-               <div class="space-y-3 text-body-md text-on-surface-variant pr-2">
+               <h3 class="font-bold text-on-surface mb-3 flex justify-between items-center cursor-pointer select-none" onclick="this.nextElementSibling.classList.toggle('hidden'); const icon = this.querySelector('.material-symbols-outlined'); icon.innerText = icon.innerText === 'expand_less' ? 'expand_more' : 'expand_less';">
+                   محدوده قیمت <span class="material-symbols-outlined">expand_less</span>
+               </h3>
+               <div class="space-y-3 text-body-md text-on-surface-variant pr-2 transition-all duration-300 origin-top">
                    <label class="flex items-center gap-3 cursor-pointer hover:text-primary">
                        <input type="checkbox" name="price_ranges[]" value="under_500k" <?php echo in_array('under_500k', $price_ranges) ? 'checked' : ''; ?> onchange="this.form.submit()" class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4">
                        زیر ۵۰۰,۰۰۰ تومان
@@ -215,6 +257,8 @@ function buildUrlRemoveArrayItem($arrayName, $valueToRemove) {
                        بالای ۱,۵۰۰,۰۰۰ تومان
                    </label>
                </div>
+           </div>
+            </div>
            </div>
         </aside>
 
@@ -308,6 +352,11 @@ function buildUrlRemoveArrayItem($arrayName, $valueToRemove) {
                                 افزودن به سبد
                             </button>
                         </div>
+                        
+                        <!-- Mobile Quick Add to Cart -->
+                        <button type="button" onclick="addToCart(this, <?php echo $product['id']; ?>)" class="lg:hidden absolute bottom-4 left-4 z-30 w-10 h-10 bg-primary/90 backdrop-blur-md text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform border border-white/20">
+                            <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+                        </button>
                     </div>
                     <div class="flex-1 flex flex-col">
                         <p class="text-label-sm text-on-surface-variant mb-1">
@@ -325,11 +374,7 @@ function buildUrlRemoveArrayItem($arrayName, $valueToRemove) {
                                 <?php endif; ?>
                             </div>
                         </div>
-                        <!-- Autoship -->
-                        <div class="flex items-center gap-1 text-[11px] text-[#0066cc] font-bold mt-2">
-                             <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">autorenew</span>
-                             <?php echo number_format(($product['discount_price'] ?: $product['price']) * 0.95); ?> تومان با خرید اشتراکی
-                        </div>
+
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -435,6 +480,23 @@ function addToCart(btn, productId) {
         console.error('Error:', error);
         btn.innerHTML = originalText;
     });
+}
+
+function toggleFilters() {
+    const sidebar = document.getElementById('filter-sidebar');
+    const backdrop = document.getElementById('filter-backdrop');
+    
+    if (sidebar.classList.contains('translate-x-full')) {
+        sidebar.classList.remove('translate-x-full');
+        backdrop.classList.remove('hidden');
+        setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
+        document.body.style.overflow = 'hidden';
+    } else {
+        sidebar.classList.add('translate-x-full');
+        backdrop.classList.add('opacity-0');
+        setTimeout(() => backdrop.classList.add('hidden'), 300);
+        document.body.style.overflow = '';
+    }
 }
 </script>
 

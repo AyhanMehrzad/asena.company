@@ -61,7 +61,7 @@ $stmt = $pdo->query("SELECT * FROM dashboard_events ORDER BY event_time ASC");
 $dashboard_events = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!-- Dashboard Content Container -->
-<div class="p-8 space-y-8">
+<div class="p-4 md:p-8 space-y-6 md:space-y-8">
     <!-- Section 1: Overview Statistics -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Card: Appointments -->

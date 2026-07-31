@@ -8,6 +8,16 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+$userStmt = $pdo->prepare("SELECT email, phone, city, address FROM users WHERE id = ?");
+$userStmt->execute([$_SESSION['user_id']]);
+$currentUser = $userStmt->fetch(PDO::FETCH_ASSOC);
+
+if (empty(trim((string)$currentUser['city'])) || empty(trim((string)$currentUser['address']))) {
+    $_SESSION['profile_error'] = "لطفاً پیش از خرید، آدرس منزل و شهر خود را در پروفایل تکمیل کنید تا امکان ارسال مرسولات فراهم باشد.";
+    header('Location: profile.php');
+    exit;
+}
+
 $cart_items = $_SESSION['cart'] ?? [];
 if (empty($cart_items)) {
     header('Location: cart.php');
@@ -54,9 +64,7 @@ $callback_url = (isset($_SERVER['HTTPS']) ? 'https' : 'http')
               . '/petshop/actions/complete_payment.php';
 
 // Fetch user details for ZarinPal metadata
-$stmt = $pdo->prepare("SELECT email, phone FROM users WHERE id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
+$user = $currentUser;
 
 $metadata = [];
 if (!empty($user['email'])) {

@@ -158,7 +158,7 @@ unset($appt);
 
 ?>
 
-<div class="p-8 max-w-[1400px] mx-auto space-y-8">
+<div class="p-4 md:p-8 max-w-[1400px] mx-auto space-y-6 md:space-y-8">
     
     <?php if ($success): ?>
         <div class="bg-status-active/10 text-status-active p-4 rounded-xl font-bold flex items-center gap-2 border border-status-active/20">
