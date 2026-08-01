@@ -417,37 +417,7 @@ $top_donors = $donor_stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </section>
 
-        <!-- Top Donors Section -->
-        <?php if(!empty($top_donors)): ?>
-        <section class="bg-surface-container-low rounded-[3rem] p-8 md:p-12 mt-8 flex flex-col md:flex-row items-center gap-8 justify-between border border-outline-variant/20 shadow-sm">
-            <div class="flex items-center gap-4 shrink-0">
-                <div class="w-16 h-16 bg-primary-container text-white rounded-full flex items-center justify-center shadow-lg">
-                    <span class="material-symbols-outlined text-3xl">workspace_premium</span>
-                </div>
-                <div>
-                    <h3 class="text-2xl font-bold text-primary">قهرمانان مهربانی</h3>
-                    <p class="text-sm text-on-surface-variant font-medium">حامیان برتر این ماه</p>
-                </div>
-            </div>
-            <div class="flex-1 flex flex-wrap gap-4 items-center justify-end">
-                <?php foreach($top_donors as $i => $donor): 
-                    $colors = ['bg-amber-400', 'bg-slate-300', 'bg-amber-600', 'bg-primary-container/20', 'bg-primary-container/20'];
-                    $color = $colors[$i] ?? 'bg-surface-container';
-                ?>
-                <div class="flex items-center gap-3 bg-white p-2 pr-4 rounded-full shadow-sm border border-outline-variant/10">
-                    <div class="flex flex-col text-left mr-2">
-                        <span class="text-sm font-bold text-primary"><?php echo htmlspecialchars($donor['donor_name']); ?></span>
-                        <span class="text-[10px] text-on-surface-variant"><?php echo number_format($donor['total_donated']); ?> تومان</span>
-                    </div>
-                    <div class="w-10 h-10 rounded-full <?php echo $color; ?> flex items-center justify-center font-bold text-primary-container">
-                        #<?php echo $i+1; ?>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
-        </section>
-        <?php endif; ?>
-        <!-- Shop Categories -->
+        <!-- Top Donors Removed (Moved to Community Heroes) -->
         <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 pb-24">
             <div
                 class="relative workstation-module rounded-[2rem] p-10 flex flex-col items-center gap-6 group cursor-pointer border-none bg-surface-container/50">
@@ -571,45 +541,49 @@ $top_donors = $donor_stmt->fetchAll(PDO::FETCH_ASSOC);
                 <p class="text-on-surface-variant">ما به داشتن چنین همراهانی افتخار می‌کنیم</p>
             </div>
             <div class="flex flex-wrap justify-center gap-16">
-                <div class="flex flex-col items-center gap-4 group cursor-pointer">
-                    <div class="relative w-28 h-28">
-                        <div
-                            class="absolute inset-0 rounded-full border-4 border-secondary-container p-1 group-hover:scale-110 transition-transform">
-                            <div class="w-full h-full rounded-full bg-cover bg-center"
-                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCKepGrR8mFuL2hU5YGkA9Wl-hbWlntqKmFD0CHDZaIbSmvMDtMbt-X47mFw3f9KWiOFUelnSnZyMX-ep6JOs02iQS8lXAUVfhtvyjZEDQPBn9S728GsP5mnWjfse8d6QO5vVcR3LEKz1NMRTGv-zeedxU_poPBzyOGr7Ua-2dRyQ46M7-sHfr0pSGmaO3YxfDMZQurPGY_ZslUjsdzG9VS8KVokVE6PVya7y1_8FRV4L644DhCasy93X5AFTDLxDAanyCbLEy3DJY");'>
+                <?php if(!empty($top_donors)): ?>
+                    <?php foreach($top_donors as $index => $donor): 
+                        $medal_icon = 'stars';
+                        $medal_color = 'bg-primary-container';
+                        $border_color = 'border-primary-container';
+                        if ($index === 0) {
+                            $medal_icon = 'workspace_premium';
+                            $medal_color = 'bg-amber-400';
+                            $border_color = 'border-amber-400';
+                        } elseif ($index === 1) {
+                            $medal_icon = 'military_tech';
+                            $medal_color = 'bg-slate-300';
+                            $border_color = 'border-slate-300';
+                        } elseif ($index === 2) {
+                            $medal_icon = 'military_tech';
+                            $medal_color = 'bg-amber-600';
+                            $border_color = 'border-amber-600';
+                        }
+                    ?>
+                    <div class="flex flex-col items-center gap-4 group cursor-pointer">
+                        <div class="relative w-28 h-28">
+                            <div class="absolute inset-0 rounded-full border-4 <?php echo $border_color; ?> p-1 group-hover:scale-110 transition-transform">
+                                <div class="w-full h-full rounded-full bg-cover bg-center"
+                                    style='background-image: url("https://ui-avatars.com/api/?name=<?php echo urlencode($donor['donor_name']); ?>&background=random&color=fff&size=150");'>
+                                </div>
+                            </div>
+                            <div class="absolute -bottom-1 -right-1 <?php echo $medal_color; ?> text-white w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                                <?php if($index < 3): ?>
+                                    <span class="material-symbols-outlined text-lg"><?php echo $medal_icon; ?></span>
+                                <?php else: ?>
+                                    <span class="text-sm font-bold">#<?php echo $index + 1; ?></span>
+                                <?php endif; ?>
                             </div>
                         </div>
-                        <div
-                            class="absolute -bottom-1 -right-1 bg-primary-container text-white w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
-                            <span class="material-symbols-outlined text-lg">workspace_premium</span>
+                        <div>
+                            <div class="font-bold text-primary text-lg"><?php echo htmlspecialchars($donor['donor_name']); ?></div>
+                            <div class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest"><?php echo number_format($donor['total_donated']); ?> تومان</div>
                         </div>
                     </div>
-                    <div>
-                        <div class="font-bold text-primary text-lg">مریم ستوده</div>
-                        <div class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">حامی برتر
-                            فرشته‌ها</div>
-                    </div>
-                </div>
-                <div class="flex flex-col items-center gap-4 group cursor-pointer">
-                    <div class="relative w-28 h-28">
-                        <div
-                            class="absolute inset-0 rounded-full border-4 border-primary-container p-1 group-hover:scale-110 transition-transform">
-                            <div class="w-full h-full rounded-full bg-cover bg-center"
-                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCNxTx8Y6cwW8_uDHfy907i8SXfuVGtvs5ulqIm86vI5q6LfOKb9hOSGoZgIvapD_JRnPz90S-3BQ8d7Wotuey8q9pXi4h8TdlnIh-rgE84jsEW9GzH6uUPzFMQDt51ssEMvf3NsVDcCE2T31H5HhzuTsevYURsqR8PPSHEBTTyGjyR_RcHkr_9rc3YWEUOHOmINcYBxQrdOaMH63JhjLrXNPoKrVpiOfwvHWF6dhU__6rb531gPN0HszB_k4B41O7KhRZbHEM6ejk");'>
-                            </div>
-                        </div>
-                        <div
-                            class="absolute -bottom-1 -right-1 bg-secondary-container text-white w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
-                            <span class="material-symbols-outlined text-lg">stars</span>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="font-bold text-primary text-lg">امیررضا علوی</div>
-                        <div class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">بیشترین
-                            پاسخ مفید</div>
-                    </div>
-                </div>
-                <div class="flex flex-col items-center gap-4 group cursor-pointer">
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                
+                <div class="flex flex-col items-center justify-center gap-4 group cursor-pointer" onclick="window.location.href='charity.php'">
                     <div
                         class="w-28 h-28 rounded-full border-2 border-dashed border-outline-variant flex items-center justify-center group-hover:border-primary-container transition-all">
                         <span
