@@ -13,6 +13,21 @@ if (isset($_SESSION['user_id'])) {
     $wishlist_stmt->execute([$_SESSION['user_id']]);
     $user_wishlist = $wishlist_stmt->fetchAll(PDO::FETCH_COLUMN);
 }
+
+// Fetch active campaigns
+$campaign_stmt = $pdo->query("SELECT * FROM campaigns WHERE status = 'active' ORDER BY created_at DESC");
+$active_campaigns = $campaign_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch top 5 donors
+$donor_stmt = $pdo->query("
+    SELECT donor_name, SUM(amount) as total_donated 
+    FROM donations 
+    WHERE status = 'successful' AND donor_name != 'ناشناس'
+    GROUP BY donor_name 
+    ORDER BY total_donated DESC 
+    LIMIT 5
+");
+$top_donors = $donor_stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <main class="w-full max-w-container-max mx-auto space-y-24">
@@ -333,15 +348,12 @@ if (isset($_SESSION['user_id'])) {
             </div>
         </section>
         <!-- Charity Section -->
-        <section
-            class="bg-primary-container rounded-[2rem] md:rounded-[3.5rem] overflow-hidden relative text-white shadow-2xl p-6 md:p-12 lg:p-24">
+        <section class="bg-primary-container rounded-[2rem] md:rounded-[3.5rem] overflow-hidden relative text-white shadow-2xl p-6 md:p-12 lg:p-24">
             <div class="paw-pattern absolute inset-0"></div>
             <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center text-center lg:text-right">
                 <div class="space-y-6 md:space-y-10 flex flex-col items-center lg:items-start">
-                    <div
-                        class="flex items-center gap-3 text-secondary-container font-bold bg-white/10 w-fit px-6 py-2 rounded-full border border-white/10 backdrop-blur-md">
-                        <span class="material-symbols-outlined"
-                            style='font-variation-settings: "FILL" 1;'>volunteer_activism</span>
+                    <div class="flex items-center gap-3 text-secondary-container font-bold bg-white/10 w-fit px-6 py-2 rounded-full border border-white/10 backdrop-blur-md">
+                        <span class="material-symbols-outlined" style='font-variation-settings: "FILL" 1;'>volunteer_activism</span>
                         مسئولیت اجتماعی پت‌کر
                     </div>
                     <h2 class="text-4xl lg:text-6xl font-bold leading-tight">
@@ -361,42 +373,80 @@ if (isset($_SESSION['user_id'])) {
                         </div>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-4 pt-4 w-full sm:w-auto">
-                        <button
-                            class="bg-secondary-container text-white px-10 py-5 rounded-2xl font-bold shadow-xl hover:scale-105 transition-transform">حمایت
-                            مستقیم</button>
-                        <button
-                            class="border border-white/30 text-white px-10 py-5 rounded-2xl font-bold hover:bg-white/10 transition-all">گزارش
-                            شفافیت</button>
+                        <a href="charity.php" class="inline-block bg-secondary-container text-white px-10 py-5 rounded-2xl font-bold shadow-xl hover:scale-105 transition-transform text-center">مشاهده کمپین‌ها و حمایت</a>
                     </div>
                 </div>
-                <div class="glass-card !bg-white/10 !border-white/10 rounded-[2.5rem] p-1.5 shadow-2xl">
-                    <div class="bg-white rounded-[2.4rem] overflow-hidden">
-                        <div class="h-64 md:h-80 bg-cover bg-center"
-                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDoc0762tHSFBfBv1K4IZHhv0c4teOyQqtU4JBSg90EZWAsgBikVH1FHG7NqU3J8IGI5hGSezuQ8ZJYmkjxQlw1H9iXXR-l0rIYIVn_bZ8W9hgmRtn51cESd69rnfAHZVyFf3Cs24GBLsdMowu-wI9qy7HIkyysU3ab6l0aynpcohWmbwzcniMHJ_6Qs0mu-Rb9bBInnnqpT_8NX3eny015G3WjyvTqtnOx2gGLh9mCTsJ0HVd6PAxXQ9BQEIizwTUbN-TJzdxuXQ0");'>
-                        </div>
-                        <div class="p-10 space-y-8">
-                            <div class="flex justify-between items-center">
-                                <h3 class="text-2xl font-bold text-primary">کمپین زمستان گرم</h3>
-                                <span
-                                    class="bg-emerald-500 text-white text-[10px] px-3 py-1 rounded-full font-bold animate-pulse">فعال</span>
-                            </div>
-                            <div class="space-y-4">
-                                <div
-                                    class="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex items-stretch p-0.5">
-                                    <div
-                                        class="bg-gradient-to-l from-secondary-container to-orange-400 w-3/4 rounded-full">
+                
+                <div class="glass-card !bg-white/10 !border-white/10 rounded-[2.5rem] p-1.5 shadow-2xl relative">
+                    <?php if(empty($active_campaigns)): ?>
+                    <div class="bg-white rounded-[2.4rem] overflow-hidden p-10 text-center">
+                        <h3 class="text-2xl font-bold text-primary">کمپین فعالی وجود ندارد</h3>
+                        <p class="text-on-surface-variant mt-4">منتظر کمپین‌های جدید باشید.</p>
+                    </div>
+                    <?php else: ?>
+                    
+                    <div class="swiper-container charity-index-slider relative rounded-[2.4rem] overflow-hidden bg-white">
+                        <div class="swiper-wrapper">
+                            <?php foreach($active_campaigns as $camp): 
+                                $percent = $camp['goal_amount'] > 0 ? min(100, round(($camp['current_amount'] / $camp['goal_amount']) * 100)) : 0;
+                            ?>
+                            <div class="swiper-slide">
+                                <div class="h-64 md:h-80 bg-cover bg-center" style="background-image: url('<?php echo htmlspecialchars($camp['image_url'] ?: 'https://placehold.co/800x600?text=Campaign'); ?>');"></div>
+                                <div class="p-10 space-y-8 bg-white text-right">
+                                    <div class="flex justify-between items-center">
+                                        <h3 class="text-2xl font-bold text-primary line-clamp-1"><?php echo htmlspecialchars($camp['title']); ?></h3>
+                                        <span class="bg-emerald-500 text-white text-[10px] px-3 py-1 rounded-full font-bold animate-pulse">فعال</span>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex items-stretch p-0.5">
+                                            <div class="bg-gradient-to-l from-secondary-container to-orange-400 rounded-full transition-all duration-1000" style="width: <?php echo $percent; ?>%;"></div>
+                                        </div>
+                                        <div class="flex justify-between text-xs font-bold text-on-surface-variant">
+                                            <span class="">هدف: <?php echo number_format($camp['goal_amount']); ?> تومان</span>
+                                            <span class="text-primary"><?php echo number_format($camp['current_amount']); ?> جمع شده</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="flex justify-between text-xs font-bold text-on-surface-variant">
-                                    <span class="">هدف: ۵۰۰ کیسه غذا</span>
-                                    <span class="text-primary">۳۷۵ کیسه تامین شده</span>
-                                </div>
                             </div>
+                            <?php endforeach; ?>
                         </div>
+                        <div class="swiper-pagination !bottom-4"></div>
                     </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </section>
+
+        <!-- Top Donors Section -->
+        <?php if(!empty($top_donors)): ?>
+        <section class="bg-surface-container-low rounded-[3rem] p-8 md:p-12 mt-8 flex flex-col md:flex-row items-center gap-8 justify-between border border-outline-variant/20 shadow-sm">
+            <div class="flex items-center gap-4 shrink-0">
+                <div class="w-16 h-16 bg-primary-container text-white rounded-full flex items-center justify-center shadow-lg">
+                    <span class="material-symbols-outlined text-3xl">workspace_premium</span>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-primary">قهرمانان مهربانی</h3>
+                    <p class="text-sm text-on-surface-variant font-medium">حامیان برتر این ماه</p>
+                </div>
+            </div>
+            <div class="flex-1 flex flex-wrap gap-4 items-center justify-end">
+                <?php foreach($top_donors as $i => $donor): 
+                    $colors = ['bg-amber-400', 'bg-slate-300', 'bg-amber-600', 'bg-primary-container/20', 'bg-primary-container/20'];
+                    $color = $colors[$i] ?? 'bg-surface-container';
+                ?>
+                <div class="flex items-center gap-3 bg-white p-2 pr-4 rounded-full shadow-sm border border-outline-variant/10">
+                    <div class="flex flex-col text-left mr-2">
+                        <span class="text-sm font-bold text-primary"><?php echo htmlspecialchars($donor['donor_name']); ?></span>
+                        <span class="text-[10px] text-on-surface-variant"><?php echo number_format($donor['total_donated']); ?> تومان</span>
+                    </div>
+                    <div class="w-10 h-10 rounded-full <?php echo $color; ?> flex items-center justify-center font-bold text-primary-container">
+                        #<?php echo $i+1; ?>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+        <?php endif; ?>
         <!-- Shop Categories -->
         <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 pb-24">
             <div
@@ -959,4 +1009,22 @@ function resetInterval() {
     slideInterval = setInterval(nextSlide, 6000);
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+<script>
+    if (document.querySelector('.charity-index-slider')) {
+        new Swiper('.charity-index-slider', {
+            loop: true,
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            }
+        });
+    }
+</script>
+
 <?php include 'includes/footer.php'; ?>

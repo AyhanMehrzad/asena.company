@@ -153,6 +153,8 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
             'users' => ['icon' => 'group', 'title' => 'مدیریت کاربران', 'url' => 'user_management.php'],
             'subscriptions' => ['icon' => 'event_repeat', 'title' => 'مدیریت اشتراک‌ها', 'url' => 'subscriptions.php'],
             'tickets' => ['icon' => 'support_agent', 'title' => 'تیکت و پشتیبانی', 'url' => 'tickets.php'],
+            'campaigns' => ['icon' => 'campaign', 'title' => 'مدیریت کمپین‌ها', 'url' => 'campaigns.php'],
+            'donations' => ['icon' => 'volunteer_activism', 'title' => 'گزارش کمک‌ها', 'url' => 'donations.php'],
             'analytics' => ['icon' => 'analytics', 'title' => 'تحلیل و آمار', 'url' => 'analytics.php']
         ];
 

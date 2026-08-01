@@ -2,6 +2,10 @@
 // Centralized utility functions.
 // Session is already started via includes/db.php.
 
+function e($string): string {
+    return htmlspecialchars((string)$string, ENT_QUOTES, 'UTF-8');
+}
+
 function csrf_token(): string {
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
