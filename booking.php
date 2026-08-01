@@ -114,13 +114,15 @@ $booked_slots_json = json_encode($booked_slots);
             <!-- Doctor Selection Section -->
             <section>
                 <div class="flex justify-between items-end mb-6">
-                    <h1 class="text-headline-md font-headline-md text-primary">رزرو نوبت دکتر</h1>
-                    <a class="text-primary text-label-lg font-label-lg hover:underline" href="#">مشاهده همه پزشکان</a>
+                    <h2 class="text-2xl font-black text-slate-800 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-indigo-500">stethoscope</span>
+                        ۱. انتخاب پزشک معالج
+                    </h2>
                 </div>
                 <div class="flex overflow-x-auto gap-4 pb-4 custom-scrollbar snap-x" id="doctors-list">
                     
                     <?php foreach($doctors as $index => $doctor): ?>
-                    <div class="doctor-card min-w-[280px] bg-white border border-outline-variant rounded-xl p-4 snap-start hover:shadow-md transition-all group cursor-pointer hover:-translate-y-1 duration-300"
+                    <div class="doctor-card min-w-[280px] bg-white border border-slate-200 rounded-2xl p-4 snap-start hover:shadow-xl hover:border-indigo-200 transition-all duration-300 group cursor-pointer hover:-translate-y-2 relative overflow-hidden"
                          data-id="<?php echo $doctor['id']; ?>"
                          data-name="<?php echo htmlspecialchars($doctor['name']); ?>"
                          data-image="<?php echo htmlspecialchars($doctor['image_url'] ?: 'https://via.placeholder.com/300x200?text=' . urlencode($doctor['name'])); ?>"
@@ -128,25 +130,26 @@ $booked_slots_json = json_encode($booked_slots);
                          data-schedule="<?php echo htmlspecialchars($doctor['schedule_info'] ?? '{}'); ?>"
                          onclick="selectDoctor(this)">
                         
-                        <div class="relative mb-4">
-                            <img class="w-full h-48 object-cover rounded-lg" src="<?php echo htmlspecialchars($doctor['image_url'] ?: 'https://via.placeholder.com/300x200?text=' . urlencode($doctor['name'])); ?>" alt="<?php echo htmlspecialchars($doctor['name']); ?>"/>
+                        <div class="relative mb-4 overflow-hidden rounded-xl">
+                            <img class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500" src="<?php echo htmlspecialchars($doctor['image_url'] ?: 'https://via.placeholder.com/300x200?text=' . urlencode($doctor['name'])); ?>" alt="<?php echo htmlspecialchars($doctor['name']); ?>"/>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             <?php if($index === 0): ?>
-                            <div class="absolute top-2 left-2 bg-status-active text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                            <div class="absolute top-2 right-2 bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg shadow-emerald-500/30">
+                                <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
                                 آماده ویزیت
                             </div>
                             <?php endif; ?>
                         </div>
-                        <div class="space-y-1">
-                            <h3 class="text-title-lg font-title-lg text-primary"><?php echo htmlspecialchars($doctor['name']); ?></h3>
-                            <p class="text-body-md font-body-md text-on-surface-variant"><?php echo htmlspecialchars($doctor['specialty']); ?></p>
-                            <div class="flex items-center gap-1 text-status-warning">
-                                <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                                <span class="text-label-lg font-label-lg text-on-surface"><?php echo $doctor['rating']; ?></span>
-                                <span class="text-label-sm font-label-sm text-on-surface-variant">(<?php echo $doctor['review_count']; ?> نظر)</span>
+                        <div class="space-y-1.5">
+                            <h3 class="text-xl font-bold text-slate-800"><?php echo htmlspecialchars($doctor['name']); ?></h3>
+                            <p class="text-sm font-medium text-indigo-600 bg-indigo-50 inline-block px-2 py-0.5 rounded-md"><?php echo htmlspecialchars($doctor['specialty']); ?></p>
+                            <div class="flex items-center gap-1 text-amber-500 mt-2">
+                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                <span class="text-sm font-bold text-slate-700"><?php echo $doctor['rating']; ?></span>
+                                <span class="text-xs text-slate-400 mr-1">(<?php echo $doctor['review_count']; ?> نظر)</span>
                             </div>
                         </div>
-                        <button type="button" class="w-full mt-4 border border-primary text-primary py-2 rounded-lg text-label-lg font-label-lg hover:bg-primary-container hover:text-white transition-colors select-btn">انتخاب پزشک</button>
+                        <button type="button" class="w-full mt-5 border-2 border-indigo-100 bg-indigo-50/50 text-indigo-700 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-600 hover:border-indigo-600 hover:text-white transition-all shadow-sm select-btn">انتخاب پزشک</button>
                     </div>
                     <?php endforeach; ?>
 
@@ -217,16 +220,20 @@ $booked_slots_json = json_encode($booked_slots);
         </div>
         
         <!-- Right Side: Sticky Summary Sidebar -->
-        <aside class="w-full lg:w-[380px] shrink-0">
-            <div class="sticky top-28 bg-white rounded-2xl border border-outline-variant/30 shadow-lg space-y-8 p-8">
-                <h2 class="text-title-lg font-title-lg text-primary mb-6">خلاصه رزرو</h2>
+        <aside class="w-full lg:w-[400px] shrink-0">
+            <div class="sticky top-28 bg-white rounded-3xl border border-slate-200 shadow-2xl shadow-indigo-900/5 space-y-8 p-8 overflow-hidden relative">
+                <div class="absolute top-0 right-0 w-full h-2 bg-gradient-to-r from-indigo-500 to-pink-500"></div>
+                <h2 class="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-pink-500">receipt_long</span>
+                    خلاصه نوبت
+                </h2>
                 <div class="space-y-6">
                     <!-- Selected Doctor Summary -->
-                    <div id="summary-doctor" class="flex items-center gap-4 p-3 bg-surface-container-lowest border border-outline-variant/30 rounded-xl opacity-50 transition-opacity">
-                        <img id="summary-doctor-img" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-sm" src="https://via.placeholder.com/150?text=?"/>
+                    <div id="summary-doctor" class="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl opacity-50 transition-all duration-300 group">
+                        <img id="summary-doctor-img" class="w-16 h-16 rounded-full object-cover border-4 border-white shadow-md transition-transform group-hover:scale-110" src="https://via.placeholder.com/150?text=?"/>
                         <div>
-                            <p class="text-label-sm font-label-sm text-on-surface-variant">پزشک انتخابی</p>
-                            <h4 id="summary-doctor-name" class="text-body-lg font-body-lg font-bold text-primary">پزشک را انتخاب کنید</h4>
+                            <p class="text-xs font-bold text-slate-400 mb-1">پزشک انتخابی</p>
+                            <h4 id="summary-doctor-name" class="text-lg font-bold text-slate-800">پزشک را انتخاب کنید</h4>
                         </div>
                     </div>
                     
@@ -255,16 +262,16 @@ $booked_slots_json = json_encode($booked_slots);
                         </div>
                     </div>
                     
-                    <div class="border-t border-outline-variant/30 pt-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <span class="text-title-lg font-title-lg text-on-surface">هزینه ویزیت</span>
-                            <div class="text-right flex items-baseline gap-1">
-                                <span id="summary-price" class="text-headline-md font-headline-md text-primary tracking-tight">---</span>
-                                <span class="text-label-sm font-label-sm text-on-surface-variant">تومان</span>
+                    <div class="border-t border-slate-200 pt-6">
+                        <div class="flex justify-between items-center mb-8 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100/50">
+                            <span class="text-lg font-bold text-slate-700">هزینه ویزیت</span>
+                            <div class="text-right flex items-baseline gap-1.5">
+                                <span id="summary-price" class="text-2xl font-black text-indigo-600 tracking-tight">---</span>
+                                <span class="text-sm font-bold text-slate-500">تومان</span>
                             </div>
                         </div>
                         
-                        <button type="submit" id="submit-btn" disabled class="w-full bg-surface-container-high text-on-surface-variant py-4 rounded-xl text-title-lg font-title-lg font-bold transition-all flex justify-center items-center gap-2 cursor-not-allowed">
+                        <button type="submit" id="submit-btn" disabled class="w-full bg-slate-100 text-slate-400 py-4 rounded-xl text-lg font-bold transition-all duration-300 flex justify-center items-center gap-2 cursor-not-allowed">
                             لطفا فرم را تکمیل کنید
                         </button>
                         
