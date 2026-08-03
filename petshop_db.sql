@@ -41,7 +41,7 @@ CREATE TABLE `appointments` (
   KEY `doctor_id` (`doctor_id`),
   CONSTRAINT `appointments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `appointments_ibfk_2` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -50,7 +50,7 @@ CREATE TABLE `appointments` (
 
 LOCK TABLES `appointments` WRITE;
 /*!40000 ALTER TABLE `appointments` DISABLE KEYS */;
-INSERT INTO `appointments` VALUES (1,2,4,'2026-07-26','17:30','completed','2026-07-24 15:53:19','گربه','persian',NULL,NULL,NULL,NULL),(2,5,4,'2026-07-26','09:00','cancelled','2026-07-25 01:38:32','سگ','Husky',NULL,NULL,NULL,NULL),(3,6,4,'2026-07-26','16:45','cancelled','2026-07-25 02:04:34','سگ','Husky',NULL,NULL,NULL,NULL),(4,7,4,'2026-08-01','08:00','pending','2026-07-25 12:57:01','سگ','bulldog',NULL,NULL,NULL,NULL),(5,2,4,'2026-08-02','09:45','pending','2026-07-31 19:10:41','سگ','germenshepert',NULL,NULL,NULL,NULL);
+INSERT INTO `appointments` VALUES (1,2,4,'2026-07-26','17:30','completed','2026-07-24 15:53:19','گربه','persian',NULL,NULL,NULL,NULL),(2,5,4,'2026-07-26','09:00','cancelled','2026-07-25 01:38:32','سگ','Husky',NULL,NULL,NULL,NULL),(3,6,4,'2026-07-26','16:45','cancelled','2026-07-25 02:04:34','سگ','Husky',NULL,NULL,NULL,NULL),(4,7,4,'2026-08-01','08:00','pending','2026-07-25 12:57:01','سگ','bulldog',NULL,NULL,NULL,NULL),(5,2,4,'2026-08-02','09:45','cancelled','2026-07-31 19:10:41','سگ','germenshepert',NULL,NULL,NULL,NULL),(6,2,4,'2026-08-08','08:45','pending','2026-08-01 17:03:51','گربه','persian',NULL,NULL,NULL,NULL),(7,11,4,'2026-08-08','17:30','pending','2026-08-03 11:54:19','سگ','',NULL,NULL,NULL,NULL),(8,11,5,'2026-08-12','18:15','pending','2026-08-03 12:39:51','سگ','',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `appointments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -113,6 +113,36 @@ CREATE TABLE `autoship_subscriptions` (
 LOCK TABLES `autoship_subscriptions` WRITE;
 /*!40000 ALTER TABLE `autoship_subscriptions` DISABLE KEYS */;
 /*!40000 ALTER TABLE `autoship_subscriptions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `campaigns`
+--
+
+DROP TABLE IF EXISTS `campaigns`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `campaigns` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `goal_amount` int(11) NOT NULL,
+  `current_amount` int(11) DEFAULT 0,
+  `image_url` varchar(500) DEFAULT NULL,
+  `status` enum('active','completed','inactive') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `campaigns`
+--
+
+LOCK TABLES `campaigns` WRITE;
+/*!40000 ALTER TABLE `campaigns` DISABLE KEYS */;
+INSERT INTO `campaigns` VALUES (1,'Save Homeless Animals','Please help us raise funds for our shelter to support homeless pets. Every small donation counts.',10000000,150000,'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=500','active','2026-08-01 13:57:26');
+/*!40000 ALTER TABLE `campaigns` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -192,7 +222,7 @@ CREATE TABLE `doctors` (
   `phone` varchar(255) DEFAULT NULL,
   `schedule_info` text DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -201,8 +231,42 @@ CREATE TABLE `doctors` (
 
 LOCK TABLES `doctors` WRITE;
 /*!40000 ALTER TABLE `doctors` DISABLE KEYS */;
-INSERT INTO `doctors` VALUES (4,'akbar nami','پزشک عمومی',5.0,0,'uploads/doctors/6a63b8fcdf04e_329748003990695799.jpeg',150000,'2026-07-23 20:12:40',4,'09990999','{\"sat\":{\"m_start\":\"08:00\",\"m_end\":\"14:00\",\"a_start\":\"16:00\",\"a_end\":\"21:00\"},\"sun\":{\"m_start\":\"09:00\",\"m_end\":\"13:00\",\"a_start\":\"16:00\",\"a_end\":\"20:00\"}}'),(5,'ali','vet edited',5.0,0,'uploads/doctors/6a63b90c61a3d_doctor kitty.jpeg',600000,'2026-07-23 20:35:20',3,NULL,NULL),(7,'کاربر تستی OAuth','عمومی',5.0,0,NULL,450000,'2026-07-25 04:18:37',6,'09194360331','{\"sat\":{\"m_start\":\"09:00\",\"m_end\":\"13:00\",\"a_start\":\"16:00\",\"a_end\":\"20:00\"},\"sun\":{\"m_start\":\"09:00\",\"m_end\":\"13:00\",\"a_start\":\"16:00\",\"a_end\":\"20:00\"},\"tue\":{\"m_start\":\"09:00\",\"m_end\":\"13:00\",\"a_start\":\"16:00\",\"a_end\":\"20:00\"},\"wed\":{\"m_start\":\"09:00\",\"m_end\":\"13:00\",\"a_start\":\"16:00\",\"a_end\":\"20:00\"},\"thu\":{\"m_start\":\"09:00\",\"m_end\":\"13:00\",\"a_start\":\"17:00\",\"a_end\":\"23:00\"},\"fri\":{\"m_start\":\"10:00\",\"m_end\":\"12:00\",\"a_start\":\"16:00\",\"a_end\":\"20:00\"}}');
+INSERT INTO `doctors` VALUES (4,'akbar nami','پزشک عمومی',5.0,0,'uploads/doctors/6a63b8fcdf04e_329748003990695799.jpeg',150000,'2026-07-23 20:12:40',4,'09990999','{\"sat\":{\"m_start\":\"08:00\",\"m_end\":\"14:00\",\"a_start\":\"16:00\",\"a_end\":\"21:00\"},\"sun\":{\"m_start\":\"09:00\",\"m_end\":\"13:00\",\"a_start\":\"16:00\",\"a_end\":\"20:00\"}}'),(5,'ali','vet',5.0,0,'uploads/doctors/6a63b90c61a3d_doctor kitty.jpeg',600000,'2026-07-23 20:35:20',3,NULL,'{\"sat\":{\"m_active\":true,\"m_start\":\"09:00\",\"m_end\":\"13:00\",\"a_active\":true,\"a_start\":\"16:00\",\"a_end\":\"20:00\"},\"sun\":{\"m_active\":true,\"m_start\":\"09:00\",\"m_end\":\"13:00\",\"a_active\":true,\"a_start\":\"16:00\",\"a_end\":\"20:00\"},\"mon\":{\"m_active\":true,\"m_start\":\"09:00\",\"m_end\":\"13:00\",\"a_active\":true,\"a_start\":\"16:00\",\"a_end\":\"20:00\"},\"tue\":{\"m_active\":true,\"m_start\":\"09:00\",\"m_end\":\"13:00\",\"a_active\":true,\"a_start\":\"16:00\",\"a_end\":\"20:00\"},\"wed\":{\"m_active\":true,\"m_start\":\"09:00\",\"m_end\":\"13:00\",\"a_active\":true,\"a_start\":\"16:00\",\"a_end\":\"20:00\"},\"thu\":{\"m_active\":true,\"m_start\":\"09:00\",\"m_end\":\"13:00\",\"a_active\":true,\"a_start\":\"16:00\",\"a_end\":\"20:00\"},\"fri\":{\"m_active\":true,\"m_start\":\"09:00\",\"m_end\":\"13:00\",\"a_active\":true,\"a_start\":\"16:00\",\"a_end\":\"20:00\"}}'),(8,'doctor','عمومی',5.0,0,NULL,450000,'2026-08-03 08:24:56',10,'user.doctor',NULL);
 /*!40000 ALTER TABLE `doctors` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `donations`
+--
+
+DROP TABLE IF EXISTS `donations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `donations` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `donor_name` varchar(255) DEFAULT NULL,
+  `campaign_id` int(11) DEFAULT NULL,
+  `amount` int(11) NOT NULL,
+  `status` enum('pending','successful','failed') DEFAULT 'pending',
+  `payment_reference` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `campaign_id` (`campaign_id`),
+  CONSTRAINT `donations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `donations_ibfk_2` FOREIGN KEY (`campaign_id`) REFERENCES `campaigns` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `donations`
+--
+
+LOCK TABLES `donations` WRITE;
+/*!40000 ALTER TABLE `donations` DISABLE KEYS */;
+INSERT INTO `donations` VALUES (1,2,'ناشناس',1,50000,'successful','360976201','2026-08-01 14:30:46'),(2,2,'Sina',1,100000,'successful','360977501','2026-08-01 14:31:47');
+/*!40000 ALTER TABLE `donations` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -218,7 +282,7 @@ CREATE TABLE `login_attempts` (
   `username` varchar(100) DEFAULT NULL,
   `attempt_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -249,7 +313,7 @@ CREATE TABLE `order_items` (
   KEY `product_id` (`product_id`),
   CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
   CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -258,7 +322,7 @@ CREATE TABLE `order_items` (
 
 LOCK TABLES `order_items` WRITE;
 /*!40000 ALTER TABLE `order_items` DISABLE KEYS */;
-INSERT INTO `order_items` VALUES (1,3,1,1,1980000,'غذای خشک سگ بالغ نژاد کوچک رویال کنین مدل Mini Adult'),(2,3,8,1,280000,'شامپو ضد ریزش موی سگ تریکسی'),(3,3,31,1,100000,'Cat Toy Mouse Updated'),(4,4,1,1,1980000,'غذای خشک سگ بالغ نژاد کوچک رویال کنین مدل Mini Adult'),(5,4,31,1,100000,'Cat Toy Mouse Updated');
+INSERT INTO `order_items` VALUES (1,3,1,1,1980000,'غذای خشک سگ بالغ نژاد کوچک رویال کنین مدل Mini Adult'),(2,3,8,1,280000,'شامپو ضد ریزش موی سگ تریکسی'),(3,3,31,1,100000,'Cat Toy Mouse Updated'),(4,4,1,1,1980000,'غذای خشک سگ بالغ نژاد کوچک رویال کنین مدل Mini Adult'),(5,4,31,1,100000,'Cat Toy Mouse Updated'),(6,5,1,1,1980000,'غذای خشک سگ بالغ نژاد کوچک رویال کنین مدل Mini Adult'),(7,5,31,1,100000,'Cat Toy Mouse Updated');
 /*!40000 ALTER TABLE `order_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -309,7 +373,7 @@ CREATE TABLE `orders` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -318,7 +382,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,6,5490000,0,'delivered',NULL,'2026-07-25 02:13:27'),(2,6,5490000,0,'delivered',NULL,'2026-07-25 02:18:18'),(3,7,2360000,0,'delivered',NULL,'2026-07-25 12:58:00'),(4,2,2080000,0,'shipped',NULL,'2026-07-31 19:10:57');
+INSERT INTO `orders` VALUES (1,6,5490000,0,'delivered',NULL,'2026-07-25 02:13:27'),(2,6,5490000,0,'delivered',NULL,'2026-07-25 02:18:18'),(3,7,2360000,0,'delivered',NULL,'2026-07-25 12:58:00'),(4,2,2080000,0,'shipped',NULL,'2026-07-31 19:10:57'),(5,11,2080000,0,'processing',NULL,'2026-08-03 11:54:02');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -379,7 +443,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,'غذای خشک سگ بالغ نژاد کوچک رویال کنین مدل Mini Adult','غذای سگ',2450000,1980000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','شایر',8),(2,'کنسرو گربه گورمت گلد با طعم مرغ','غذای گربه',150000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','جوسرا',10),(3,'قلاده چرمی سگ زولاکس سایز لارج','لوازم بهداشتی',850000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuCsm_sg4VlKSHpcOfcLE3gOwdTo1GG1jQRBPPFrcDxaZ_Ns_46U7AAxqMN5-gRD8xhBefgAjzfkwncuFZOp2K-JXSR50lxWxmSDuf8Ed74RsAW1fVV2QL1qn4LJczSR4I0jzHfOPB_a8fqBit2odwrEv6KCyt32eWKnqVyyCmhUBtC1IcA-2hK-l61vUN3TSwd1YQ0FxeZ9WCvajbHU1fGvEeVU6Ym1pTNYos5Kn-gQ8J9PMfE8QyaR',NULL,'2026-07-21 13:23:55','جوسرا',10),(4,'توپ دندانی طناب‌دار','اسباب‌بازی',220000,180000,'https://lh3.googleusercontent.com/aida-public/AB6AXuCsm_sg4VlKSHpcOfcLE3gOwdTo1GG1jQRBPPFrcDxaZ_Ns_46U7AAxqMN5-gRD8xhBefgAjzfkwncuFZOp2K-JXSR50lxWxmSDuf8Ed74RsAW1fVV2QL1qn4LJczSR4I0jzHfOPB_a8fqBit2odwrEv6KCyt32eWKnqVyyCmhUBtC1IcA-2hK-l61vUN3TSwd1YQ0FxeZ9WCvajbHU1fGvEeVU6Ym1pTNYos5Kn-gQ8J9PMfE8QyaR',NULL,'2026-07-21 13:23:55','جوسرا',10),(5,'خاک گربه پتوپیا ۱۰ کیلویی','لوازم بهداشتی',350000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','رفلکس',10),(6,'قطره مولتی ویتامین سگ و گربه','مکمل دارویی',450000,390000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAUJoM_Cb8R1bvWWSCz2yxdiA9nIKNsl1SEJ9R40MzslKtcd2CpKfpmIAZcO67KF-CzRp08fneiShCpaSD-lFf5yI0cBJgW8EBMMLu9Bb_kdV_XyZcTTLQ7Ll-bxo2aej9wGv4I-Bp2N1YVe7srdsKFyH9MWnVbZwG3Gk6iRCa-pbdIX3EujAQPnUqaL5L1ZxQC-kqtxZSWDfnZYGQhSc9YdnlaczRv_iTpZWScGJ9SopSETZfLui4o',NULL,'2026-07-21 13:23:55','شایر',10),(7,'درخت گربه ۳ طبقه کدیپک','اسباب‌بازی',4200000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','نوتری پت',10),(8,'شامپو ضد ریزش موی سگ تریکسی','لوازم بهداشتی',280000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuAUJoM_Cb8R1bvWWSCz2yxdiA9nIKNsl1SEJ9R40MzslKtcd2CpKfpmIAZcO67KF-CzRp08fneiShCpaSD-lFf5yI0cBJgW8EBMMLu9Bb_kdV_XyZcTTLQ7Ll-bxo2aej9wGv4I-Bp2N1YVe7srdsKFyH9MWnVbZwG3Gk6iRCa-pbdIX3EujAQPnUqaL5L1ZxQC-kqtxZSWDfnZYGQhSc9YdnlaczRv_iTpZWScGJ9SopSETZfLui4o',NULL,'2026-07-21 13:23:55','رفلکس',9),(9,'غذای خشک گربه بالغ عقیم شده رویال کنین','غذای گربه',2850000,2600000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','شایر',10),(10,'تشک خواب سگ سایز متوسط','لوازم بهداشتی',950000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','رفلکس',10),(11,'غذای خشک سگ بالغ نژاد کوچک رویال کنین مدل Mini Adult','غذای سگ',2450000,1980000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','جوسرا',10),(12,'کنسرو گربه گورمت گلد با طعم مرغ','غذای گربه',150000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','رفلکس',10),(13,'قلاده چرمی سگ زولاکس سایز لارج','لوازم بهداشتی',850000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuCsm_sg4VlKSHpcOfcLE3gOwdTo1GG1jQRBPPFrcDxaZ_Ns_46U7AAxqMN5-gRD8xhBefgAjzfkwncuFZOp2K-JXSR50lxWxmSDuf8Ed74RsAW1fVV2QL1qn4LJczSR4I0jzHfOPB_a8fqBit2odwrEv6KCyt32eWKnqVyyCmhUBtC1IcA-2hK-l61vUN3TSwd1YQ0FxeZ9WCvajbHU1fGvEeVU6Ym1pTNYos5Kn-gQ8J9PMfE8QyaR',NULL,'2026-07-21 13:23:55','نوتری پت',10),(14,'توپ دندانی طناب‌دار','اسباب‌بازی',220000,180000,'https://lh3.googleusercontent.com/aida-public/AB6AXuCsm_sg4VlKSHpcOfcLE3gOwdTo1GG1jQRBPPFrcDxaZ_Ns_46U7AAxqMN5-gRD8xhBefgAjzfkwncuFZOp2K-JXSR50lxWxmSDuf8Ed74RsAW1fVV2QL1qn4LJczSR4I0jzHfOPB_a8fqBit2odwrEv6KCyt32eWKnqVyyCmhUBtC1IcA-2hK-l61vUN3TSwd1YQ0FxeZ9WCvajbHU1fGvEeVU6Ym1pTNYos5Kn-gQ8J9PMfE8QyaR',NULL,'2026-07-21 13:23:55','رویال کنین',10),(15,'خاک گربه پتوپیا ۱۰ کیلویی','لوازم بهداشتی',350000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','شایر',10),(16,'قطره مولتی ویتامین سگ و گربه','مکمل دارویی',450000,390000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAUJoM_Cb8R1bvWWSCz2yxdiA9nIKNsl1SEJ9R40MzslKtcd2CpKfpmIAZcO67KF-CzRp08fneiShCpaSD-lFf5yI0cBJgW8EBMMLu9Bb_kdV_XyZcTTLQ7Ll-bxo2aej9wGv4I-Bp2N1YVe7srdsKFyH9MWnVbZwG3Gk6iRCa-pbdIX3EujAQPnUqaL5L1ZxQC-kqtxZSWDfnZYGQhSc9YdnlaczRv_iTpZWScGJ9SopSETZfLui4o',NULL,'2026-07-21 13:23:55','رویال کنین',10),(17,'درخت گربه ۳ طبقه کدیپک','اسباب‌بازی',4200000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','رویال کنین',10),(18,'شامپو ضد ریزش موی سگ تریکسی','لوازم بهداشتی',280000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuAUJoM_Cb8R1bvWWSCz2yxdiA9nIKNsl1SEJ9R40MzslKtcd2CpKfpmIAZcO67KF-CzRp08fneiShCpaSD-lFf5yI0cBJgW8EBMMLu9Bb_kdV_XyZcTTLQ7Ll-bxo2aej9wGv4I-Bp2N1YVe7srdsKFyH9MWnVbZwG3Gk6iRCa-pbdIX3EujAQPnUqaL5L1ZxQC-kqtxZSWDfnZYGQhSc9YdnlaczRv_iTpZWScGJ9SopSETZfLui4o',NULL,'2026-07-21 13:23:55','پت‌کر',10),(19,'غذای خشک گربه بالغ عقیم شده رویال کنین','غذای گربه',2850000,2600000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','شایر',10),(20,'تشک خواب سگ سایز متوسط','لوازم بهداشتی',950000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','رویال کنین',10),(21,'غذای خشک سگ بالغ نژاد کوچک رویال کنین مدل Mini Adult','غذای سگ',2450000,1980000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','نوتری پت',10),(22,'کنسرو گربه گورمت گلد با طعم مرغ','غذای گربه',150000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','رویال کنین',10),(23,'قلاده چرمی سگ زولاکس سایز لارج','لوازم بهداشتی',850000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuCsm_sg4VlKSHpcOfcLE3gOwdTo1GG1jQRBPPFrcDxaZ_Ns_46U7AAxqMN5-gRD8xhBefgAjzfkwncuFZOp2K-JXSR50lxWxmSDuf8Ed74RsAW1fVV2QL1qn4LJczSR4I0jzHfOPB_a8fqBit2odwrEv6KCyt32eWKnqVyyCmhUBtC1IcA-2hK-l61vUN3TSwd1YQ0FxeZ9WCvajbHU1fGvEeVU6Ym1pTNYos5Kn-gQ8J9PMfE8QyaR',NULL,'2026-07-21 13:23:55','رویال کنین',10),(24,'توپ دندانی طناب‌دار','اسباب‌بازی',220000,180000,'https://lh3.googleusercontent.com/aida-public/AB6AXuCsm_sg4VlKSHpcOfcLE3gOwdTo1GG1jQRBPPFrcDxaZ_Ns_46U7AAxqMN5-gRD8xhBefgAjzfkwncuFZOp2K-JXSR50lxWxmSDuf8Ed74RsAW1fVV2QL1qn4LJczSR4I0jzHfOPB_a8fqBit2odwrEv6KCyt32eWKnqVyyCmhUBtC1IcA-2hK-l61vUN3TSwd1YQ0FxeZ9WCvajbHU1fGvEeVU6Ym1pTNYos5Kn-gQ8J9PMfE8QyaR',NULL,'2026-07-21 13:23:55','رفلکس',10),(25,'خاک گربه پتوپیا ۱۰ کیلویی','لوازم بهداشتی',350000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','رویال کنین',10),(26,'قطره مولتی ویتامین سگ و گربه','مکمل دارویی',450000,390000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAUJoM_Cb8R1bvWWSCz2yxdiA9nIKNsl1SEJ9R40MzslKtcd2CpKfpmIAZcO67KF-CzRp08fneiShCpaSD-lFf5yI0cBJgW8EBMMLu9Bb_kdV_XyZcTTLQ7Ll-bxo2aej9wGv4I-Bp2N1YVe7srdsKFyH9MWnVbZwG3Gk6iRCa-pbdIX3EujAQPnUqaL5L1ZxQC-kqtxZSWDfnZYGQhSc9YdnlaczRv_iTpZWScGJ9SopSETZfLui4o',NULL,'2026-07-21 13:23:55','رویال کنین',10),(27,'درخت گربه ۳ طبقه کدیپک','اسباب‌بازی',4200000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','رفلکس',10),(28,'شامپو ضد ریزش موی سگ تریکسی','لوازم بهداشتی',280000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuAUJoM_Cb8R1bvWWSCz2yxdiA9nIKNsl1SEJ9R40MzslKtcd2CpKfpmIAZcO67KF-CzRp08fneiShCpaSD-lFf5yI0cBJgW8EBMMLu9Bb_kdV_XyZcTTLQ7Ll-bxo2aej9wGv4I-Bp2N1YVe7srdsKFyH9MWnVbZwG3Gk6iRCa-pbdIX3EujAQPnUqaL5L1ZxQC-kqtxZSWDfnZYGQhSc9YdnlaczRv_iTpZWScGJ9SopSETZfLui4o',NULL,'2026-07-21 13:23:55','رفلکس',10),(29,'غذای خشک گربه بالغ عقیم شده رویال کنین','غذای گربه',2850000,2600000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','رویال کنین',10),(30,'تشک خواب سگ سایز متوسط','لوازم بهداشتی',950000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','رویال کنین',10),(31,'Cat Toy Mouse Updated','Toys',120000,100000,'assets/images/toy-mouse.jpg','Great toy for cats','2026-07-25 01:20:40','Test Brand',13);
+INSERT INTO `products` VALUES (1,'غذای خشک سگ بالغ نژاد کوچک رویال کنین مدل Mini Adult','غذای سگ',2450000,1980000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','شایر',7),(2,'کنسرو گربه گورمت گلد با طعم مرغ','غذای گربه',150000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','جوسرا',10),(3,'قلاده چرمی سگ زولاکس سایز لارج','لوازم بهداشتی',850000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuCsm_sg4VlKSHpcOfcLE3gOwdTo1GG1jQRBPPFrcDxaZ_Ns_46U7AAxqMN5-gRD8xhBefgAjzfkwncuFZOp2K-JXSR50lxWxmSDuf8Ed74RsAW1fVV2QL1qn4LJczSR4I0jzHfOPB_a8fqBit2odwrEv6KCyt32eWKnqVyyCmhUBtC1IcA-2hK-l61vUN3TSwd1YQ0FxeZ9WCvajbHU1fGvEeVU6Ym1pTNYos5Kn-gQ8J9PMfE8QyaR',NULL,'2026-07-21 13:23:55','جوسرا',10),(4,'توپ دندانی طناب‌دار','اسباب‌بازی',220000,180000,'https://lh3.googleusercontent.com/aida-public/AB6AXuCsm_sg4VlKSHpcOfcLE3gOwdTo1GG1jQRBPPFrcDxaZ_Ns_46U7AAxqMN5-gRD8xhBefgAjzfkwncuFZOp2K-JXSR50lxWxmSDuf8Ed74RsAW1fVV2QL1qn4LJczSR4I0jzHfOPB_a8fqBit2odwrEv6KCyt32eWKnqVyyCmhUBtC1IcA-2hK-l61vUN3TSwd1YQ0FxeZ9WCvajbHU1fGvEeVU6Ym1pTNYos5Kn-gQ8J9PMfE8QyaR',NULL,'2026-07-21 13:23:55','جوسرا',10),(5,'خاک گربه پتوپیا ۱۰ کیلویی','لوازم بهداشتی',350000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','رفلکس',10),(6,'قطره مولتی ویتامین سگ و گربه','مکمل دارویی',450000,390000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAUJoM_Cb8R1bvWWSCz2yxdiA9nIKNsl1SEJ9R40MzslKtcd2CpKfpmIAZcO67KF-CzRp08fneiShCpaSD-lFf5yI0cBJgW8EBMMLu9Bb_kdV_XyZcTTLQ7Ll-bxo2aej9wGv4I-Bp2N1YVe7srdsKFyH9MWnVbZwG3Gk6iRCa-pbdIX3EujAQPnUqaL5L1ZxQC-kqtxZSWDfnZYGQhSc9YdnlaczRv_iTpZWScGJ9SopSETZfLui4o',NULL,'2026-07-21 13:23:55','شایر',10),(7,'درخت گربه ۳ طبقه کدیپک','اسباب‌بازی',4200000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','نوتری پت',10),(8,'شامپو ضد ریزش موی سگ تریکسی','لوازم بهداشتی',280000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuAUJoM_Cb8R1bvWWSCz2yxdiA9nIKNsl1SEJ9R40MzslKtcd2CpKfpmIAZcO67KF-CzRp08fneiShCpaSD-lFf5yI0cBJgW8EBMMLu9Bb_kdV_XyZcTTLQ7Ll-bxo2aej9wGv4I-Bp2N1YVe7srdsKFyH9MWnVbZwG3Gk6iRCa-pbdIX3EujAQPnUqaL5L1ZxQC-kqtxZSWDfnZYGQhSc9YdnlaczRv_iTpZWScGJ9SopSETZfLui4o',NULL,'2026-07-21 13:23:55','رفلکس',9),(9,'غذای خشک گربه بالغ عقیم شده رویال کنین','غذای گربه',2850000,2600000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','شایر',10),(10,'تشک خواب سگ سایز متوسط','لوازم بهداشتی',950000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','رفلکس',10),(11,'غذای خشک سگ بالغ نژاد کوچک رویال کنین مدل Mini Adult','غذای سگ',2450000,1980000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','جوسرا',10),(12,'کنسرو گربه گورمت گلد با طعم مرغ','غذای گربه',150000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','رفلکس',10),(13,'قلاده چرمی سگ زولاکس سایز لارج','لوازم بهداشتی',850000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuCsm_sg4VlKSHpcOfcLE3gOwdTo1GG1jQRBPPFrcDxaZ_Ns_46U7AAxqMN5-gRD8xhBefgAjzfkwncuFZOp2K-JXSR50lxWxmSDuf8Ed74RsAW1fVV2QL1qn4LJczSR4I0jzHfOPB_a8fqBit2odwrEv6KCyt32eWKnqVyyCmhUBtC1IcA-2hK-l61vUN3TSwd1YQ0FxeZ9WCvajbHU1fGvEeVU6Ym1pTNYos5Kn-gQ8J9PMfE8QyaR',NULL,'2026-07-21 13:23:55','نوتری پت',10),(14,'توپ دندانی طناب‌دار','اسباب‌بازی',220000,180000,'https://lh3.googleusercontent.com/aida-public/AB6AXuCsm_sg4VlKSHpcOfcLE3gOwdTo1GG1jQRBPPFrcDxaZ_Ns_46U7AAxqMN5-gRD8xhBefgAjzfkwncuFZOp2K-JXSR50lxWxmSDuf8Ed74RsAW1fVV2QL1qn4LJczSR4I0jzHfOPB_a8fqBit2odwrEv6KCyt32eWKnqVyyCmhUBtC1IcA-2hK-l61vUN3TSwd1YQ0FxeZ9WCvajbHU1fGvEeVU6Ym1pTNYos5Kn-gQ8J9PMfE8QyaR',NULL,'2026-07-21 13:23:55','رویال کنین',10),(15,'خاک گربه پتوپیا ۱۰ کیلویی','لوازم بهداشتی',350000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','شایر',10),(16,'قطره مولتی ویتامین سگ و گربه','مکمل دارویی',450000,390000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAUJoM_Cb8R1bvWWSCz2yxdiA9nIKNsl1SEJ9R40MzslKtcd2CpKfpmIAZcO67KF-CzRp08fneiShCpaSD-lFf5yI0cBJgW8EBMMLu9Bb_kdV_XyZcTTLQ7Ll-bxo2aej9wGv4I-Bp2N1YVe7srdsKFyH9MWnVbZwG3Gk6iRCa-pbdIX3EujAQPnUqaL5L1ZxQC-kqtxZSWDfnZYGQhSc9YdnlaczRv_iTpZWScGJ9SopSETZfLui4o',NULL,'2026-07-21 13:23:55','رویال کنین',10),(17,'درخت گربه ۳ طبقه کدیپک','اسباب‌بازی',4200000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','رویال کنین',10),(18,'شامپو ضد ریزش موی سگ تریکسی','لوازم بهداشتی',280000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuAUJoM_Cb8R1bvWWSCz2yxdiA9nIKNsl1SEJ9R40MzslKtcd2CpKfpmIAZcO67KF-CzRp08fneiShCpaSD-lFf5yI0cBJgW8EBMMLu9Bb_kdV_XyZcTTLQ7Ll-bxo2aej9wGv4I-Bp2N1YVe7srdsKFyH9MWnVbZwG3Gk6iRCa-pbdIX3EujAQPnUqaL5L1ZxQC-kqtxZSWDfnZYGQhSc9YdnlaczRv_iTpZWScGJ9SopSETZfLui4o',NULL,'2026-07-21 13:23:55','پت‌کر',10),(19,'غذای خشک گربه بالغ عقیم شده رویال کنین','غذای گربه',2850000,2600000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','شایر',10),(20,'تشک خواب سگ سایز متوسط','لوازم بهداشتی',950000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','رویال کنین',10),(21,'غذای خشک سگ بالغ نژاد کوچک رویال کنین مدل Mini Adult','غذای سگ',2450000,1980000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','نوتری پت',10),(22,'کنسرو گربه گورمت گلد با طعم مرغ','غذای گربه',150000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','رویال کنین',10),(23,'قلاده چرمی سگ زولاکس سایز لارج','لوازم بهداشتی',850000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuCsm_sg4VlKSHpcOfcLE3gOwdTo1GG1jQRBPPFrcDxaZ_Ns_46U7AAxqMN5-gRD8xhBefgAjzfkwncuFZOp2K-JXSR50lxWxmSDuf8Ed74RsAW1fVV2QL1qn4LJczSR4I0jzHfOPB_a8fqBit2odwrEv6KCyt32eWKnqVyyCmhUBtC1IcA-2hK-l61vUN3TSwd1YQ0FxeZ9WCvajbHU1fGvEeVU6Ym1pTNYos5Kn-gQ8J9PMfE8QyaR',NULL,'2026-07-21 13:23:55','رویال کنین',10),(24,'توپ دندانی طناب‌دار','اسباب‌بازی',220000,180000,'https://lh3.googleusercontent.com/aida-public/AB6AXuCsm_sg4VlKSHpcOfcLE3gOwdTo1GG1jQRBPPFrcDxaZ_Ns_46U7AAxqMN5-gRD8xhBefgAjzfkwncuFZOp2K-JXSR50lxWxmSDuf8Ed74RsAW1fVV2QL1qn4LJczSR4I0jzHfOPB_a8fqBit2odwrEv6KCyt32eWKnqVyyCmhUBtC1IcA-2hK-l61vUN3TSwd1YQ0FxeZ9WCvajbHU1fGvEeVU6Ym1pTNYos5Kn-gQ8J9PMfE8QyaR',NULL,'2026-07-21 13:23:55','رفلکس',10),(25,'خاک گربه پتوپیا ۱۰ کیلویی','لوازم بهداشتی',350000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','رویال کنین',10),(26,'قطره مولتی ویتامین سگ و گربه','مکمل دارویی',450000,390000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAUJoM_Cb8R1bvWWSCz2yxdiA9nIKNsl1SEJ9R40MzslKtcd2CpKfpmIAZcO67KF-CzRp08fneiShCpaSD-lFf5yI0cBJgW8EBMMLu9Bb_kdV_XyZcTTLQ7Ll-bxo2aej9wGv4I-Bp2N1YVe7srdsKFyH9MWnVbZwG3Gk6iRCa-pbdIX3EujAQPnUqaL5L1ZxQC-kqtxZSWDfnZYGQhSc9YdnlaczRv_iTpZWScGJ9SopSETZfLui4o',NULL,'2026-07-21 13:23:55','رویال کنین',10),(27,'درخت گربه ۳ طبقه کدیپک','اسباب‌بازی',4200000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','رفلکس',10),(28,'شامپو ضد ریزش موی سگ تریکسی','لوازم بهداشتی',280000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuAUJoM_Cb8R1bvWWSCz2yxdiA9nIKNsl1SEJ9R40MzslKtcd2CpKfpmIAZcO67KF-CzRp08fneiShCpaSD-lFf5yI0cBJgW8EBMMLu9Bb_kdV_XyZcTTLQ7Ll-bxo2aej9wGv4I-Bp2N1YVe7srdsKFyH9MWnVbZwG3Gk6iRCa-pbdIX3EujAQPnUqaL5L1ZxQC-kqtxZSWDfnZYGQhSc9YdnlaczRv_iTpZWScGJ9SopSETZfLui4o',NULL,'2026-07-21 13:23:55','رفلکس',10),(29,'غذای خشک گربه بالغ عقیم شده رویال کنین','غذای گربه',2850000,2600000,'https://lh3.googleusercontent.com/aida-public/AB6AXuAQsPH2nC6QsVlQckvVzjRg1NfOR9A33iDk5dGkHxYPCwfOzHQVvfOUri1XiL-PiTdC_LcmvtQDPQZ_ZCRc9jFp7tIKRUjrKuBvyFNB5GPsRtmrt2P_LXzvwDO-Jx1iYXPnsw7GD-19aI9c5mIKUs8X2fWw5y41cnQAaJbQJZOQvw2wTIIreB1s0kuu6Wz9IjNLk1RjnmqDnEedi-C-7DV1UaxFXCFJG8VK6VOBmFqsr5B_MpUuQw-0',NULL,'2026-07-21 13:23:55','رویال کنین',10),(30,'تشک خواب سگ سایز متوسط','لوازم بهداشتی',950000,NULL,'https://lh3.googleusercontent.com/aida-public/AB6AXuDKtf4eimUY5E8Ts0ArAFpKGX0kSgRYgemNuYLV-0kjBKpzfhS6-kKgvCuKiQnancWtDDWmCEN5RC3MIJfRgG95ZbKtfr2KWlINH4pjcCZYLsis-Fh3vU1f3ZbjJuFIPd-HNjdvWp5TSVrA7qjOtxYWAcPCdDkxZZmjPq0-LdT8TFPis7trtHp1_QTeIXl3o5aGIXE0qRa473pZ6SnNwHpz80pdcljlNsNP8n13ppl_7ZZW4Z46c1bj',NULL,'2026-07-21 13:23:55','رویال کنین',10),(31,'Cat Toy Mouse Updated','Toys',120000,100000,'assets/images/toy-mouse.jpg','Great toy for cats','2026-07-25 01:20:40','Test Brand',12);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -462,7 +526,7 @@ CREATE TABLE `subscription_deliveries` (
   PRIMARY KEY (`id`),
   KEY `subscription_id` (`subscription_id`),
   CONSTRAINT `subscription_deliveries_ibfk_1` FOREIGN KEY (`subscription_id`) REFERENCES `user_subscriptions` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -471,7 +535,7 @@ CREATE TABLE `subscription_deliveries` (
 
 LOCK TABLES `subscription_deliveries` WRITE;
 /*!40000 ALTER TABLE `subscription_deliveries` DISABLE KEYS */;
-INSERT INTO `subscription_deliveries` VALUES (1,2,1,'2026-08-03','delivered'),(2,2,2,'2026-09-02','pending'),(3,2,3,'2026-10-02','pending'),(4,2,4,'2026-11-01','pending'),(5,2,5,'2026-12-01','pending'),(6,2,6,'2026-12-31','pending');
+INSERT INTO `subscription_deliveries` VALUES (1,2,1,'2026-08-03','delivered'),(2,2,2,'2026-09-02','pending'),(3,2,3,'2026-10-02','pending'),(4,2,4,'2026-11-01','pending'),(5,2,5,'2026-12-01','pending'),(6,2,6,'2026-12-31','pending'),(7,3,1,'2026-08-06','pending'),(8,3,2,'2026-09-05','pending'),(9,3,3,'2026-10-05','pending');
 /*!40000 ALTER TABLE `subscription_deliveries` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -552,7 +616,7 @@ CREATE TABLE `ticket_messages` (
   PRIMARY KEY (`id`),
   KEY `ticket_id` (`ticket_id`),
   CONSTRAINT `ticket_messages_ibfk_1` FOREIGN KEY (`ticket_id`) REFERENCES `tickets` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -561,7 +625,7 @@ CREATE TABLE `ticket_messages` (
 
 LOCK TABLES `ticket_messages` WRITE;
 /*!40000 ALTER TABLE `ticket_messages` DISABLE KEYS */;
-INSERT INTO `ticket_messages` VALUES (1,1,'ai','سلام! من لئو هستم، دستیار هوشمند شما. چطور می‌تونم به فرشته کوچولوت کمک کنم؟',NULL,'2026-07-31 12:31:35'),(2,2,'admin','درخواست شما ثبت شد. یکی از کارشناسان ما به زودی پاسخگوی شما خواهد بود.',NULL,'2026-07-31 12:31:51'),(3,1,'user','hi',NULL,'2026-07-31 12:51:15'),(4,1,'ai','خطا در برقراری ارتباط با مغز لئو.',NULL,'2026-07-31 12:51:17'),(5,2,'user','hello',NULL,'2026-07-31 12:51:31'),(6,2,'admin','hi',NULL,'2026-07-31 12:51:45'),(7,2,'admin','what is the problem with your pet',NULL,'2026-07-31 12:52:01'),(8,2,'user','hi',NULL,'2026-07-31 13:04:41');
+INSERT INTO `ticket_messages` VALUES (1,1,'ai','سلام! من لئو هستم، دستیار هوشمند شما. چطور می‌تونم به فرشته کوچولوت کمک کنم؟',NULL,'2026-07-31 12:31:35'),(2,2,'admin','درخواست شما ثبت شد. یکی از کارشناسان ما به زودی پاسخگوی شما خواهد بود.',NULL,'2026-07-31 12:31:51'),(3,1,'user','hi',NULL,'2026-07-31 12:51:15'),(4,1,'ai','خطا در برقراری ارتباط با مغز لئو.',NULL,'2026-07-31 12:51:17'),(5,2,'user','hello',NULL,'2026-07-31 12:51:31'),(6,2,'admin','hi',NULL,'2026-07-31 12:51:45'),(7,2,'admin','what is the problem with your pet',NULL,'2026-07-31 12:52:01'),(8,2,'user','hi',NULL,'2026-07-31 13:04:41'),(9,3,'ai','سلام! من لئو هستم، دستیار هوشمند شما. چطور می‌تونم به فرشته کوچولوت کمک کنم؟',NULL,'2026-08-01 13:16:39'),(10,4,'admin','درخواست شما ثبت شد. یکی از کارشناسان ما به زودی پاسخگوی شما خواهد بود.',NULL,'2026-08-01 17:04:41'),(11,5,'ai','سلام! من لئو هستم، دستیار هوشمند شما. چطور می‌تونم به فرشته کوچولوت کمک کنم؟',NULL,'2026-08-01 18:17:18'),(12,6,'ai','سلام! من لئو هستم، دستیار هوشمند شما. چطور می‌تونم به فرشته کوچولوت کمک کنم؟',NULL,'2026-08-03 08:16:02'),(13,7,'ai','سلام! من لئو هستم، دستیار هوشمند شما. چطور می‌تونم به فرشته کوچولوت کمک کنم؟',NULL,'2026-08-03 08:23:13'),(14,8,'ai','سلام! من لئو هستم، دستیار هوشمند شما. چطور می‌تونم به فرشته کوچولوت کمک کنم؟',NULL,'2026-08-03 08:24:18'),(15,9,'admin','درخواست شما ثبت شد. یکی از کارشناسان ما به زودی پاسخگوی شما خواهد بود.',NULL,'2026-08-03 09:05:41'),(16,10,'ai','سلام! من لئو هستم، دستیار هوشمند شما. چطور می‌تونم به فرشته کوچولوت کمک کنم؟',NULL,'2026-08-03 11:52:33'),(17,11,'ai','سلام! من لئو هستم، دستیار هوشمند شما. چطور می‌تونم به فرشته کوچولوت کمک کنم؟',NULL,'2026-08-03 11:55:12');
 /*!40000 ALTER TABLE `ticket_messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -583,7 +647,7 @@ CREATE TABLE `tickets` (
   KEY `user_id` (`user_id`),
   KEY `idx_tickets_status` (`status`),
   CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -592,7 +656,7 @@ CREATE TABLE `tickets` (
 
 LOCK TABLES `tickets` WRITE;
 /*!40000 ALTER TABLE `tickets` DISABLE KEYS */;
-INSERT INTO `tickets` VALUES (1,2,'ai','open','2026-07-31 12:31:35','2026-07-31 12:31:35'),(2,2,'admin','open','2026-07-31 12:31:51','2026-07-31 12:31:51');
+INSERT INTO `tickets` VALUES (1,2,'ai','closed','2026-07-31 12:31:35','2026-08-01 13:16:03'),(2,2,'admin','closed','2026-07-31 12:31:51','2026-08-01 13:16:03'),(3,2,'ai','closed','2026-08-01 13:16:39','2026-08-03 08:12:56'),(4,2,'admin','closed','2026-08-01 17:04:41','2026-08-03 08:12:56'),(5,9,'ai','closed','2026-08-01 18:17:18','2026-08-03 08:12:56'),(6,7,'ai','open','2026-08-03 08:16:02','2026-08-03 08:16:02'),(7,2,'ai','open','2026-08-03 08:23:13','2026-08-03 08:23:13'),(8,10,'ai','open','2026-08-03 08:24:18','2026-08-03 08:24:18'),(9,2,'admin','open','2026-08-03 09:05:41','2026-08-03 09:05:41'),(10,11,'ai','open','2026-08-03 11:52:33','2026-08-03 11:52:33'),(11,3,'ai','open','2026-08-03 11:55:12','2026-08-03 11:55:12');
 /*!40000 ALTER TABLE `tickets` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -613,7 +677,7 @@ CREATE TABLE `user_pets` (
   `gender` varchar(20) DEFAULT NULL,
   `age` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -622,7 +686,7 @@ CREATE TABLE `user_pets` (
 
 LOCK TABLES `user_pets` WRITE;
 /*!40000 ALTER TABLE `user_pets` DISABLE KEYS */;
-INSERT INTO `user_pets` VALUES (1,2,'joei','سگ','germenshepert','2026-07-23 11:51:15','نر','8'),(3,2,'pisi','گربه','persian','2026-07-23 13:41:51','ماده','2'),(4,5,'Bobby2','سگ','Husky','2026-07-25 01:35:21',NULL,NULL),(5,7,'dogie','سگ','bulldog','2026-07-25 12:32:50',NULL,NULL);
+INSERT INTO `user_pets` VALUES (1,2,'joei','سگ','germenshepert','2026-07-23 11:51:15','نر','8'),(3,2,'pisi','گربه','persian','2026-07-23 13:41:51','ماده','2'),(4,5,'Bobby2','سگ','Husky','2026-07-25 01:35:21',NULL,NULL),(5,7,'dogie','سگ','bulldog','2026-07-25 12:32:50',NULL,NULL),(6,11,'akbar','سگ','','2026-08-03 11:52:49',NULL,NULL);
 /*!40000 ALTER TABLE `user_pets` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -645,7 +709,7 @@ CREATE TABLE `user_subscriptions` (
   KEY `user_id` (`user_id`),
   KEY `idx_user_subs_status` (`status`),
   CONSTRAINT `user_subscriptions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -654,7 +718,7 @@ CREATE TABLE `user_subscriptions` (
 
 LOCK TABLES `user_subscriptions` WRITE;
 /*!40000 ALTER TABLE `user_subscriptions` DISABLE KEYS */;
-INSERT INTO `user_subscriptions` VALUES (2,2,'اشتراک ۶ ماهه',2100000,'active','2026-08-03','2026-07-31 19:08:06');
+INSERT INTO `user_subscriptions` VALUES (2,2,'اشتراک ۶ ماهه',2100000,'active','2026-08-03','2026-07-31 19:08:06'),(3,11,'اشتراک ۳ ماهه',2500000,'active','2026-08-06','2026-08-03 11:53:44');
 /*!40000 ALTER TABLE `user_subscriptions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -690,7 +754,7 @@ CREATE TABLE `users` (
   UNIQUE KEY `phone_2` (`phone`),
   UNIQUE KEY `google_id` (`google_id`),
   UNIQUE KEY `apple_id` (`apple_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -699,7 +763,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'09123456789','مدیر سیستم',NULL,'admin','2026-07-21 13:23:55',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,20,'2026-07-25',NULL,NULL),(2,'096154654','ayhan edited',NULL,'admin','2026-07-21 17:16:18','$2y$10$wQ/UJ0eAxhmzvST6hlmYaOuNu/jWLHjPytzydJbiEit.l3.ZOx1D.',NULL,NULL,'mehrzad.ayhan@gmail.com','','','',38.07195846,46.23498291,200,'2026-07-23',NULL,NULL),(3,'doctor@gmail.com','ali',NULL,'doctor','2026-07-23 19:19:04','$2y$10$cseRCBybswwGyndV1Z4s6OqWMRgp5YK2l54SE2MzJgPYnczSIsLKO',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,70,'2026-07-23',NULL,NULL),(4,'09990999','akbar nami',NULL,'doctor','2026-07-23 19:21:54','$2y$10$GqI3ekTbgb9F8IiomfpCmec32eUnAJaSTwIsfTuJacVzTL7UJGcWu',NULL,NULL,'nami.akbar@gmail.com',NULL,NULL,'',NULL,NULL,0,'2026-07-23',NULL,NULL),(5,'09000000001','test user',NULL,'user','2026-07-25 01:33:28','$2y$10$qIF//jFhW3RAys4qL31UoORnmBRDO8ghsGa.7LgCmdgw8f4t5MOne',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,90,'2026-07-25',NULL,NULL),(6,'09194360331','کاربر تستی OAuth',NULL,'admin','2026-07-25 01:57:34',NULL,NULL,NULL,'',NULL,NULL,'',NULL,NULL,90,'2026-07-25','mock_123456',NULL),(7,'user.user@gmail.com','user.user',NULL,'user','2026-07-25 12:07:59','$2y$10$NRVKFcOVP96F.KVePQwFlec1FgVGLNge/J9FjoSTVYnSzVJmGZM6m',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,120,'2026-07-25',NULL,NULL),(8,'user.admin@gmail.com','user.admin',NULL,'admin','2026-07-25 12:59:15','$2y$10$eOfr0iUrovwG7ALhRvEijeLquk3DZ9RxP64GhHFPDWD8I1zZlqryy',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,70,'2026-07-25',NULL,NULL);
+INSERT INTO `users` VALUES (1,'09123456789','مدیر سیستم',NULL,'admin','2026-07-21 13:23:55',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,20,'2026-07-25',NULL,NULL),(2,'096154654','ayhan',NULL,'admin','2026-07-21 17:16:18','$2y$10$wQ/UJ0eAxhmzvST6hlmYaOuNu/jWLHjPytzydJbiEit.l3.ZOx1D.',NULL,NULL,'mehrzad.ayhan@gmail.com','تبریز','','نارمک, Golgasht, مرز محله, Tabriz, بخش مرکزی شهرستان تبریز, Tabriz County, East Azerbaijan Province, 51639-17697, Iran',38.06273998,46.32526875,220,'2026-08-01',NULL,NULL),(3,'doctor@gmail.com','ali',NULL,'doctor','2026-07-23 19:19:04','$2y$10$cseRCBybswwGyndV1Z4s6OqWMRgp5YK2l54SE2MzJgPYnczSIsLKO',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,90,'2026-08-03',NULL,NULL),(4,'09990999','akbar nami',NULL,'doctor','2026-07-23 19:21:54','$2y$10$GqI3ekTbgb9F8IiomfpCmec32eUnAJaSTwIsfTuJacVzTL7UJGcWu',NULL,NULL,'nami.akbar@gmail.com',NULL,NULL,'',NULL,NULL,0,'2026-07-23',NULL,NULL),(5,'09000000001','test user',NULL,'user','2026-07-25 01:33:28','$2y$10$qIF//jFhW3RAys4qL31UoORnmBRDO8ghsGa.7LgCmdgw8f4t5MOne',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,90,'2026-07-25',NULL,NULL),(6,'09194360331','کاربر تستی OAuth',NULL,'admin','2026-07-25 01:57:34',NULL,NULL,NULL,'',NULL,NULL,'',NULL,NULL,90,'2026-07-25','mock_123456',NULL),(7,'user.user@gmail.com','user.user',NULL,'user','2026-07-25 12:07:59','$2y$10$NRVKFcOVP96F.KVePQwFlec1FgVGLNge/J9FjoSTVYnSzVJmGZM6m',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,140,'2026-08-03',NULL,NULL),(8,'user.admin@gmail.com','user.admin',NULL,'admin','2026-07-25 12:59:15','$2y$10$eOfr0iUrovwG7ALhRvEijeLquk3DZ9RxP64GhHFPDWD8I1zZlqryy',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,70,'2026-07-25',NULL,NULL),(9,'cataloguser','Catalog User',NULL,'user','2026-08-01 18:17:17','$2y$10$A1x/tZQKwG29pTij62yKhermzbVR0XpvsuZ.Zjm5bWHbd3PcfEFKC',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,70,'2026-08-01',NULL,NULL),(10,'user.doctor','doctor',NULL,'doctor','2026-08-03 08:24:18','$2y$10$jCdzvKTkiHuJXJV83GTmHeJ8liRGqV4GeMWEqGBBEuvigoKHCkQGq',NULL,NULL,'',NULL,NULL,'',NULL,NULL,70,'2026-08-03',NULL,NULL),(11,'user.more','user1',NULL,'user','2026-08-03 11:52:32','$2y$10$k5PC7Jh7bgb/C99hRg5eHOD1kRAfqFctGHiJaSoLzF/UOrM2u/.ae',NULL,NULL,NULL,'تبریز','1234567890','پردیس ۲, Baghmisheh, Tabriz, بخش مرکزی شهرستان تبریز, Tabriz County, East Azerbaijan Province, 51584-46719, Iran',38.06741958,46.38874054,170,'2026-08-03',NULL,NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -742,4 +806,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-31 22:31:01
+-- Dump completed on 2026-08-03 15:35:46
