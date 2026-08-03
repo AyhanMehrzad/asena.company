@@ -35,11 +35,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>PetCare Iran</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;display=swap" rel="stylesheet">
+    <link href="assets/css/material-symbols.css" rel="stylesheet">
+    <link href="assets/css/geist.css" rel="stylesheet">
     
     <!-- Custom & Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="assets/js/tailwindcss-cdn.js"></script>
     <script src="assets/js/tailwind-config.js?v=<?php echo time(); ?>"></script>
     <link rel="stylesheet" href="assets/css/style.css?v=<?php echo time(); ?>">
 </head>

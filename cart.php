@@ -39,10 +39,11 @@ $final_price = $total_price - $total_discount;
     </div>
 
     <?php if(isset($_SESSION['profile_error'])): ?>
-        <div class="bg-error/10 text-error p-4 rounded-xl mb-8 font-bold text-sm border border-error/20 flex items-center gap-2">
-            <span class="material-symbols-outlined">error</span>
+        <a href="profile_settings.php" class="block bg-error/10 text-error p-4 rounded-xl mb-8 font-bold text-sm border border-error/20 flex items-center gap-2 hover:bg-error/20 transition-colors cursor-pointer group">
+            <span class="material-symbols-outlined group-hover:scale-110 transition-transform">error</span>
             <?php echo $_SESSION['profile_error']; unset($_SESSION['profile_error']); ?>
-        </div>
+            <span class="material-symbols-outlined mr-auto">chevron_left</span>
+        </a>
     <?php endif; ?>
     <?php if(isset($_SESSION['profile_success'])): ?>
         <div class="bg-status-active/10 text-status-active p-4 rounded-xl mb-8 font-bold text-sm border border-status-active/20 flex items-center gap-2">

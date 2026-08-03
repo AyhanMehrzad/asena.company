@@ -2,7 +2,7 @@
 require_once '../includes/db.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
 
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'redeem') {
         if (!$user || $user['loyalty_points'] < $cost) {
             $_SESSION['reward_error'] = "امتیاز شما برای دریافت این کد تخفیف کافی نیست.";
             $pdo->rollBack();
-            header("Location: rewards.php");
+            header("Location: ../rewards.php");
             exit;
         }
 
@@ -62,10 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'redeem') {
         $_SESSION['reward_error'] = "خطا در پردازش درخواست. لطفا دوباره تلاش کنید.";
     }
 
-    header("Location: rewards.php");
+    header("Location: ../rewards.php");
     exit;
 } else {
-    header("Location: rewards.php");
+    header("Location: ../rewards.php");
     exit;
 }
 ?>

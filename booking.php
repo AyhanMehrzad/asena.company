@@ -110,28 +110,29 @@ $booked_slots_json = json_encode($booked_slots);
         <input type="hidden" name="appointment_time" id="input_time" value="">
 
         <!-- Left Side: Main Selection -->
-        <div class="flex-grow space-y-10">
+        <div class="flex-grow space-y-10 min-w-0">
             <!-- Doctor Selection Section -->
             <section>
                 <div class="flex justify-between items-end mb-6">
                     <h2 class="text-2xl font-black text-slate-800 flex items-center gap-2">
                         <span class="material-symbols-outlined text-indigo-500">stethoscope</span>
-                        ۱. انتخاب پزشک معالج
+                        ۱. انتخاب پزشک
                     </h2>
                 </div>
-                <div class="flex overflow-x-auto gap-4 pb-4 custom-scrollbar snap-x" id="doctors-list">
+                <!-- Doctors Grid (Y-axis movement) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar" id="doctors-list">
                     
                     <?php foreach($doctors as $index => $doctor): ?>
-                    <div class="doctor-card min-w-[280px] bg-white border border-slate-200 rounded-2xl p-4 snap-start hover:shadow-xl hover:border-indigo-200 transition-all duration-300 group cursor-pointer hover:-translate-y-2 relative overflow-hidden"
+                    <div class="doctor-card w-full bg-white border border-slate-200 rounded-2xl p-4 hover:shadow-xl hover:border-indigo-200 transition-all duration-300 group cursor-pointer hover:-translate-y-1 relative overflow-hidden"
                          data-id="<?php echo $doctor['id']; ?>"
                          data-name="<?php echo htmlspecialchars($doctor['name']); ?>"
-                         data-image="<?php echo htmlspecialchars($doctor['image_url'] ?: 'https://via.placeholder.com/300x200?text=' . urlencode($doctor['name'])); ?>"
+                         data-image="<?php echo htmlspecialchars($doctor['image_url'] ?: 'assets/images/presentation-dog.jpg'); ?>"
                          data-price="<?php echo $doctor['price']; ?>"
                          data-schedule="<?php echo htmlspecialchars($doctor['schedule_info'] ?? '{}'); ?>"
                          onclick="selectDoctor(this)">
                         
                         <div class="relative mb-4 overflow-hidden rounded-xl">
-                            <img class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500" src="<?php echo htmlspecialchars($doctor['image_url'] ?: 'https://via.placeholder.com/300x200?text=' . urlencode($doctor['name'])); ?>" alt="<?php echo htmlspecialchars($doctor['name']); ?>"/>
+                            <img class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500" src="<?php echo htmlspecialchars($doctor['image_url'] ?: 'assets/images/presentation-dog.jpg'); ?>" alt="<?php echo htmlspecialchars($doctor['name']); ?>"/>
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             <?php if($index === 0): ?>
                             <div class="absolute top-2 right-2 bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg shadow-emerald-500/30">
@@ -158,7 +159,10 @@ $booked_slots_json = json_encode($booked_slots);
             
             <!-- Scheduling Interface -->
             <section class="space-y-6">
-                <h2 class="text-title-lg font-title-lg text-primary">انتخاب تاریخ و زمان</h2>
+                <h2 class="text-title-lg font-title-lg text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined text-indigo-500">calendar_month</span>
+                    ۲. انتخاب تاریخ و زمان
+                </h2>
                 
                 <!-- Date Picker -->
                 <div class="flex gap-3 overflow-x-auto pb-2 custom-scrollbar" id="dates-list">
@@ -230,7 +234,7 @@ $booked_slots_json = json_encode($booked_slots);
                 <div class="space-y-6">
                     <!-- Selected Doctor Summary -->
                     <div id="summary-doctor" class="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl opacity-50 transition-all duration-300 group">
-                        <img id="summary-doctor-img" class="w-16 h-16 rounded-full object-cover border-4 border-white shadow-md transition-transform group-hover:scale-110" src="https://via.placeholder.com/150?text=?"/>
+                        <img id="summary-doctor-img" class="w-16 h-16 rounded-full object-cover border-4 border-white shadow-md transition-transform group-hover:scale-110" src="assets/images/presentation-dog.jpg"/>
                         <div>
                             <p class="text-xs font-bold text-slate-400 mb-1">پزشک انتخابی</p>
                             <h4 id="summary-doctor-name" class="text-lg font-bold text-slate-800">پزشک را انتخاب کنید</h4>
@@ -399,6 +403,7 @@ $booked_slots_json = json_encode($booked_slots);
         
         selectedDate = card.dataset.date;
         document.getElementById('input_date').value = selectedDate;
+        document.getElementById('input_date').dispatchEvent(new Event('change'));
         
         document.getElementById('summary-date').textContent = card.dataset.display;
         document.getElementById('summary-date').classList.remove('text-on-surface-variant');
@@ -461,7 +466,7 @@ $booked_slots_json = json_encode($booked_slots);
                              </button>`;
                 } else {
                     html += `<button type="button" class="time-btn py-3 px-4 rounded-lg bg-white border border-outline-variant text-body-md font-body-md hover:border-primary transition-colors text-center flex items-center justify-center"
-                                onclick="selectTime(this, '${time}', '${label}')">${time}</button>`;
+                                data-time="${time}" onclick="selectTime(this, '${time}', '${label}')">${time}</button>`;
                 }
             });
             

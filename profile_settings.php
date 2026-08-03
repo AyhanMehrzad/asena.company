@@ -250,8 +250,8 @@ require_once 'includes/header.php';
 </div>
 <!-- Postal Code -->
 <div class="space-y-2">
-<label class="block text-label-lg font-label-lg text-on-surface-variant">کد پستی</label>
-<input name="postal_code" class="w-full h-12 bg-surface-container-low border border-outline-variant rounded-lg px-4 font-body-md focus:ring-2 focus:ring-primary-container outline-none transition-all" placeholder="مثلاً: ۱۴۱۵۹۶۳۴۸۷" type="text" value="<?php echo htmlspecialchars($user['postal_code'] ?? ''); ?>"/>
+<label class="block text-label-lg font-label-lg text-on-surface-variant">کد پستی <span class="text-error">*</span></label>
+<input name="postal_code" required class="w-full h-12 bg-surface-container-low border border-outline-variant rounded-lg px-4 font-body-md focus:ring-2 focus:ring-primary-container outline-none transition-all" placeholder="مثلاً: ۱۴۱۵۹۶۳۴۸۷" type="text" value="<?php echo htmlspecialchars($user['postal_code'] ?? ''); ?>"/>
 </div>
 </div>
 <!-- Address Input (Full Width) -->

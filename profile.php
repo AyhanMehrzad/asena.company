@@ -205,10 +205,11 @@ $fmtDateText = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter
     </div>
 <?php endif; ?>
 <?php if ($error): ?>
-    <div class="bg-error/10 text-error p-4 rounded-xl flex items-center gap-3 border border-error/20">
-        <span class="material-symbols-outlined">error</span>
-        <span class="font-bold text-sm"><?php echo htmlspecialchars($error); ?></span>
-    </div>
+    <a href="profile_settings.php" class="block bg-error/10 text-error p-4 rounded-xl flex items-center gap-3 border border-error/20 hover:bg-error/20 transition-colors cursor-pointer group">
+        <span class="material-symbols-outlined group-hover:scale-110 transition-transform">error</span>
+        <span class="font-bold text-sm flex-1"><?php echo htmlspecialchars($error); ?></span>
+        <span class="material-symbols-outlined">chevron_left</span>
+    </a>
 <?php endif; ?>
 <!-- Profile Overview Card (Intelligent Dashboard style) -->
 <section class="glass-card rounded-2xl p-8 border border-outline-variant shadow-lg flex flex-col lg:flex-row justify-between items-center gap-8 relative overflow-hidden">

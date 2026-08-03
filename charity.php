@@ -29,7 +29,7 @@ $recentDonations = $stmt->fetchAll();
 ?>
 
 <!-- Swiper CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+<link rel="stylesheet" href="assets/css/swiper-bundle.min.css" />
 
 <main class="w-full max-w-[1400px] mx-auto px-4 lg:px-8 space-y-16 pb-24 mt-8">
     
@@ -217,8 +217,8 @@ $recentDonations = $stmt->fetchAll();
 </main>
 
 <!-- Swiper JS -->
-<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"></script>
-<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+<script src="assets/css/swiper-bundle.min.css"></script>
+<script src="assets/js/swiper-bundle.min.js"></script>
 
 <script>
     const swiper = new Swiper('.charitySwiper', {

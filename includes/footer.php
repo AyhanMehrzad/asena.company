@@ -38,10 +38,27 @@
                     <nav class="flex flex-col gap-3">
                         <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors" href="#">سوالات متداول</a>
                     </nav>
-                </div>
             </div>
         </div>
     </footer>
+
+    <!-- Copyright Under Everything -->
+    <div class="w-full flex justify-center pb-8 pt-4 mt-4" dir="ltr">
+        <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-sm text-on-surface-variant/80">
+            <div class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[1.1rem]">copyright</span>
+                <span><?php echo date('Y'); ?> PetCare Iran. All rights reserved.</span>
+            </div>
+            <div class="hidden sm:block w-1.5 h-1.5 rounded-full bg-outline-variant/50"></div>
+            <div class="flex items-center gap-2">
+                <span>All copyrights belong to</span>
+                <a href="https://ayhanmehrzad.pro/" target="_blank" class="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-300 shadow-sm hover:shadow-md font-medium text-xs tracking-wide">
+                    ayhanmehrzad.pro
+                    <span class="material-symbols-outlined text-[14px] transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5">north_east</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
     <!-- Autoship Web Worker Trigger (Poor Man's Cron) -->
     <script>

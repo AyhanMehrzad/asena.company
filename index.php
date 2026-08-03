@@ -67,7 +67,7 @@ $top_donors = $donor_stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 </div>
                 <div id="hero-bg" class="absolute inset-0 md:left-0 md:top-0 h-full w-full md:w-1/2 opacity-20 md:opacity-100 bg-cover bg-center mask-fade-l md:mr-auto transition-all duration-700"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC7JDe1BNtLZjDeCHhWzxtfKBCiOZOPFtW6_O86c3KFbcxHMmzpzcl9OKEhq_upgdqXesxKl62ccKIhyD95R8red5P9zdTN6Hc-t6JqKIIoNv6zO0I7XeA1GsvBKSAylDVNvj7QYnYBBOEnJ4Yc3X7VAO1iscvaFOm0QSJY5b3AUyRYLStsffV1Vema9m0Rvwq-PSaZQ6YUs3zdvo86p4LRzaB9ZrncOkuur75P3VtGOL-nGYspCz3WnYuhUyEQHI7KKqls2avYE-k");'>
+                    style='background-image: url("assets/images/cat-hero.jpg");'>
                 </div>
             </div>
             <!-- Redesigned Slider Controls -->
@@ -903,7 +903,7 @@ const slides = [
         badgeText: "سیستم تحویل خودکار (Autoship)",
         link: "subscriptions.php",
         linkText: "شروع تجربه اشتراک",
-        img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC7JDe1BNtLZjDeCHhWzxtfKBCiOZOPFtW6_O86c3KFbcxHMmzpzcl9OKEhq_upgdqXesxKl62ccKIhyD95R8red5P9zdTN6Hc-t6JqKIIoNv6zO0I7XeA1GsvBKSAylDVNvj7QYnYBBOEnJ4Yc3X7VAO1iscvaFOm0QSJY5b3AUyRYLStsffV1Vema9m0Rvwq-PSaZQ6YUs3zdvo86p4LRzaB9ZrncOkuur75P3VtGOL-nGYspCz3WnYuhUyEQHI7KKqls2avYE-k"
+        img: "assets/images/cat-hero.jpg"
     },
     {
         title: "برترین محصولات<br />برای سلامت پت",
@@ -912,7 +912,7 @@ const slides = [
         badgeText: "ارسال رایگان سفارشات بالای ۵۰۰ هزار تومان",
         link: "shop.php",
         linkText: "مشاهده فروشگاه",
-        img: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=1000&auto=format&fit=crop"
+        img: "assets/images/toy-mouse.jpg"
     },
     {
         title: "کلینیک تخصصی<br />در دستان شما",
@@ -921,7 +921,7 @@ const slides = [
         badgeText: "پشتیبانی درمانی حرفه‌ای",
         link: "booking.php",
         linkText: "رزرو نوبت کلینیک",
-        img: "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?q=80&w=1000&auto=format&fit=crop"
+        img: "assets/images/presentation-dog.jpg"
     }
 ];
 
@@ -983,8 +983,8 @@ function resetInterval() {
     slideInterval = setInterval(nextSlide, 6000);
 }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+<script src="assets/js/swiper-bundle.min.js"></script>
+<link rel="stylesheet" href="assets/css/swiper-bundle.min.css" />
 <script>
     if (document.querySelector('.charity-index-slider')) {
         new Swiper('.charity-index-slider', {

@@ -21,11 +21,10 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>پنل مدیریت پت‌کر ایران - PetCare Iran Admin</title>
-    <link rel="stylesheet" href="/petshop/assets/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist.css" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="../assets/css/material-symbols.css" rel="stylesheet"/>
+    <link href="../assets/css/geist.css" rel="stylesheet"/>
+    <script src="../assets/js/tailwindcss-cdn.js"></script>
     <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",

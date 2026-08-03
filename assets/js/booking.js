@@ -93,29 +93,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Doctor list drag-to-scroll
-    const doctorList = document.querySelector('.snap-x');
-    if (doctorList) {
+    // Dates list drag-to-scroll
+    const sliderList = document.querySelector('#dates-list');
+    if (sliderList) {
         let isDown = false, startX, scrollLeft;
-        doctorList.addEventListener('mousedown', e => {
+        sliderList.addEventListener('mousedown', e => {
             isDown     = true;
-            startX     = e.pageX - doctorList.offsetLeft;
-            scrollLeft = doctorList.scrollLeft;
+            startX     = e.pageX - sliderList.offsetLeft;
+            scrollLeft = sliderList.scrollLeft;
         });
-        doctorList.addEventListener('mouseleave', () => { isDown = false; });
-        doctorList.addEventListener('mouseup',    () => { isDown = false; });
-        doctorList.addEventListener('mousemove', e => {
+        sliderList.addEventListener('mouseleave', () => { isDown = false; });
+        sliderList.addEventListener('mouseup',    () => { isDown = false; });
+        sliderList.addEventListener('mousemove', e => {
             if (!isDown) return;
             e.preventDefault();
-            doctorList.scrollLeft = scrollLeft - (e.pageX - doctorList.offsetLeft - startX) * 2;
+            sliderList.scrollLeft = scrollLeft - (e.pageX - sliderList.offsetLeft - startX) * 2;
         });
     }
 
     // ── Hook into booking page doctor/date selection ───────────────────────────
     // Start polling when doctor card is selected
-    document.querySelectorAll('[data-doctor-id]').forEach(card => {
+    document.querySelectorAll('[data-id]').forEach(card => {
         card.addEventListener('click', () => {
-            const docId = card.getAttribute('data-doctor-id');
+            const docId = card.getAttribute('data-id');
             const dateInput = document.getElementById('appointment_date_input')
                            || document.querySelector('input[name="appointment_date"]');
             if (docId && dateInput && dateInput.value) {

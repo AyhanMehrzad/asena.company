@@ -4,7 +4,7 @@ require_once '../includes/functions.php';
 
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['redirect_after_login'] = 'booking.php';
-    header('Location: login.php');
+    header('Location: ../login.php');
     exit;
 }
 
