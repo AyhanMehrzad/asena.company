@@ -1,6 +1,7 @@
 <?php
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
+require_once 'includes/SmsService.php';
 
 $error = '';
 $success = '';
@@ -12,37 +13,63 @@ if (empty($phone)) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $otp = trim($_POST['otp'] ?? '');
-    $password = $_POST['password'] ?? '';
+    if (isset($_POST['action']) && $_POST['action'] === 'resend') {
+        $rate_error = check_rate_limit($pdo, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', $phone);
+        if ($rate_error) {
+            $error = $rate_error;
+        } else {
+            $stmt = $pdo->prepare("SELECT id FROM users WHERE phone = ?");
+            $stmt->execute([$phone]);
+            if ($stmt->rowCount() > 0) {
+                $otp = sprintf("%06d", mt_rand(1, 999999));
+                $stmt = $pdo->prepare("UPDATE users SET sms_code = ? WHERE phone = ?");
+                if ($stmt->execute([$otp, $phone])) {
+                    $sms = new SmsService();
+                    $sms->sendOtp($phone, $otp);
+                    $success = 'کد تأیید جدید پیامک شد.';
+                } else {
+                    $error = 'خطا در سیستم. لطفاً دوباره تلاش کنید.';
+                }
+            } else {
+                $error = 'کاربری یافت نشد.';
+            }
+        }
+    } else {
+        $otp = trim($_POST['otp'] ?? '');
+        $password = $_POST['password'] ?? '';
     
     if (empty($otp) || empty($password)) {
         $error = 'لطفاً تمامی فیلدها را پر کنید.';
     } else {
-        check_rate_limit($pdo, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', $phone);
-        
-        $stmt = $pdo->prepare("SELECT id, sms_code FROM users WHERE phone = ?");
-        $stmt->execute([$phone]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if (!$user) {
-            $error = 'کاربری با این مشخصات یافت نشد.';
-        } elseif (empty($user['sms_code']) || $user['sms_code'] !== $otp) {
-            $error = 'کد تأیید وارد شده نامعتبر است.';
+        $rate_error = check_rate_limit($pdo, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', $phone);
+        if ($rate_error) {
+            $error = $rate_error;
         } else {
-            // Success! Reset password
-            $hash = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("UPDATE users SET password = ?, sms_code = NULL WHERE id = ?");
-            if ($stmt->execute([$hash, $user['id']])) {
-                // Optional: Automatically log them in
-                // $_SESSION['user_id'] = $user['id'];
-                
-                // For now, redirect to login with success message in session or query string
-                $_SESSION['login_success'] = 'رمز عبور شما با موفقیت تغییر کرد. لطفاً وارد شوید.';
-                header("Location: login.php?reset=success");
-                exit;
+            $stmt = $pdo->prepare("SELECT id, sms_code FROM users WHERE phone = ?");
+            $stmt->execute([$phone]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$user) {
+                $error = 'کاربری با این مشخصات یافت نشد.';
+            } elseif (empty($user['sms_code']) || $user['sms_code'] !== $otp) {
+                $error = 'کد تأیید وارد شده نامعتبر است.';
             } else {
-                $error = 'خطا در تغییر رمز عبور. لطفاً دوباره تلاش کنید.';
+                // Success! Reset password
+                $hash = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $pdo->prepare("UPDATE users SET password = ?, sms_code = NULL WHERE id = ?");
+                if ($stmt->execute([$hash, $user['id']])) {
+                    // Optional: Automatically log them in
+                    // $_SESSION['user_id'] = $user['id'];
+                    
+                    // For now, redirect to login with success message in session or query string
+                    $_SESSION['login_success'] = 'رمز عبور شما با موفقیت تغییر کرد. لطفاً وارد شوید.';
+                    header("Location: login.php?reset=success");
+                    exit;
+                } else {
+                    $error = 'خطا در تغییر رمز عبور. لطفاً دوباره تلاش کنید.';
+                }
             }
+        }
         }
     }
 }
@@ -112,6 +139,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
 
+        <?php if($success): ?>
+            <div class="flex items-start gap-3 bg-emerald-50/80 border border-emerald-200 text-emerald-800 p-4 rounded-2xl shadow-sm mb-6 backdrop-blur-sm transition-all">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center mt-0.5">
+                    <span class="material-symbols-outlined text-emerald-600 text-[18px]">check_circle</span>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-bold text-sm text-emerald-900">موفقیت</h4>
+                    <p class="text-xs opacity-90 mt-1 leading-relaxed"><?php echo htmlspecialchars($success); ?></p>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <?php if($error): ?>
             <div class="flex items-start gap-3 bg-red-50/80 border border-red-200 text-red-800 p-4 rounded-2xl shadow-sm mb-6 backdrop-blur-sm transition-all">
                 <div class="flex-shrink-0 w-8 h-8 rounded-full bg-red-100 flex items-center justify-center mt-0.5">
@@ -150,12 +189,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 تغییر رمز عبور
             </button>
             
+            <div class="text-center mt-4">
+                <button type="button" id="resend-btn" onclick="document.getElementById('resend-form').submit();" class="text-sm font-bold text-secondary hover:underline disabled:opacity-50 disabled:no-underline" disabled>
+                    ارسال مجدد کد (<span id="countdown">120</span> ثانیه)
+                </button>
+            </div>
+            
             <div class="text-center mt-6">
                 <a class="font-bold text-sm text-secondary hover:underline" href="login.php">بازگشت به صفحه ورود</a>
             </div>
         </form>
+
+        <form id="resend-form" method="POST" action="reset_password.php" class="hidden">
+            <?php echo csrf_field(); ?>
+            <input type="hidden" name="phone" value="<?php echo htmlspecialchars($phone); ?>" />
+            <input type="hidden" name="action" value="resend" />
+        </form>
     </div>
 </section>
 </main>
+<script>
+    let timeLeft = 120;
+    const countdownEl = document.getElementById('countdown');
+    const resendBtn = document.getElementById('resend-btn');
+
+    if (countdownEl && resendBtn) {
+        const timer = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                resendBtn.disabled = false;
+                resendBtn.innerHTML = 'ارسال مجدد کد';
+            } else {
+                countdownEl.innerText = timeLeft;
+            }
+        }, 1000);
+    }
+</script>
 </body>
 </html>

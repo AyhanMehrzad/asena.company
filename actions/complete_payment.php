@@ -133,6 +133,21 @@ try {
             ->execute([$pending['booking_id']]);
         $pdo->prepare("UPDATE users SET loyalty_points = loyalty_points + 20 WHERE id = ?")
             ->execute([$user_id]);
+            
+        // Send SMS Booking Confirmation
+        require_once '../includes/SmsService.php';
+        $u_stmt = $pdo->prepare("SELECT phone FROM users WHERE id = ?");
+        $u_stmt->execute([$user_id]);
+        $u = $u_stmt->fetch(PDO::FETCH_ASSOC);
+        if ($u && !empty($u['phone'])) {
+            $a_stmt = $pdo->prepare("SELECT appointment_date, appointment_time FROM appointments WHERE id = ?");
+            $a_stmt->execute([$pending['booking_id']]);
+            $appt = $a_stmt->fetch(PDO::FETCH_ASSOC);
+            if ($appt) {
+                $sms = new SmsService();
+                $sms->sendBookingConfirmation($u['phone'], $appt['appointment_date'], $appt['appointment_time']);
+            }
+        }
     } else {
         $pdo->prepare("UPDATE users SET loyalty_points = loyalty_points + 50 WHERE id = ?")
             ->execute([$user_id]);

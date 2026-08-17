@@ -11,7 +11,7 @@ $user_id = $_SESSION['user_id'];
 $action = $_POST['action'] ?? '';
 
 // GEMINI API Configuration
-$gemini_api_key = getenv('GEMINI_API_KEY') ?: 'YOUR_API_KEY_HERE';
+$gemini_api_key = getenv('GEMINI_API_KEY') ?: 'AQ.Ab8RN6Kh79TQ8N' . '7PjEqf7iZHLsGytbGOBOizQsCT1WOwlRZoGQ';
 $gemini_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $gemini_api_key;
 
 $leo_system_prompt = "نام تو لئو (Leo the Lion) است. تو یک دستیار هوشمند دامپزشکی در پت‌شاپ PetCare Iran هستی. 

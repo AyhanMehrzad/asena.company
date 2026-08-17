@@ -20,6 +20,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare("UPDATE subscription_deliveries SET status = 'shipped' WHERE id = ? AND subscription_id = ?");
             $stmt->execute([$delivery_id, $subscription_id]);
             $success = "وضعیت مرسوله به «در مسیر ارسال» تغییر یافت.";
+            
+            // Send SMS to user
+            require_once '../includes/SmsService.php';
+            $u_stmt = $pdo->prepare("SELECT u.phone FROM users u JOIN user_subscriptions s ON u.id = s.user_id WHERE s.id = ?");
+            $u_stmt->execute([$subscription_id]);
+            $u = $u_stmt->fetch(PDO::FETCH_ASSOC);
+            if ($u && !empty($u['phone'])) {
+                $sms = new SmsService();
+                $sms->sendSubscriptionSent($u['phone']);
+            }
         }
         
         if ($action === 'cancel_subscription') {

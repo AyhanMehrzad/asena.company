@@ -47,6 +47,18 @@ if ($verify['success']) {
         $stmt->execute([$donation['amount'], $donation['campaign_id']]);
     }
     
+    // Send SMS Thank You
+    if (!empty($donation['user_id'])) {
+        require_once '../includes/SmsService.php';
+        $user_stmt = $pdo->prepare("SELECT phone FROM users WHERE id = ?");
+        $user_stmt->execute([$donation['user_id']]);
+        $donor = $user_stmt->fetch(PDO::FETCH_ASSOC);
+        if ($donor && !empty($donor['phone'])) {
+            $sms = new SmsService();
+            $sms->sendCharityThankYou($donor['phone'], $donation['amount']);
+        }
+    }
+    
     $_SESSION['charity_success'] = "پرداخت با موفقیت انجام شد. از حمایت شما سپاسگزاریم! کد رهگیری: " . $ref_id;
     unset($_SESSION['pending_donation']);
     header('Location: ../charity.php');

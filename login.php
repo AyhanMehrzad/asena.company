@@ -1,6 +1,23 @@
 <?php
 require_once 'includes/db.php';
+require_once 'includes/config.php';
 
+// Generate OAuth URLs
+$google_oauth_url = "https://accounts.google.com/o/oauth2/v2/auth?" . http_build_query([
+    'response_type' => 'code',
+    'client_id' => GOOGLE_CLIENT_ID,
+    'redirect_uri' => GOOGLE_REDIRECT_URI,
+    'scope' => 'email profile',
+    'access_type' => 'online'
+]);
+
+$apple_oauth_url = "https://appleid.apple.com/auth/authorize?" . http_build_query([
+    'response_type' => 'code id_token',
+    'client_id' => APPLE_CLIENT_ID,
+    'redirect_uri' => APPLE_REDIRECT_URI,
+    'scope' => 'name email',
+    'response_mode' => 'form_post'
+]);
 $error = '';
 $success = '';
 
@@ -13,50 +30,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'لطفاً تمامی فیلدها را پر کنید.';
     } else {
         require_once 'includes/functions.php';
-        check_rate_limit($pdo, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', $phone);
-        
-        if ($mode === 'signup') {
-            $name = trim($_POST['name'] ?? '');
-            
-            // Check if user already exists
-            $stmt = $pdo->prepare("SELECT id FROM users WHERE phone = ?");
-            $stmt->execute([$phone]);
-            if ($stmt->rowCount() > 0) {
-                $error = 'این شماره موبایل/ایمیل قبلاً ثبت شده است.';
-            } else {
-                $hash = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare("INSERT INTO users (phone, name, password, loyalty_points) VALUES (?, ?, ?, 50)");
-                if ($stmt->execute([$phone, $name, $hash])) {
-                    $user_id = $pdo->lastInsertId();
+        $rate_error = check_rate_limit($pdo, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', $phone);
+        if ($rate_error) {
+            $error = $rate_error;
+        } else {
+            if ($mode === 'signup') {
+                $name = trim($_POST['name'] ?? '');
+                
+                // Check if user already exists
+                $stmt = $pdo->prepare("SELECT id FROM users WHERE phone = ?");
+                $stmt->execute([$phone]);
+                if ($stmt->rowCount() > 0) {
+                    $error = 'این شماره موبایل/ایمیل قبلاً ثبت شده است.';
+                } else {
+                    $hash = password_hash($password, PASSWORD_DEFAULT);
+                    $stmt = $pdo->prepare("INSERT INTO users (phone, name, password, loyalty_points) VALUES (?, ?, ?, 50)");
+                    if ($stmt->execute([$phone, $name, $hash])) {
+                        $user_id = $pdo->lastInsertId();
+                        session_regenerate_id(true);
+                        $_SESSION['user_id'] = $user_id;
+                        $_SESSION['user_role'] = 'user';
+                        
+                        // Clear login attempts for this IP/user after success
+                        $pdo->prepare("DELETE FROM login_attempts WHERE ip_address = ?")->execute([$_SERVER['REMOTE_ADDR'] ?? '127.0.0.1']);
+                        
+                        header("Location: index.php");
+                        exit;
+                    }
+                }
+            } elseif ($mode === 'login') {
+                $stmt = $pdo->prepare("SELECT id, role, password FROM users WHERE phone = ?");
+                $stmt->execute([$phone]);
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                // For admin seeded user which didn't have password, we can bypass or wait for them to re-register
+                if ($user && !empty($user['password']) && password_verify($password, $user['password'])) {
                     session_regenerate_id(true);
-                    $_SESSION['user_id'] = $user_id;
-                    $_SESSION['user_role'] = 'user';
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['user_role'] = $user['role'];
                     
                     // Clear login attempts for this IP/user after success
                     $pdo->prepare("DELETE FROM login_attempts WHERE ip_address = ?")->execute([$_SERVER['REMOTE_ADDR'] ?? '127.0.0.1']);
                     
                     header("Location: index.php");
                     exit;
+                } else {
+                    $error = 'اطلاعات ورود اشتباه است.';
                 }
-            }
-        } elseif ($mode === 'login') {
-            $stmt = $pdo->prepare("SELECT id, role, password FROM users WHERE phone = ?");
-            $stmt->execute([$phone]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            // For admin seeded user which didn't have password, we can bypass or wait for them to re-register
-            if ($user && !empty($user['password']) && password_verify($password, $user['password'])) {
-                session_regenerate_id(true);
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_role'] = $user['role'];
-                
-                // Clear login attempts for this IP/user after success
-                $pdo->prepare("DELETE FROM login_attempts WHERE ip_address = ?")->execute([$_SERVER['REMOTE_ADDR'] ?? '127.0.0.1']);
-                
-                header("Location: index.php");
-                exit;
-            } else {
-                $error = 'اطلاعات ورود اشتباه است.';
             }
         }
     }
@@ -160,10 +180,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <input type="hidden" name="mode" id="form-mode" value="<?php echo htmlspecialchars($_POST['mode'] ?? 'login'); ?>" />
 
 <div class="input-group">
-<label class="block font-bold text-sm text-on-surface-variant mb-2 transition-colors">ایمیل یا شماره موبایل</label>
+<label class="block font-bold text-sm text-on-surface-variant mb-2 transition-colors">شماره موبایل</label>
 <div class="relative">
-<input name="phone" value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>" class="w-full h-12 pr-4 pl-12 rounded-lg border border-outline-variant focus:border-primary-container focus:ring-1 focus:ring-primary-container bg-surface-container-lowest transition-all text-sm text-left dir-ltr" placeholder="example@mail.com" type="text" required/>
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant">mail</span>
+<input name="phone" value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>" class="w-full h-12 pr-4 pl-12 rounded-lg border border-outline-variant focus:border-primary-container focus:ring-1 focus:ring-primary-container bg-surface-container-lowest transition-all text-sm text-left dir-ltr" placeholder="0912..." type="text" required/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant">smartphone</span>
 </div>
 </div>
 
@@ -205,7 +225,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!-- Social Logins -->
 <div class="grid grid-cols-2 gap-4">
-<a href="actions/oauth_callback.php?provider=google" class="flex items-center justify-center gap-3 h-12 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-all font-bold text-sm text-on-surface cursor-pointer">
+<a href="<?php echo htmlspecialchars($google_oauth_url); ?>" class="flex items-center justify-center gap-3 h-12 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-all font-bold text-sm text-on-surface cursor-pointer">
 <svg class="w-5 h-5" viewbox="0 0 24 24">
 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
@@ -214,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </svg>
                         گوگل
                     </a>
-<a href="actions/oauth_callback.php?provider=apple" class="flex items-center justify-center gap-3 h-12 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-all font-bold text-sm text-on-surface cursor-pointer">
+<a href="<?php echo htmlspecialchars($apple_oauth_url); ?>" class="flex items-center justify-center gap-3 h-12 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-all font-bold text-sm text-on-surface cursor-pointer">
 <svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24">
 <path d="M17.05 20.28c-.96.95-2.06 1.72-3.32 1.72-1.18 0-1.6-.74-2.95-.74-1.37 0-1.87.72-2.96.72-1.2 0-2.2-.76-3.19-1.72-2.01-1.96-3.53-5.54-3.53-8.8 0-3.3 1.6-5.06 3.19-5.06 1.03 0 1.83.6 2.65.6.83 0 1.4-.6 2.62-.6 1.34 0 2.5.76 3.1 1.72-2.73 1.65-2.28 5.6.43 6.7-.6 1.43-1.35 2.83-2.54 3.76zm-3.54-15.65c.6-.73 1-1.74 1-2.75 0-.14-.02-.28-.04-.41-.95.04-2.1.64-2.78 1.43-.6.7-.85 1.65-.85 2.65 0 .15.02.3.06.41.05 0 .1 0 .15 0 .9 0 1.9-.45 2.46-1.33z"></path>
 </svg>

@@ -1,6 +1,7 @@
 <?php
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
+require_once 'includes/SmsService.php';
 
 $error = '';
 $success = '';
@@ -11,27 +12,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($phone)) {
         $error = 'لطفاً ایمیل یا شماره موبایل خود را وارد کنید.';
     } else {
-        check_rate_limit($pdo, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', $phone);
-        
-        $stmt = $pdo->prepare("SELECT id FROM users WHERE phone = ?");
-        $stmt->execute([$phone]);
-        
-        if ($stmt->rowCount() === 0) {
-            $error = 'کاربری با این مشخصات یافت نشد.';
+        $rate_error = check_rate_limit($pdo, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', $phone);
+        if ($rate_error) {
+            $error = $rate_error;
         } else {
-            // Generate a 6-digit OTP
-            $otp = sprintf("%06d", mt_rand(1, 999999));
+            $stmt = $pdo->prepare("SELECT id FROM users WHERE phone = ?");
+            $stmt->execute([$phone]);
             
-            $stmt = $pdo->prepare("UPDATE users SET sms_code = ? WHERE phone = ?");
-            if ($stmt->execute([$otp, $phone])) {
-                // In a real app, send the SMS here.
-                // For now, we store it in session to display it on the next page as a mock.
-                $_SESSION['mock_otp'] = "کد تایید شما (جهت تست): $otp";
-                
-                header("Location: reset_password.php?phone=" . urlencode($phone));
-                exit;
+            if ($stmt->rowCount() === 0) {
+                $error = 'کاربری با این مشخصات یافت نشد.';
             } else {
-                $error = 'خطا در سیستم. لطفاً دوباره تلاش کنید.';
+                // Generate a 6-digit OTP
+                $otp = sprintf("%06d", mt_rand(1, 999999));
+                
+                $stmt = $pdo->prepare("UPDATE users SET sms_code = ? WHERE phone = ?");
+                if ($stmt->execute([$otp, $phone])) {
+                    $sms = new SmsService();
+                    $sms->sendOtp($phone, $otp);
+                    
+                    header("Location: reset_password.php?phone=" . urlencode($phone));
+                    exit;
+                } else {
+                    $error = 'خطا در سیستم. لطفاً دوباره تلاش کنید.';
+                }
             }
         }
     }
