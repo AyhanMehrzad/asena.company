@@ -6,7 +6,10 @@
 define('GOOGLE_CLIENT_ID', 'YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com');
 define('GOOGLE_CLIENT_SECRET', 'YOUR_GOOGLE_CLIENT_SECRET_HERE');
 // Make sure this exact URI is authorized in your Google Cloud Console
-define('GOOGLE_REDIRECT_URI', 'http://localhost/petshop/actions/oauth_callback.php?provider=google');
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+$host = $_SERVER['HTTP_HOST'];
+$base_dir = rtrim(dirname($_SERVER['PHP_SELF']), '/\');
+define('GOOGLE_REDIRECT_URI', $protocol . '://' . $host . $base_dir . '/actions/oauth_callback.php?provider=google');
 
 // Apple OAuth
 define('APPLE_CLIENT_ID', 'com.yourdomain.petshop'); // Service ID
