@@ -78,7 +78,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'shop.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="shop.php">فروشگاه</a>
                     <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'booking.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="booking.php">کلینیک</a>
                     <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'subscriptions.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="subscriptions.php">اشتراک خودکار</a>
-                    <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'rewards.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="rewards.php">باشگاه وفاداری</a>
                 </div>
                 
                 <!-- Desktop Search -->
@@ -150,9 +149,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </a>
                     <a class="flex items-center gap-4 text-on-surface font-bold p-3 rounded-xl hover:bg-primary-container/10 hover:text-primary transition-colors" href="subscriptions.php">
                         <span class="material-symbols-outlined text-outline">autorenew</span> اشتراک خودکار
-                    </a>
-                    <a class="flex items-center gap-4 text-on-surface font-bold p-3 rounded-xl hover:bg-primary-container/10 hover:text-primary transition-colors" href="rewards.php">
-                        <span class="material-symbols-outlined text-outline">loyalty</span> باشگاه وفاداری
                     </a>
                 </nav>
 
