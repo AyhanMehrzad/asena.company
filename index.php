@@ -8,10 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASENA | پلتفرم یکپارچه مدیریت کلینیک، پت‌شاپ و داروخانه دامپزشکی</title>
     
-    <!-- Vazirmatn Font & Google Icons -->
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <!-- Self-Hosted Local Fonts & Icons (100% VPN-Free) -->
+    <link href="assets/css/vazirmatn.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/material-symbols.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/paw-loader.css" rel="stylesheet" type="text/css" />
+    <script src="assets/js/paw-loader.js" defer></script>
     
     <style>
         :root {
