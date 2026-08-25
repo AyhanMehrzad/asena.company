@@ -1,6 +1,6 @@
 -- MariaDB dump 10.19  Distrib 10.4.28-MariaDB, for Linux (x86_64)
 --
--- Host: localhost    Database: asena_pharmacy_golzari
+-- Host: localhost    Database: asena_premium
 -- ------------------------------------------------------
 -- Server version	10.4.28-MariaDB
 
@@ -173,6 +173,40 @@ LOCK TABLES `chat_messages` WRITE;
 /*!40000 ALTER TABLE `chat_messages` DISABLE KEYS */;
 INSERT INTO `chat_messages` VALUES (1,6,'user','[AI] Hello, how can I feed my cat?',0,'2026-07-25 02:00:20'),(2,6,'ai','این یک پیام خودکار از دستیار هوشمند پت‌کر است. شما پرسیدید: \'Hello, how can I feed my cat?\'. در حال حاضر من در فاز آزمایشی هستم.',1,'2026-07-25 02:00:20');
 /*!40000 ALTER TABLE `chat_messages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `curated_recommendations`
+--
+
+DROP TABLE IF EXISTS `curated_recommendations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `curated_recommendations` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `slot_type` enum('banner','notification','cart_upsell','spotlight') NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `custom_badge` varchar(100) DEFAULT NULL,
+  `custom_title` varchar(255) DEFAULT NULL,
+  `custom_subtitle` text DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `display_order` int(11) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_slot` (`slot_type`,`is_active`),
+  KEY `idx_product` (`product_id`),
+  CONSTRAINT `fk_rec_prem_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `curated_recommendations`
+--
+
+LOCK TABLES `curated_recommendations` WRITE;
+/*!40000 ALTER TABLE `curated_recommendations` DISABLE KEYS */;
+INSERT INTO `curated_recommendations` VALUES (1,'banner',1,'🔥 پرفروش‌ترین محصول ماه','غذای خشک سگ بالغ نژاد کوچک رویال کنین مدل Mini Adult','تغذیه کامل و بهینه شده، هم‌اکنون با ۱۰٪ تخفیف اشتراک خودکار',1,1,'2026-08-25 15:21:55'),(2,'notification',2,'⚡ شگفت‌انگیز هفتگی','کنسرو گربه گورمت گلد با طعم مرغ در تخفیف ویژه به مدت محدود!','خرید آنلاین و تحویل اکسپرس درب منزل',1,1,'2026-08-25 15:21:55'),(3,'cart_upsell',6,'⭐ مکمل پیشنهادی','قطره مولتی ویتامین سگ و گربه شایر','پیشنهاد طلایی برای شادابی و درخشش موی پت شما',1,1,'2026-08-25 15:21:55'),(4,'spotlight',7,'🐱 سرگرمی خانگی','درخت گربه ۳ طبقه کدیپک','بهترین انتخاب برای استراحت و اسکرچ گربه‌ها',1,1,'2026-08-25 15:21:55');
+/*!40000 ALTER TABLE `curated_recommendations` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -819,4 +853,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-24 22:57:22
+-- Dump completed on 2026-08-25 17:25:03
