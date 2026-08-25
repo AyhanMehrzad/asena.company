@@ -1,6 +1,5 @@
 <?php
 require_once 'includes/db.php';
-if (($_SESSION['active_model'] ?? 'premium') !== 'premium') { header('Location: index.php'); exit; }
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;

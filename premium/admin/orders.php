@@ -1,9 +1,10 @@
 <?php
-require_once '../includes/db.php';
+$currentPage = 'orders';
+require_once 'includes/admin_header.php';
+require_once '../includes/functions.php';
 
 // Handle status update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_order_status') {
-    require_once '../includes/functions.php';
     csrf_verify();
     
     $order_id = (int)$_POST['order_id'];
@@ -28,13 +29,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit;
 }
 
-$currentPage = 'orders';
-require_once 'includes/admin_header.php';
-require_once '../includes/functions.php';
-
 // Fetch orders
 $stmt = $pdo->query("SELECT o.*, u.name as user_name FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.created_at DESC LIMIT 50");
 $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Attach items to orders
+if (!empty($orders)) {
+    $order_ids = array_column($orders, 'id');
+    $ph = implode(',', array_fill(0, count($order_ids), '?'));
+    $itemsStmt = $pdo->prepare("
+        SELECT oi.*, p.image_url, p.category, p.brand, p.target_animal, p.pharmacy_tag, p.is_autoship 
+        FROM order_items oi 
+        LEFT JOIN products p ON oi.product_id = p.id 
+        WHERE oi.order_id IN ($ph)
+    ");
+    $itemsStmt->execute($order_ids);
+    $all_items = $itemsStmt->fetchAll(PDO::FETCH_ASSOC);
+    $items_by_order = [];
+    foreach ($all_items as $item) {
+        $items_by_order[$item['order_id']][] = $item;
+    }
+    foreach ($orders as &$order) {
+        $order['items'] = $items_by_order[$order['id']] ?? [];
+    }
+    unset($order);
+}
 
 // Fetch order logs
 $stmt = $pdo->query("SELECT * FROM order_logs ORDER BY changed_at DESC");
@@ -67,10 +86,14 @@ $fmt = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter::FULL, 
             <h2 class="font-headline-lg text-headline-lg text-primary">مدیریت سفارشات</h2>
             <p class="text-on-surface-variant font-body-md mt-1">پیگیری سفارشات، پرداخت‌ها و ارسال‌ها</p>
         </div>
-        <div class="flex gap-4">
-            <a href="export_orders.php" class="flex items-center gap-2 bg-secondary-container text-on-secondary-container px-6 py-2 rounded-lg font-label-lg font-bold shadow-sm hover:opacity-90 transition-opacity">
-                <span class="material-symbols-outlined">download</span>
-                خروجی CSV (سفارشات امروز)
+        <div class="flex items-center gap-3">
+            <a href="subscriptions.php?filter=today" class="flex items-center gap-2 bg-primary text-white px-5 py-2 rounded-xl font-label-lg font-bold shadow-sm hover:bg-primary-container transition-all text-xs">
+                <span class="material-symbols-outlined text-base">local_shipping</span>
+                تقویم نوبت‌های ارسال
+            </a>
+            <a href="export_orders.php" class="flex items-center gap-2 bg-secondary-container text-white px-5 py-2 rounded-xl font-label-lg font-bold shadow-sm hover:opacity-90 transition-opacity text-xs">
+                <span class="material-symbols-outlined text-base">download</span>
+                خروجی CSV
             </a>
         </div>
     </header>
@@ -98,10 +121,38 @@ $fmt = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter::FULL, 
                         <tr><td colspan="5" class="px-6 py-4 text-center text-on-surface-variant">هیچ سفارشی یافت نشد.</td></tr>
                     <?php else: ?>
                         <?php foreach($orders as $order): ?>
-                        <tr class="hover:bg-surface-container-low transition-colors group">
-                            <td class="px-6 py-4 font-bold text-primary" dir="ltr">#PC-<?= $order['id'] ?></td>
-                            <td class="px-6 py-4 text-on-surface-variant"><?= htmlspecialchars($order['user_name']) ?></td>
-                            <td class="px-6 py-4 font-bold"><?= number_format($order['total_amount']) ?></td>
+                            <td class="px-6 py-4 font-bold text-primary align-top" dir="ltr">
+                                <div>#PC-<?= $order['id'] ?></div>
+                                <?php if (!empty($order['items'])): ?>
+                                    <div class="mt-2 space-y-1 text-right" dir="rtl">
+                                        <?php foreach($order['items'] as $item): ?>
+                                            <?php 
+                                                $is_pharma = (str_contains($item['category'] ?? '', 'دارو') || str_contains($item['category'] ?? '', 'مکمل') || !empty($item['pharmacy_tag']));
+                                                $img = !empty($item['image_url']) ? htmlspecialchars($item['image_url']) : '../assets/images/toy-mouse.jpg';
+                                            ?>
+                                            <div class="flex items-center gap-2 bg-surface-container-low p-1.5 rounded-lg border border-outline-variant/30 text-xs font-normal">
+                                                <img src="<?= $img ?>" class="w-8 h-8 rounded-md object-cover bg-white shrink-0 border border-outline-variant/40">
+                                                <div class="min-w-0 flex-1">
+                                                    <div class="flex items-center gap-1 flex-wrap">
+                                                        <?php if($is_pharma): ?>
+                                                            <span class="bg-secondary-container/15 text-secondary-container px-1 py-0.2 rounded text-[9px] font-bold">💊 دارو</span>
+                                                        <?php else: ?>
+                                                            <span class="bg-primary/10 text-primary px-1 py-0.2 rounded text-[9px] font-bold">🛍️ پت‌شاپ</span>
+                                                        <?php endif; ?>
+                                                        <?php if(!empty($item['is_autoship'])): ?>
+                                                            <span class="bg-status-active/10 text-status-active px-1 py-0.2 rounded text-[9px] font-bold">🔄 Autoship</span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <p class="text-[11px] font-bold text-primary truncate"><?= htmlspecialchars($item['product_name_snapshot']) ?></p>
+                                                    <p class="text-[10px] text-on-surface-variant"><?= $item['quantity'] ?> عدد × <?= number_format($item['price_at_purchase']) ?> ت</p>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                            <td class="px-6 py-4 text-on-surface-variant align-top font-bold"><?= htmlspecialchars($order['user_name']) ?></td>
+                            <td class="px-6 py-4 font-bold align-top"><?= number_format($order['total_amount']) ?></td>
                             <td class="px-6 py-4">
                                 <form action="orders.php" method="POST" class="m-0 p-0">
                                     <?= csrf_field() ?>

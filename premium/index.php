@@ -28,8 +28,6 @@ $donor_stmt = $pdo->query("
     LIMIT 5
 ");
 $top_donors = $donor_stmt->fetchAll(PDO::FETCH_ASSOC);
-
-$active_model = $_SESSION['active_model'] ?? 'premium';
 ?>
 
 <main class="w-full max-w-container-max mx-auto space-y-24">
@@ -86,20 +84,18 @@ $active_model = $_SESSION['active_model'] ?? 'premium';
             </div>
             <!-- Pagination Pills -->
             <div class="absolute bottom-12 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3" id="hero-pills">
-                <button onclick="goToSlide(0)" class="w-8 h-2 rounded-full bg-primary-container scale-125 transition-all"></button>
-                <button onclick="goToSlide(1)"
-                    class="w-3 h-2 rounded-full bg-primary-container/20 hover:bg-primary-container/40 transition-all"></button>
-                <button onclick="goToSlide(2)"
-                    class="w-3 h-2 rounded-full bg-primary-container/20 hover:bg-primary-container/40 transition-all"></button>
+                <button onclick="goToSlide(0)" class="w-8 h-2 rounded-full bg-primary-container scale-125 transition-all cursor-pointer"></button>
+                <button onclick="goToSlide(1)" class="w-3 h-2 rounded-full bg-primary-container/20 hover:bg-primary-container/40 transition-all cursor-pointer"></button>
+                <button onclick="goToSlide(2)" class="w-3 h-2 rounded-full bg-primary-container/20 hover:bg-primary-container/40 transition-all cursor-pointer"></button>
+                <button onclick="goToSlide(3)" class="w-3 h-2 rounded-full bg-primary-container/20 hover:bg-primary-container/40 transition-all cursor-pointer"></button>
             </div>
         </section>
-        <!-- Cycle Section - Rail Density -->
+        
+        <!-- Cycle Section - Rail Density (Functional & Clickable) -->
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-            <div
-                class="lg:col-span-3 flex flex-col justify-center p-10 bg-surface-container-low rounded-[2rem] space-y-4">
+            <div class="lg:col-span-3 flex flex-col justify-center p-10 bg-surface-container-low rounded-[2rem] space-y-4">
                 <h2 class="text-3xl font-bold text-primary">چرخه مراقبت هوشمند</h2>
-                <p class="text-sm text-on-surface-variant leading-relaxed">خدمات یکپارچه برای سلامت همیشگی پت شما که به
-                    صورت ۲۴ ساعته مانیتور می‌شود.</p>
+                <p class="text-sm text-on-surface-variant leading-relaxed">خدمات یکپارچه برای سلامت همیشگی پت شما که به صورت ۲۴ ساعته مانیتور می‌شود.</p>
                 <div class="flex gap-2 pt-4">
                     <div class="w-3 h-3 rounded-full bg-primary-container"></div>
                     <div class="w-3 h-3 rounded-full bg-outline-variant/30"></div>
@@ -107,46 +103,110 @@ $active_model = $_SESSION['active_model'] ?? 'premium';
                 </div>
             </div>
             <div class="lg:col-span-9 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="group workstation-module rounded-[2rem] p-8 cursor-pointer">
-                    <div
-                        class="w-16 h-16 bg-surface-container-low rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-container group-hover:text-white transition-colors">
+                <!-- 1. Checkup -->
+                <a href="booking.php" class="group workstation-module rounded-[2rem] p-8 cursor-pointer hover:-translate-y-1.5 transition-all block">
+                    <div class="w-16 h-16 bg-surface-container-low rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-container group-hover:text-white transition-colors">
                         <span class="material-symbols-outlined text-3xl">stethoscope</span>
                     </div>
-                    <h3 class="font-bold text-primary text-lg mb-2">چک‌آپ دوره‌ای</h3>
-                    <p class="text-sm text-on-surface-variant leading-relaxed">یادآوری هوشمند معاینات بر اساس سن و نژاد
-                        دقیق پت شما.</p>
-                </div>
-                <div class="group workstation-module rounded-[2rem] p-8 cursor-pointer">
-                    <div
-                        class="w-16 h-16 bg-surface-container-low rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-container group-hover:text-white transition-colors">
+                    <h3 class="font-bold text-primary text-lg mb-2 group-hover:text-primary-container flex items-center justify-between">
+                        <span>چک‌آپ دوره‌ای</span>
+                        <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+                    </h3>
+                    <p class="text-sm text-on-surface-variant leading-relaxed">یادآوری هوشمند معاینات بر اساس سن و نژاد دقیق پت شما.</p>
+                </a>
+
+                <!-- 2. Nutrition -->
+                <a href="subscriptions.php" class="group workstation-module rounded-[2rem] p-8 cursor-pointer hover:-translate-y-1.5 transition-all block">
+                    <div class="w-16 h-16 bg-surface-container-low rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-container group-hover:text-white transition-colors">
                         <span class="material-symbols-outlined text-3xl">nutrition</span>
                     </div>
-                    <h3 class="font-bold text-primary text-lg mb-2">تغذیه اختصاصی</h3>
-                    <p class="text-sm text-on-surface-variant leading-relaxed">آنالیز تخصصی رژیم غذایی بر اساس
-                        فعالیت‌های روزانه.</p>
-                </div>
-                <div class="group workstation-module rounded-[2rem] p-8 cursor-pointer">
-                    <div
-                        class="w-16 h-16 bg-surface-container-low rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-container group-hover:text-white transition-colors">
+                    <h3 class="font-bold text-primary text-lg mb-2 group-hover:text-primary-container flex items-center justify-between">
+                        <span>تغذیه اختصاصی</span>
+                        <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+                    </h3>
+                    <p class="text-sm text-on-surface-variant leading-relaxed">آنالیز تخصصی رژیم غذایی بر اساس فعالیت‌های روزانه.</p>
+                </a>
+
+                <!-- 3. Vaccination & Care -->
+                <a href="booking.php" class="group workstation-module rounded-[2rem] p-8 cursor-pointer hover:-translate-y-1.5 transition-all block">
+                    <div class="w-16 h-16 bg-surface-container-low rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-container group-hover:text-white transition-colors">
                         <span class="material-symbols-outlined text-3xl">vaccines</span>
                     </div>
-                    <h3 class="font-bold text-primary text-lg mb-2">واکسیناسیون</h3>
-                    <p class="text-sm text-on-surface-variant leading-relaxed">مدیریت خودکار پرونده سلامت دیجیتال و
-                        هشدارهای واکسن.</p>
-                </div>
-                <div class="group workstation-module rounded-[2rem] p-8 cursor-pointer">
-                    <div
-                        class="w-16 h-16 bg-surface-container-low rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-container group-hover:text-white transition-colors">
-                        <span class="material-symbols-outlined text-3xl">medication</span>
+                    <h3 class="font-bold text-primary text-lg mb-2 group-hover:text-primary-container flex items-center justify-between">
+                        <span>واکسیناسیون و چک‌آپ</span>
+                        <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+                    </h3>
+                    <p class="text-sm text-on-surface-variant leading-relaxed">مدیریت خودکار پرونده سلامت دیجیتال و هشدارهای واکسن.</p>
+                </a>
+
+                <!-- 4. Online Pet Shop -->
+                <a href="shop.php" class="group workstation-module rounded-[2rem] p-8 cursor-pointer hover:-translate-y-1.5 transition-all block border-2 border-secondary-container/30 bg-gradient-to-b from-white to-orange-50/30">
+                    <div class="w-16 h-16 bg-secondary-container/10 text-secondary-container rounded-2xl flex items-center justify-center mb-6 group-hover:bg-secondary-container group-hover:text-white transition-colors">
+                        <span class="material-symbols-outlined text-3xl">storefront</span>
                     </div>
-                    <h3 class="font-bold text-primary text-lg mb-2">داروخانه آنلاین</h3>
-                    <p class="text-sm text-on-surface-variant leading-relaxed">تامین و ارسال سریع نسخه‌های تخصصی درب
-                        منزل.</p>
+                    <h3 class="font-bold text-primary text-lg mb-2 group-hover:text-secondary-container flex items-center justify-between">
+                        <span>فروشگاه و ملزومات</span>
+                        <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+                    </h3>
+                    <p class="text-sm text-on-surface-variant leading-relaxed">تامین غذا، مکمل، وسایل بازی و ملزومات نگهداری پت با ارسال اکسپرس.</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Pet Shop Featured Spotlight Section -->
+        <section class="bg-gradient-to-r from-primary via-primary-container to-[#001a48] text-white rounded-[2.5rem] p-8 lg:p-12 shadow-2xl relative overflow-hidden">
+            <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-secondary-container/20 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="relative z-10">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 border-b border-white/10 pb-6">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1 bg-secondary-container text-white rounded-full text-xs font-bold mb-3 shadow-md">
+                            <span class="material-symbols-outlined text-sm">storefront</span>
+                            فروشگاه جامع حیوانات خانگی و ملزومات
+                        </div>
+                        <h2 class="text-2xl lg:text-4xl font-bold tracking-tight">پت‌شاپ تخصصی آسنا؛ بهترین‌ها برای پت شما</h2>
+                        <p class="text-sm text-white/75 mt-1 max-w-xl">تامین مستقیم غذاهای باکیفیت، تشویقی، مکمل‌های غذایی و لوازم بهداشتی و نگهداری برای سگ، گربه، پرندگان و سایر حیوانات.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <a href="shop.php" class="bg-secondary-container text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-[#ea580c] transition-all shadow-lg flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
+                            مشاهده تمام محصولات پت‌شاپ
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Species Quick Navigation Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
+                    <a href="shop.php?species=dog" class="bg-white/10 hover:bg-white/20 border border-white/15 p-4 rounded-2xl transition-all group flex flex-col items-center gap-2">
+                        <span class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">🐕</span>
+                        <span class="text-xs font-bold">ملزومات سگ</span>
+                    </a>
+                    <a href="shop.php?species=cat" class="bg-white/10 hover:bg-white/20 border border-white/15 p-4 rounded-2xl transition-all group flex flex-col items-center gap-2">
+                        <span class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">🐈</span>
+                        <span class="text-xs font-bold">ملزومات گربه</span>
+                    </a>
+                    <a href="shop.php?species=horse" class="bg-white/10 hover:bg-white/20 border border-white/15 p-4 rounded-2xl transition-all group flex flex-col items-center gap-2">
+                        <span class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">🐎</span>
+                        <span class="text-xs font-bold">ملزومات اسب</span>
+                    </a>
+                    <a href="shop.php?species=cow" class="bg-white/10 hover:bg-white/20 border border-white/15 p-4 rounded-2xl transition-all group flex flex-col items-center gap-2">
+                        <span class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">🐄</span>
+                        <span class="text-xs font-bold">خوراک و مکمل دام</span>
+                    </a>
+                    <a href="shop.php?species=chick" class="bg-white/10 hover:bg-white/20 border border-white/15 p-4 rounded-2xl transition-all group flex flex-col items-center gap-2">
+                        <span class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">🐥</span>
+                        <span class="text-xs font-bold">پرندگان و طیور</span>
+                    </a>
+                    <a href="subscriptions.php" class="bg-secondary-container/20 hover:bg-secondary-container/40 border border-secondary-container/40 p-4 rounded-2xl transition-all group flex flex-col items-center gap-2">
+                        <span class="w-12 h-12 rounded-full bg-secondary-container text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[20px]">autorenew</span>
+                        </span>
+                        <span class="text-xs font-bold text-secondary-container">اشتراک خودکار</span>
+                    </a>
                 </div>
             </div>
         </section>
         <!-- Subscription Plans -->
-        <?php if ($active_model !== 'basic'): ?>
         <section class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
                 <!-- 3-Month Plan -->
@@ -235,10 +295,7 @@ $active_model = $_SESSION['active_model'] ?? 'premium';
                 </div>
             </div>
         </section>
-        <?php endif; ?>
-        
         <!-- AI Clinical Assistant & Support -->
-        <?php if ($active_model === 'premium'): ?>
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center" id="support-section">
             <div class="lg:col-span-4 space-y-8 p-10 workstation-module rounded-[2.5rem] h-full flex flex-col justify-center border-none relative overflow-hidden">
                 <div class="absolute -right-20 -bottom-20 opacity-5">
@@ -294,7 +351,7 @@ $active_model = $_SESSION['active_model'] ?? 'premium';
                 </div>
                 
                 <!-- Chat Body -->
-                <div class="flex-1 p-6 space-y-6 overflow-y-auto custom-scrollbar bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-surface-container-lowest relative" id="chat-messages">
+                <div class="flex-1 p-6 space-y-6 overflow-y-auto custom-scrollbar bg-surface-container-lowest relative" id="chat-messages">
                     <?php if(!isset($_SESSION['user_id'])): ?>
                     <div class="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center z-20">
                         <span class="material-symbols-outlined text-6xl text-primary-container mb-4">lock</span>
@@ -353,8 +410,6 @@ $active_model = $_SESSION['active_model'] ?? 'premium';
                 </div>
             </div>
         </section>
-        <?php endif; ?>
-        
         <!-- Charity Section -->
         <section class="bg-primary-container rounded-[2rem] md:rounded-[3.5rem] overflow-hidden relative text-white shadow-2xl p-6 md:p-12 lg:p-24">
             <div class="paw-pattern absolute inset-0"></div>
@@ -508,14 +563,14 @@ $active_model = $_SESSION['active_model'] ?? 'premium';
                         
                         <!-- Quick add to cart overlay -->
                         <div class="absolute inset-x-0 bottom-0 p-2 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/60 to-transparent flex justify-center z-20">
-                            <button type="button" onclick="addToCart(this, <?php echo $product['id']; ?>)" class="bg-primary text-white w-full py-2 rounded-xl text-xs font-bold flex justify-center items-center gap-1 hover:bg-primary-container">
+                            <button type="button" onclick="addToCart(this, <?php echo $product['id']; ?>, 'standard')" class="bg-primary text-white w-full py-2 rounded-xl text-xs font-bold flex justify-center items-center gap-1 hover:bg-primary-container">
                                 <span class="material-symbols-outlined text-sm">add_shopping_cart</span>
-                                افزودن
+                                افزودن به سبد
                             </button>
                         </div>
                         
                         <!-- Mobile Quick Add to Cart -->
-                        <button type="button" onclick="addToCart(this, <?php echo $product['id']; ?>)" class="lg:hidden absolute bottom-3 left-3 z-30 w-9 h-9 bg-primary/90 backdrop-blur-md text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform border border-white/20">
+                        <button type="button" onclick="addToCart(this, <?php echo $product['id']; ?>, 'standard')" class="lg:hidden absolute bottom-3 left-3 z-30 w-9 h-9 bg-primary/90 backdrop-blur-md text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform border border-white/20">
                             <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
                         </button>
                     </div>
@@ -606,7 +661,6 @@ $active_model = $_SESSION['active_model'] ?? 'premium';
 
 <!-- Interaction Layer -->
     <div class="fixed bottom-6 left-6 md:bottom-12 md:left-12 flex flex-col gap-3 md:gap-4 z-50">
-        <?php if ($active_model === 'premium'): ?>
         <a href="chat.php"
             class="w-12 h-12 md:w-16 md:h-16 bg-white border border-outline-variant text-primary rounded-2xl shadow-2xl flex items-center justify-center hover:scale-110 hover:bg-primary hover:text-white transition-all group relative">
             <span class="material-symbols-outlined text-xl md:text-3xl">chat_bubble</span>
@@ -614,7 +668,6 @@ $active_model = $_SESSION['active_model'] ?? 'premium';
                 class="absolute left-14 md:left-20 bg-primary text-white px-4 py-2 rounded-xl text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">پشتیبانی
                 آنلاین</span>
         </a>
-        <?php endif; ?>
         <a href="https://maps.google.com/?q=Tehran" target="_blank"
             class="w-12 h-12 md:w-16 md:h-16 bg-secondary-container text-white rounded-2xl shadow-2xl flex items-center justify-center hover:scale-110 transition-all group relative">
             <span class="material-symbols-outlined text-xl md:text-3xl">location_on</span>
@@ -701,18 +754,25 @@ function fetchMessages() {
         });
 }
 
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text || '';
+    return div.innerHTML;
+}
+
 function renderMessages(messages) {
     const container = document.getElementById('chat-messages');
     
     messages.forEach(msg => {
         const isUser = msg.sender_type === 'user';
         const avatar = msg.sender_type === 'ai' ? 'cruelty_free' : 'support_agent';
+        const safeMessage = escapeHtml(msg.message).replace(/\n/g, '<br>');
         
         let imgHtml = '';
         if (msg.image_url) {
-            imgHtml = `<img src="${msg.image_url}" class="rounded-xl mb-3 max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity">`;
+            const safeImg = escapeHtml(msg.image_url);
+            imgHtml = `<img src="${safeImg}" class="rounded-xl mb-3 max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity" alt="ضمیمه پیام">`;
         }
-        // Base64 images are not saved to DB for AI mode to save space, but if we had them they'd be here.
 
         const time = new Date(msg.created_at).toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
 
@@ -721,7 +781,7 @@ function renderMessages(messages) {
                 <div class="flex gap-4 max-w-[85%] flex-row-reverse ml-auto group">
                     <div class="bg-primary text-white px-5 py-4 rounded-3xl rounded-tl-sm shadow-md text-sm leading-relaxed">
                         ${imgHtml}
-                        <div>${msg.message.replace(/\n/g, '<br>')}</div>
+                        <div>${safeMessage}</div>
                         <div class="text-[9px] text-white/70 mt-2 text-left w-full block">${time} <span class="material-symbols-outlined text-[10px] ml-0.5" style="vertical-align: middle">done_all</span></div>
                     </div>
                 </div>
@@ -734,7 +794,7 @@ function renderMessages(messages) {
                     </div>
                     <div class="bg-white px-5 py-4 rounded-3xl rounded-br-sm shadow-md text-sm border border-outline-variant/10 leading-relaxed text-on-surface">
                         ${imgHtml}
-                        <div class="markdown-body">${msg.message.replace(/\n/g, '<br>')}</div>
+                        <div class="markdown-body">${safeMessage}</div>
                         <div class="text-[9px] text-on-surface-variant/70 mt-2 text-right w-full block">${time}</div>
                     </div>
                 </div>
@@ -837,8 +897,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Cart Logic
-function addToCart(btn, productId) {
-    if(event) event.preventDefault();
+function addToCart(btn, productId, type = 'standard') {
+    if(window.event) window.event.preventDefault();
     
     const originalText = btn.innerHTML;
     btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span>';
@@ -848,7 +908,7 @@ function addToCart(btn, productId) {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: 'action=add&ajax=1&csrf_token=<?php echo csrf_token(); ?>&product_id=' + productId
+        body: 'action=add&ajax=1&csrf_token=<?php echo csrf_token(); ?>&product_id=' + productId + '&type=' + type
     })
     .then(response => response.json())
     .then(data => {
@@ -932,6 +992,15 @@ const slides = [
         link: "booking.php",
         linkText: "رزرو نوبت کلینیک",
         img: "assets/images/presentation-dog.jpg"
+    },
+    {
+        title: "ارسال دوره‌ای و خودکار؛<br />همیشه به موقع",
+        desc: "تامین خودکار و ماهانه غذا، مکمل‌های تقویتی و وسایل بهداشتی حیوانات شما بدون دغدغه اتمام موجودی با تخفیف ویژه.",
+        badgeIcon: "autorenew",
+        badgeText: "سرویس تحویل خودکار (Autoship)",
+        link: "subscriptions.php",
+        linkText: "مشاهده اشتراک‌ها",
+        img: "assets/images/dog-hero.jpg"
     }
 ];
 
@@ -1006,9 +1075,38 @@ function resetInterval() {
             pagination: {
                 el: '.swiper-pagination',
                 clickable: true,
-            }
-        });
     }
+</script>
+
+<!-- Schema.org JSON-LD Structured Data for Pharmacy & Pet Care Organization -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Pharmacy",
+  "name": "داروخانه آنلاین و پت‌شاپ تخصصی آسنا",
+  "alternateName": "ASENA Pet Care & Veterinary Pharmacy",
+  "url": "http://localhost/asena/asena-pharmacy-golzari/",
+  "logo": "http://localhost/asena/asena-pharmacy-golzari/assets/images/logo.png",
+  "description": "مرجع تخصصی خرید آنلاین داروهای دامپزشکی، مکمل‌ها، واکسن‌ها و ملزومات حیوانات خانگی با تاییدیه دکتر داروساز و ارسال زنجیره سرد",
+  "telephone": "+98-21-88888888",
+  "priceRange": "$$",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "خیابان ولیعصر، بالاتر از پارک ساعی",
+    "addressLocality": "تهران",
+    "addressRegion": "تهران",
+    "addressCountry": "IR"
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "00:00",
+      "closes": "23:59"
+    }
+  ],
+  "medicalSpecialty": "VeterinaryCare"
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>

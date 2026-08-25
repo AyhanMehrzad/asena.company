@@ -93,3 +93,61 @@ This is the standard, user-approved design for product cards. It features rounde
 ### Action Buttons
 *   **Primary Action**: `<button class="bg-primary text-white py-3 px-6 rounded-lg font-bold hover:bg-primary-container transition-colors">Submit</button>`
 *   **Secondary/Highlight Action (e.g., Cart)**: `<button class="bg-[#f97316] text-white py-2 px-4 font-bold rounded hover:bg-[#ea580c] transition-colors">Action</button>`
+
+## 5. Autoship & Pet Pharmacy Architecture (Chewy Model)
+
+### Chewy-Style Autoship & Subscription Architecture
+*   **Item-Level Autoship ("Subscribe & Save")**: Products with `is_autoship = 1` must support both one-time purchasing and recurring delivery with an automatic `autoship_discount` (typically 10%–15%).
+*   **Unified Cart & Checkout**: Regular items, pharmacy products, and Autoship items share the standard cart workflow (`cart.php`). Upon order approval, recurring delivery schedules are provisioned in `autoship_subscriptions`.
+*   **Tiered Curated Plans**: High-tier concierge plans in `subscriptions.php` (3-Month, 6-Month, 12-Month packages with free veterinary clinic vouchers and express delivery) coexist with item-level autoship.
+
+### Pet Pharmacy Sub-Store Standards
+*   **Domain Differentiation**: Veterinary pharmaceuticals and prescription medications are distinctly served on `pharmacy.php` and flagged with category badges (`💊 داروخانه تخصصی` vs `🛍️ پت‌شاپ`).
+*   **Multi-Species Targeting**: All pharmacy products must define `target_animal` (`dog`, `cat`, `horse`, `cow`, `chick`, `all`).
+*   **Clinical Taxonomy**: Veterinary items are classified into 9 standard tags (`drugs`, `pain_management`, `inflammation`, `vitamins`, `therapy`, `dewormer`, `hoof_care`, `first_aid`, `vaccines`).
+*   **Unified Customer Orders Surface**: In user profiles (`profile.php`), all order items appear in the unified order stream with functional clickable thumbnails, species tags, and pharmacy indicators.
+
+## 6. Veterinary Pharmacy UX, Multi-Surface Synchronization & SEO Standard
+
+### 6.1 Pharmacy UX & Trust Architecture
+1. **Prescription Management (Rx Workflow)**:
+   - Products flagged with prescription requirements must feature an intuitive 3-step upload modal (Photo of Rx, Clinic/Vet contact info, Patient/Pet name).
+   - Display a prominent verification hotline banner (پشتیبانی ۲۴/۷ و مشاوره داروساز).
+2. **Predictive Search & Medication Facets**:
+   - Live search input on `pharmacy.php` supports generic drug names, active compounds, and brand laboratories (*Bayer, GimCat, Feliway, Razi, Ceva*).
+   - Multi-faceted filter sidebar with 9 clinical tags, target species, customer star ratings, and price bands.
+3. **Autoship ("Subscribe & Save") Convenience**:
+   - Prominent Autoship frequency selector (هر ۲ هفته، ماهانه، هر ۲ ماه) on product cards and checkout with guaranteed 10%–15% recurring discounts.
+
+### 6.2 End-to-End Multi-Surface Synchronization
+All pharmacy and pet shop transactions must remain strictly synchronized across 3 surfaces:
+*   **Admin Panel (`admin/inventory.php` & `admin/orders.php`)**: Single source of truth for stock, target species, medical tags, and prescription statuses.
+*   **User Profile (`profile.php`)**: Interactive stream showing clickable thumbnails, domain distinction (`[💊 داروخانه]` vs `[🛍️ پت‌شاپ]`), and one-click repeat orders.
+*   **Catalog Segregation**: `shop.php` strictly for Pet Supplies; `pharmacy.php` strictly for Veterinary Drugs & Supplements.
+
+### 6.3 Veterinary Pharmacy SEO & Structured Data (JSON-LD)
+1. **Schema.org Structured Data**:
+   - `VeterinaryCare` & `Pharmacy` Schema defining business authority.
+   - `Product` & `AggregateRating` Schema enabling Google Rich Snippets with pricing, stock availability, and star ratings.
+   - `FAQPage` Schema answering top medication search queries to capture zero-click answers.
+   - `BreadcrumbList` Schema defining hierarchical paths.
+2. **Dynamic On-Page SEO**:
+   - Programmatic `<title>` and `<meta name="description">` based on active species and clinical tags.
+
+## 7. Multi-Surface Rating & Review Standards (Bayesian Model)
+
+### 7.1 Mathematical Bayesian Weighted Averaging
+*   All product and doctor ratings use the prior-damped Bayesian formula:
+    $$\text{Score} = \frac{(5 \times \text{baseline\_rating}) + \sum \text{user\_ratings}}{5 + n}$$
+*   **Cold-Start Transparency**: When review count $n = 0$, the UI explicitly identifies the score as an expert baseline (`امتیاز کارشناسی`) rather than fabricated user reviews. As real reviews accumulate, the real customer score seamlessly takes precedence.
+
+### 7.2 Non-Intrusive UX & Loyalty Incentives
+*   **"Task, Then Ask"**: Review prompts must only appear post-fulfillment in `profile.php` or post-consultation in `booking.php`.
+*   **Loyalty Points Integration**: Each verified user review automatically credits `+5` loyalty points to the user's wallet via `actions/rewards_action.php`.
+
+### 7.3 Admin Panel Controls
+*   Admin Add/Edit product and doctor forms include a `baseline_rating` input field (Default: `4.5` - `5.0`).
+*   Admin reviews management dashboard allows moderating comments and verifying buyer statuses.
+
+
+

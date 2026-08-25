@@ -214,6 +214,11 @@
             background: rgba(255, 255, 255, 0.9);
         }
 
+        .pricing-card.pharmacy {
+            border: 2px solid #0f766e;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
         .premium-badge {
             position: absolute;
             top: 24px;
@@ -226,6 +231,21 @@
             transform: rotate(-45deg);
             letter-spacing: 1.5px;
             box-shadow: 0 4px 12px var(--secondary-glow);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .pharmacy-badge {
+            position: absolute;
+            top: 24px;
+            left: -36px; /* RTL - absolute positioning flipped */
+            background: #0f766e;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 8px 36px;
+            transform: rotate(-45deg);
+            letter-spacing: 1px;
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
             font-family: 'Outfit', sans-serif;
         }
 
@@ -534,6 +554,35 @@
                     </a>
                     <a href="auto_login.php?model=premium&role=admin" class="login-btn primary">
                         <span class="material-icons-round">admin_panel_settings</span> ورود به عنوان مدیر
+                    </a>
+                </div>
+            </div>
+
+            <!-- Pharmacy Tier (NEW) -->
+            <div class="pricing-card pharmacy">
+                <div class="pharmacy-badge">PHARMACY & AUTOSHIP</div>
+                <h2 class="tier-name">مدل داروخانه تخصصی</h2>
+                <p class="tier-desc">سامانه جامع داروخانه دامپزشکی، نسخه آنلاین، تایید داروساز و اشتراک خودکار (Autoship).</p>
+                
+                <ul class="feature-list">
+                    <li><span class="material-icons-round">check_circle</span> پرونده پزشکی و نسخه الکترونیک</li>
+                    <li><span class="material-icons-round">check_circle</span> داروخانه آنلاین با تایید داروساز</li>
+                    <li><span class="material-icons-round">check_circle</span> توزیع با زنجیره سرد و پیک اختصاصی</li>
+                    <li><span class="material-icons-round">check_circle</span> مدیریت اشتراک خودکار دارو (Autoship)</li>
+                    <li><span class="material-icons-round">check_circle</span> سیستم پشتیبانی تیکت و چت آنلاین</li>
+                    <li><span class="material-icons-round">check_circle</span> دستیار هوشمند و کلینیک دامپزشکی</li>
+                    <li><span class="material-icons-round">check_circle</span> باشگاه مشتریان و امتیاز وفاداری</li>
+                </ul>
+
+                <div class="login-grid">
+                    <a href="auto_login.php?model=pharmacy&role=user" class="login-btn">
+                        <span class="material-icons-round">person</span> ورود به عنوان کاربر
+                    </a>
+                    <a href="auto_login.php?model=pharmacy&role=doctor" class="login-btn">
+                        <span class="material-icons-round">medical_services</span> ورود به عنوان پزشک / داروساز
+                    </a>
+                    <a href="auto_login.php?model=pharmacy&role=admin" class="login-btn primary" style="background: #0f766e; border-color: #0f766e; box-shadow: 0 8px 20px rgba(15, 118, 110, 0.25);">
+                        <span class="material-icons-round">local_pharmacy</span> ورود به عنوان مدیر داروخانه
                     </a>
                 </div>
             </div>

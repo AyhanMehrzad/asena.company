@@ -92,3 +92,115 @@ function check_rate_limit(PDO $pdo, string $ip, string $username = ''): ?string 
     return null;
 }
 
+/**
+ * Bayesian Weighted Average Calculator for Products and Doctors
+ * Prior damping weight C = 5
+ */
+function recalculate_bayesian_rating(PDO $pdo, string $target_type, int $target_id): array {
+    $c = 5; // prior confidence weight
+    if ($target_type === 'product') {
+        $stmt = $pdo->prepare("SELECT IFNULL(baseline_rating, 4.8) FROM products WHERE id = ?");
+        $stmt->execute([$target_id]);
+        $baseline = (float)($stmt->fetchColumn() ?: 4.8);
+
+        $revStmt = $pdo->prepare("SELECT COUNT(*) as cnt, IFNULL(SUM(rating), 0) as total_sum FROM reviews WHERE target_type = 'product' AND target_id = ? AND status = 'approved'");
+        $revStmt->execute([$target_id]);
+        $res = $revStmt->fetch(PDO::FETCH_ASSOC);
+        $n = (int)$res['cnt'];
+        $sum = (float)$res['total_sum'];
+
+        $bayesian_score = round((($c * $baseline) + $sum) / ($c + $n), 1);
+
+        $upd = $pdo->prepare("UPDATE products SET rating_cache = ?, review_count_cache = ? WHERE id = ?");
+        $upd->execute([$bayesian_score, $n, $target_id]);
+        return ['rating' => $bayesian_score, 'review_count' => $n, 'baseline' => $baseline];
+    } elseif ($target_type === 'doctor') {
+        $stmt = $pdo->prepare("SELECT IFNULL(baseline_rating, 4.9) FROM doctors WHERE id = ?");
+        $stmt->execute([$target_id]);
+        $baseline = (float)($stmt->fetchColumn() ?: 4.9);
+
+        $revStmt = $pdo->prepare("SELECT COUNT(*) as cnt, IFNULL(SUM(rating), 0) as total_sum FROM reviews WHERE target_type = 'doctor' AND target_id = ? AND status = 'approved'");
+        $revStmt->execute([$target_id]);
+        $res = $revStmt->fetch(PDO::FETCH_ASSOC);
+        $n = (int)$res['cnt'];
+        $sum = (float)$res['total_sum'];
+
+        $bayesian_score = round((($c * $baseline) + $sum) / ($c + $n), 1);
+
+        $upd = $pdo->prepare("UPDATE doctors SET rating = ?, review_count = ? WHERE id = ?");
+        $upd->execute([$bayesian_score, $n, $target_id]);
+        return ['rating' => $bayesian_score, 'review_count' => $n, 'baseline' => $baseline];
+    }
+    return ['rating' => 4.8, 'review_count' => 0, 'baseline' => 4.8];
+}
+
+/**
+ * Returns dynamic absolute base URL of the current application install.
+ */
+function get_app_base_url(): string {
+    $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $docRoot = rtrim(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? ''), '/');
+    $appRoot = rtrim(str_replace('\\', '/', dirname(__DIR__)), '/');
+    $subDir = str_replace($docRoot, '', $appRoot);
+    return $scheme . '://' . $host . $subDir;
+}
+
+/**
+ * Formats autoship delivery frequency into human-readable Persian text.
+ */
+function format_autoship_frequency(?string $freq): string {
+    $map = [
+        '2_weeks'  => 'هر ۲ هفته یک‌بار (۱۴ روز)',
+        '2_week'   => 'هر ۲ هفته یک‌بار (۱۴ روز)',
+        '14_days'  => 'هر ۲ هفته یک‌بار (۱۴ روز)',
+        '14'       => 'هر ۲ هفته یک‌بار (۱۴ روز)',
+        '1_week'   => 'هر ۱ هفته یک‌بار (۷ روز)',
+        '7_days'   => 'هر ۱ هفته یک‌بار (۷ روز)',
+        '7'        => 'هر ۱ هفته یک‌بار (۷ روز)',
+        '1_month'  => 'هر ۱ ماه یک‌بار (۳۰ روز)',
+        'monthly'  => 'هر ۱ ماه یک‌بار (۳۰ روز)',
+        '30_days'  => 'هر ۱ ماه یک‌بار (۳۰ روز)',
+        '30'       => 'هر ۱ ماه یک‌بار (۳۰ روز)',
+        '2_months' => 'هر ۲ ماه یک‌بار (۶۰ روز)',
+        '60_days'  => 'هر ۲ ماه یک‌بار (۶۰ روز)',
+        '60'       => 'هر ۲ ماه یک‌بار (۶۰ روز)',
+        '3_months' => 'هر ۳ ماه یک‌بار (۹۰ روز)',
+        '90_days'  => 'هر ۳ ماه یک‌بار (۹۰ روز)',
+        '90'       => 'هر ۳ ماه یک‌بار (۹۰ روز)',
+    ];
+    return $map[$freq ?? ''] ?? 'هر ۱ ماه یک‌بار (۳۰ روز)';
+}
+
+/**
+ * Returns integer number of days corresponding to an autoship frequency string.
+ */
+function get_autoship_frequency_days(?string $freq): int {
+    switch ($freq) {
+        case '2_weeks':
+        case '2_week':
+        case '14_days':
+        case '14':
+            return 14;
+        case '1_week':
+        case '7_days':
+        case '7':
+            return 7;
+        case '2_months':
+        case '60_days':
+        case '60':
+            return 60;
+        case '3_months':
+        case '90_days':
+        case '90':
+            return 90;
+        case '1_month':
+        case 'monthly':
+        case '30_days':
+        case '30':
+        default:
+            return 30;
+    }
+}
+
+

@@ -8,8 +8,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit;
 }
 
-$authority = trim($_GET['Authority'] ?? '');
-$status    = trim($_GET['Status'] ?? '');
+$authority = trim($_GET['Authority'] ?? $_GET['authority'] ?? '');
+$status    = strtoupper(trim($_GET['Status'] ?? $_GET['status'] ?? ''));
 
 // ── Gate 2: Gateway reported failure ──────────────────────────────────────────
 if ($status !== 'OK' || empty($authority)) {
@@ -59,20 +59,23 @@ try {
     if ($is_subscription) {
         $months = intval($pending['plan_id'] ?? 1);
         if ($months < 1) $months = 1;
+        $sub_freq = $pending['frequency'] ?? '1_month';
+        $freq_days = get_autoship_frequency_days($sub_freq);
 
         $subStmt = $pdo->prepare(
-            "INSERT INTO user_subscriptions (user_id, plan_name, amount, status, next_delivery_date)
-             VALUES (?, ?, ?, 'active', DATE_ADD(CURRENT_DATE, INTERVAL 3 DAY))"
+            "INSERT INTO user_subscriptions (user_id, plan_name, amount, status, next_delivery_date, duration_months, payment_model, delivery_frequency)
+             VALUES (?, ?, ?, 'active', DATE_ADD(CURRENT_DATE, INTERVAL ? DAY), ?, 'monthly', ?)"
         );
-        $subStmt->execute([$user_id, $pending['plan_name'], $total_amount]);
+        $subStmt->execute([$user_id, $pending['plan_name'], $total_amount, $freq_days, $months, $sub_freq]);
         $sub_id = $pdo->lastInsertId();
 
-        $delStmt = $pdo->prepare("INSERT INTO subscription_deliveries (subscription_id, delivery_month, scheduled_date) VALUES (?, ?, ?)");
+        $delStmt = $pdo->prepare("INSERT INTO subscription_deliveries (subscription_id, delivery_month, scheduled_date, status, payment_status) VALUES (?, ?, ?, ?, ?)");
         
         for ($i = 1; $i <= $months; $i++) {
-            $days = 3 + (($i - 1) * 30);
+            $days = ($i - 1) * $freq_days;
             $scheduled = date('Y-m-d', strtotime("+$days days"));
-            $delStmt->execute([$sub_id, $i, $scheduled]);
+            $del_status = ($i === 1) ? 'processing' : 'pending';
+            $delStmt->execute([$sub_id, $i, $scheduled, $del_status, 'paid']);
         }
         
         $order_id = $sub_id; // For the success message below
@@ -123,9 +126,48 @@ try {
                 $item['product_name_snapshot'],
             ]);
             $stockStmt->execute([$qty, $pid, $qty]);
+
+            // If item was purchased via Autoship, auto-create recurring subscription schedule
+            if (!empty($item['is_autoship'])) {
+                try {
+                    $dur_months = (int)($pending['duration_months'] ?? 3);
+                    if (!in_array($dur_months, [3, 6, 12])) $dur_months = 3;
+                    $pay_model = ($pending['payment_model'] ?? 'monthly') === 'upfront' ? 'upfront' : 'monthly';
+                    $freq = $item['frequency'] ?? '1_month';
+                    $item_freq_days = get_autoship_frequency_days($freq);
+
+                    $plan_label = "اشتراک {$dur_months} ماهه: " . $item['product_name_snapshot'];
+                    $sub_amt = (int)$item['unit_price'] * $qty;
+
+                    $autoSubStmt = $pdo->prepare(
+                        "INSERT INTO user_subscriptions (user_id, plan_name, amount, status, next_delivery_date, duration_months, payment_model, delivery_frequency)
+                         VALUES (?, ?, ?, 'active', DATE_ADD(CURRENT_DATE, INTERVAL ? DAY), ?, ?, ?)"
+                    );
+                    $autoSubStmt->execute([$user_id, $plan_label, $sub_amt, $item_freq_days, $dur_months, $pay_model, $freq]);
+                    $new_sub_id = $pdo->lastInsertId();
+
+                    $autoDelStmt = $pdo->prepare(
+                        "INSERT INTO subscription_deliveries (subscription_id, delivery_month, scheduled_date, status, payment_status)
+                         VALUES (?, ?, ?, ?, ?)"
+                    );
+                    for ($m = 1; $m <= $dur_months; $m++) {
+                        $sched_date = date('Y-m-d', strtotime("+" . (($m - 1) * $item_freq_days) . " days"));
+                        if ($m === 1) {
+                            $del_status = 'processing';
+                            $del_pay_status = 'paid';
+                        } else {
+                            $del_status = 'pending';
+                            $del_pay_status = ($pay_model === 'upfront') ? 'paid' : 'pending';
+                        }
+                        $autoDelStmt->execute([$new_sub_id, $m, $sched_date, $del_status, $del_pay_status]);
+                    }
+                } catch (Exception $subEx) {
+                    error_log("Autoship scheduling error: " . $subEx->getMessage());
+                }
+            }
         }
-        }
-    } // End of else block for regular orders
+    }
+} // End of else block for regular orders
 
     // 3. Loyalty points and booking approval
     if ($is_booking && !empty($pending['booking_id'])) {

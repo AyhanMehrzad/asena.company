@@ -3,12 +3,12 @@
 // NOTE: You MUST fill these with your actual credentials from Google/Apple Developer Consoles.
 
 // Google OAuth
-define('GOOGLE_CLIENT_ID', 'YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com');
-define('GOOGLE_CLIENT_SECRET', 'YOUR_GOOGLE_CLIENT_SECRET_HERE');
+define('GOOGLE_CLIENT_ID', getenv('GOOGLE_CLIENT_ID') ?: 'YOUR_GOOGLE_CLIENT_ID');
+define('GOOGLE_CLIENT_SECRET', getenv('GOOGLE_CLIENT_SECRET') ?: 'YOUR_GOOGLE_CLIENT_SECRET');
 // Make sure this exact URI is authorized in your Google Cloud Console
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
 $host = $_SERVER['HTTP_HOST'];
-$base_dir = rtrim(dirname($_SERVER['PHP_SELF']), '/\');
+$base_dir = rtrim(dirname($_SERVER['PHP_SELF']), '/\\\\');
 define('GOOGLE_REDIRECT_URI', $protocol . '://' . $host . $base_dir . '/actions/oauth_callback.php?provider=google');
 
 // Apple OAuth

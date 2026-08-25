@@ -10,8 +10,6 @@ $success = $_SESSION['settings_success'] ?? '';
 $error = $_SESSION['settings_error'] ?? '';
 unset($_SESSION['settings_success'], $_SESSION['settings_error']);
 
-$active_model = $_SESSION['active_model'] ?? 'premium';
-
 // Fetch user info
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$user_id]);
@@ -152,12 +150,10 @@ require_once 'includes/header.php';
                 <span class="material-symbols-outlined text-[24px]">settings</span>
                 تنظیمات
             </a>
-            <?php if ($active_model === 'premium'): ?>
             <a href="rewards.php" class="flex items-center gap-3 p-4 rounded-xl text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-bold text-body-md transition-colors">
                 <span class="material-symbols-outlined text-[24px]">card_giftcard</span>
                 امتیاز وفاداری و جوایز
             </a>
-            <?php endif; ?>
             <a href="#" class="flex items-center gap-3 p-4 rounded-xl text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-bold text-body-md transition-colors">
                 <span class="material-symbols-outlined text-[24px]">help</span>
                 پشتیبانی

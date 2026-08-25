@@ -1,6 +1,14 @@
 <?php
 require_once 'includes/db.php';
 require_once 'includes/config.php';
+require_once 'includes/SmsService.php';
+
+if (isset($_GET['cancel_signup'])) {
+    unset($_SESSION['signup_data']);
+    header("Location: login.php");
+    exit;
+}
+
 
 // Generate OAuth URLs
 $google_oauth_url = "https://accounts.google.com/o/oauth2/v2/auth?" . http_build_query([
@@ -22,60 +30,88 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once 'includes/functions.php';
     $mode = $_POST['mode'] ?? 'login';
-    $phone = trim($_POST['phone'] ?? '');
-    $password = $_POST['password'] ?? '';
     
-    if (empty($phone) || empty($password)) {
-        $error = 'لطفاً تمامی فیلدها را پر کنید.';
-    } else {
-        require_once 'includes/functions.php';
-        $rate_error = check_rate_limit($pdo, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', $phone);
-        if ($rate_error) {
-            $error = $rate_error;
-        } else {
-            if ($mode === 'signup') {
-                $name = trim($_POST['name'] ?? '');
+    if ($mode === 'verify_signup') {
+        $otp = trim($_POST['otp'] ?? '');
+        if (isset($_SESSION['signup_data'])) {
+            if ($otp === $_SESSION['signup_data']['otp']) {
+                $phone = $_SESSION['signup_data']['phone'];
+                $name = $_SESSION['signup_data']['name'];
+                $password = $_SESSION['signup_data']['password'];
                 
-                // Check if user already exists
-                $stmt = $pdo->prepare("SELECT id FROM users WHERE phone = ?");
-                $stmt->execute([$phone]);
-                if ($stmt->rowCount() > 0) {
-                    $error = 'این شماره موبایل/ایمیل قبلاً ثبت شده است.';
+                $hash = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $pdo->prepare("INSERT INTO users (phone, name, password, loyalty_points) VALUES (?, ?, ?, 50)");
+                if ($stmt->execute([$phone, $name, $hash])) {
+                    $user_id = $pdo->lastInsertId();
+                    session_regenerate_id(true);
+                    $_SESSION['user_id'] = $user_id;
+                    $_SESSION['user_role'] = 'user';
+                    
+                    $pdo->prepare("DELETE FROM login_attempts WHERE ip_address = ?")->execute([$_SERVER['REMOTE_ADDR'] ?? '127.0.0.1']);
+                    
+                    unset($_SESSION['signup_data']);
+                    unset($_SESSION['mock_otp']);
+                    header("Location: index.php");
+                    exit;
                 } else {
-                    $hash = password_hash($password, PASSWORD_DEFAULT);
-                    $stmt = $pdo->prepare("INSERT INTO users (phone, name, password, loyalty_points) VALUES (?, ?, ?, 50)");
-                    if ($stmt->execute([$phone, $name, $hash])) {
-                        $user_id = $pdo->lastInsertId();
-                        session_regenerate_id(true);
-                        $_SESSION['user_id'] = $user_id;
-                        $_SESSION['user_role'] = 'user';
+                    $error = 'خطا در ثبت کاربر.';
+                }
+            } else {
+                $error = 'کد وارد شده اشتباه است.';
+            }
+        } else {
+            $error = 'نشست شما منقضی شده است. لطفاً دوباره ثبت نام کنید.';
+        }
+    } else {
+        $phone = trim($_POST['phone'] ?? '');
+        $password = $_POST['password'] ?? '';
+        
+        if (empty($phone) || empty($password)) {
+            $error = 'لطفاً تمامی فیلدها را پر کنید.';
+        } else {
+            $rate_error = check_rate_limit($pdo, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', $phone);
+            if ($rate_error) {
+                $error = $rate_error;
+            } else {
+                if ($mode === 'signup') {
+                    $name = trim($_POST['name'] ?? '');
+                    
+                    $stmt = $pdo->prepare("SELECT id FROM users WHERE phone = ?");
+                    $stmt->execute([$phone]);
+                    if ($stmt->rowCount() > 0) {
+                        $error = 'این شماره موبایل/ایمیل قبلاً ثبت شده است.';
+                    } else {
+                        $otp = sprintf("%06d", mt_rand(100000, 999999));
+                        $sms = new SmsService();
+                        $sms->sendOtp($phone, $otp);
                         
-                        // Clear login attempts for this IP/user after success
+                        $_SESSION['signup_data'] = [
+                            'phone' => $phone,
+                            'name' => $name,
+                            'password' => $password,
+                            'otp' => $otp
+                        ];
+                        $_SESSION['mock_otp'] = $otp;
+                    }
+                } elseif ($mode === 'login') {
+                    $stmt = $pdo->prepare("SELECT id, role, password FROM users WHERE phone = ?");
+                    $stmt->execute([$phone]);
+                    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($user && !empty($user['password']) && password_verify($password, $user['password'])) {
+                        session_regenerate_id(true);
+                        $_SESSION['user_id'] = $user['id'];
+                        $_SESSION['user_role'] = $user['role'];
+                        
                         $pdo->prepare("DELETE FROM login_attempts WHERE ip_address = ?")->execute([$_SERVER['REMOTE_ADDR'] ?? '127.0.0.1']);
                         
                         header("Location: index.php");
                         exit;
+                    } else {
+                        $error = 'اطلاعات ورود اشتباه است.';
                     }
-                }
-            } elseif ($mode === 'login') {
-                $stmt = $pdo->prepare("SELECT id, role, password FROM users WHERE phone = ?");
-                $stmt->execute([$phone]);
-                $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                
-                // For admin seeded user which didn't have password, we can bypass or wait for them to re-register
-                if ($user && !empty($user['password']) && password_verify($password, $user['password'])) {
-                    session_regenerate_id(true);
-                    $_SESSION['user_id'] = $user['id'];
-                    $_SESSION['user_role'] = $user['role'];
-                    
-                    // Clear login attempts for this IP/user after success
-                    $pdo->prepare("DELETE FROM login_attempts WHERE ip_address = ?")->execute([$_SERVER['REMOTE_ADDR'] ?? '127.0.0.1']);
-                    
-                    header("Location: index.php");
-                    exit;
-                } else {
-                    $error = 'اطلاعات ورود اشتباه است.';
                 }
             }
         }
@@ -107,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         مراقبتی هوشمندانه برای همراهان همیشگی شما
                     </h1>
 <p class="text-lg opacity-90 leading-relaxed">
-                        به جامعه بزرگ Paws&amp;Care بپیوندید. جایی که تکنولوژی و عشق به حیوانات با هم تلاقی می‌کنند تا بهترین تجربه درمانی و رفاهی را فراهم آورند.
+                        به جامعه بزرگ ASENA بپیوندید. جایی که تکنولوژی و عشق به حیوانات با هم تلاقی می‌کنند تا بهترین تجربه درمانی و رفاهی را فراهم آورند.
                     </p>
 </div>
 <!-- Feature Bento Mini -->
@@ -134,12 +170,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <section class="w-full lg:w-5/12 bg-white flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12 relative overflow-y-auto">
 <!-- Mobile Top Bar -->
 <div class="absolute top-8 right-8 lg:right-24 flex items-center gap-2">
-<a href="index.php" class="text-primary-container font-bold text-xl hover:opacity-80 transition-opacity">Paws&amp;Care</a>
+<a href="index.php" class="text-primary-container font-bold text-xl hover:opacity-80 transition-opacity">ASENA</a>
 <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
 <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">pets</span>
 </div>
 </div>
 <!-- Form Container -->
+<?php if(isset($_SESSION['signup_data'])): ?>
+<div class="max-w-md w-full mx-auto" id="auth-container">
+    <div class="mb-12 mt-12 lg:mt-0">
+        <h2 class="text-3xl font-bold text-on-surface mb-2">تایید شماره موبایل</h2>
+        <p class="text-sm text-on-surface-variant">کد ۶ رقمی ارسال شده به <?php echo htmlspecialchars($_SESSION['signup_data']['phone']); ?> را وارد کنید.</p>
+    </div>
+    
+    <?php if(isset($_SESSION['mock_otp'])): ?>
+        <div class="flex items-start gap-3 bg-blue-50/80 border border-blue-200 text-blue-800 p-4 rounded-2xl shadow-sm mb-6 backdrop-blur-sm transition-all">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
+                <span class="material-symbols-outlined text-blue-600 text-[18px]">sms</span>
+            </div>
+            <div class="flex-1">
+                <h4 class="font-bold text-sm text-blue-900">پیامک تایید (نسخه آزمایشی)</h4>
+                <p class="text-xs opacity-90 mt-1 leading-relaxed font-bold tracking-wider">
+                    <?php echo htmlspecialchars($_SESSION['mock_otp']); unset($_SESSION['mock_otp']); ?>
+                </p>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if($error): ?>
+        <div class="flex items-start gap-3 bg-red-50/80 border border-red-200 text-red-800 p-4 rounded-2xl shadow-sm mb-6 backdrop-blur-sm transition-all">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-red-100 flex items-center justify-center mt-0.5">
+                <span class="material-symbols-outlined text-red-600 text-[18px]">error</span>
+            </div>
+            <div class="flex-1">
+                <h4 class="font-bold text-sm text-red-900">خطا</h4>
+                <p class="text-xs opacity-90 mt-1 leading-relaxed"><?php echo htmlspecialchars($error); ?></p>
+            </div>
+        </div>
+    <?php endif; ?>
+    
+    <form class="space-y-5" method="POST" action="login.php">
+        <input type="hidden" name="mode" value="verify_signup" />
+        <div class="input-group">
+            <label class="block font-bold text-sm text-on-surface-variant mb-2 transition-colors">کد تایید ۶ رقمی</label>
+            <input name="otp" class="w-full h-12 px-4 rounded-lg border border-outline-variant focus:border-primary-container focus:ring-1 focus:ring-primary-container bg-surface-container-lowest transition-all text-sm text-center tracking-widest text-lg dir-ltr" placeholder="------" type="text" maxlength="6" required autofocus/>
+        </div>
+        
+        <button type="submit" class="w-full h-12 bg-primary-container text-white rounded-lg font-bold text-lg hover:bg-primary transition-all active:scale-[0.98] shadow-lg shadow-primary-container/20">
+            تایید و عضویت
+        </button>
+        <div class="text-center mt-6">
+            <a class="font-bold text-sm text-secondary hover:underline" href="login.php?cancel_signup=1">تغییر شماره / لغو</a>
+        </div>
+    </form>
+</div>
+<?php else: ?>
 <div class="max-w-md w-full mx-auto" id="auth-container">
 <!-- Toggle Header -->
 <div class="mb-12 mt-12 lg:mt-0">
@@ -216,7 +301,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <span id="submit-text"><?php echo (isset($_POST['mode']) && $_POST['mode'] === 'signup') ? 'ایجاد حساب کاربری' : 'ورود به حساب'; ?></span>
 </button>
 </form>
+<?php endif; ?>
 
+<?php if(!isset($_SESSION['signup_data'])): ?>
 <!-- Divider -->
 <div class="relative my-10 text-center">
 <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-surface-container-high"></div></div>
@@ -241,6 +328,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         اپل
                     </a>
 </div>
+<?php endif; ?>
 </div>
 <!-- Footer Links -->
 <div class="mt-8 pb-8 text-center w-full">
@@ -248,7 +336,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <a class="hover:text-primary transition-colors" href="#">قوانین و مقررات</a>
 <a class="hover:text-primary transition-colors" href="#">حریم خصوصی</a>
 <a class="hover:text-primary transition-colors" href="#">پشتیبانی</a>
-<span class="mr-auto hidden md:inline opacity-60">© 2024 Paws&amp;Care Iran</span>
+<span class="mr-auto hidden md:inline opacity-60">© 2024 ASENA Iran</span>
 </div>
 </div>
 </section>

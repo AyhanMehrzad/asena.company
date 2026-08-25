@@ -1,8 +1,6 @@
 <?php
 require_once __DIR__ . '/db.php';
 
-$active_model = $_SESSION['active_model'] ?? 'premium';
-
 // Monthly Loyalty Points Check & Role Refresh
 if (isset($_SESSION['user_id'])) {
     $stmt = $pdo->prepare("SELECT last_monthly_points_date, role FROM users WHERE id = ?");
@@ -34,10 +32,27 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <html dir="rtl" lang="fa" style="">
 <head>
     <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>ASENA</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" name="viewport">
+    <title><?php echo isset($page_title) ? htmlspecialchars($page_title) : 'داروخانه آنلاین و پت شاپ تخصصی آسنا'; ?></title>
+    <meta name="description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'داروخانه آنلاین و تخصصی حیوانات خانگی و دامپزشکی آسنا - تامین مستقیم داروها، واکسن‌ها، مکمل‌ها و ملزومات انواع حیوانات خانگی و دام با تاییدیه دامپزشکی'; ?>">
+    <link rel="canonical" href="<?php echo htmlspecialchars((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"); ?>">
     
+    <!-- Open Graph / Facebook / Telegram -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="داروخانه و پت‌شاپ آنلاین آسنا">
+    <meta property="og:locale" content="fa_IR">
+    <meta property="og:title" content="<?php echo isset($page_title) ? htmlspecialchars($page_title) : 'داروخانه آنلاین و پت شاپ تخصصی آسنا'; ?>">
+    <meta property="og:description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'مرجع معتبر خرید آنلاین داروهای دامپزشکی، واکسن و ملزومات پت با زنجیره سرد و پشتیبانی ۲۴/۷ دکتر داروساز'; ?>">
+    <meta property="og:image" content="assets/images/logo.png">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?php echo isset($page_title) ? htmlspecialchars($page_title) : 'داروخانه آنلاین و پت شاپ تخصصی آسنا'; ?>">
+    <meta name="twitter:description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'مرجع معتبر خرید آنلاین داروهای دامپزشکی و ملزومات پت با تاییدیه دامپزشکی'; ?>">
+
+    <!-- Fonts & Icons -->
     <link href="assets/css/material-symbols.css" rel="stylesheet">
+    <link href="assets/css/vazirmatn.css" rel="stylesheet">
     <link href="assets/css/geist.css" rel="stylesheet">
     
     <!-- Custom & Tailwind CSS -->
@@ -62,9 +77,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'index.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="index.php">خانه</a>
                     <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'shop.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="shop.php">فروشگاه</a>
                     <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'booking.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="booking.php">کلینیک</a>
-                    <?php if ($active_model !== 'basic'): ?>
                     <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'subscriptions.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="subscriptions.php">اشتراک خودکار</a>
-                    <?php endif; ?>
+                    <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'rewards.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="rewards.php">باشگاه وفاداری</a>
                 </div>
                 
                 <!-- Desktop Search -->
@@ -134,11 +148,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <a class="flex items-center gap-4 text-on-surface font-bold p-3 rounded-xl hover:bg-primary-container/10 hover:text-primary transition-colors" href="booking.php">
                         <span class="material-symbols-outlined text-outline">medical_services</span> کلینیک
                     </a>
-                    <?php if ($active_model !== 'basic'): ?>
                     <a class="flex items-center gap-4 text-on-surface font-bold p-3 rounded-xl hover:bg-primary-container/10 hover:text-primary transition-colors" href="subscriptions.php">
                         <span class="material-symbols-outlined text-outline">autorenew</span> اشتراک خودکار
                     </a>
-                    <?php endif; ?>
+                    <a class="flex items-center gap-4 text-on-surface font-bold p-3 rounded-xl hover:bg-primary-container/10 hover:text-primary transition-colors" href="rewards.php">
+                        <span class="material-symbols-outlined text-outline">loyalty</span> باشگاه وفاداری
+                    </a>
                 </nav>
 
                 <div class="h-px w-full bg-outline-variant/20 my-2"></div>

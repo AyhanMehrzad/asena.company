@@ -24,6 +24,10 @@ if (empty($cart_items)) {
     exit;
 }
 
+$cart_types       = $_SESSION['cart_types'] ?? [];
+$cart_frequencies = $_SESSION['cart_frequency'] ?? [];
+$checkout_type    = $_GET['type'] ?? 'all'; // 'autoship', 'standard', or 'all'
+
 // ── Calculate real totals from DB ─────────────────────────────────────────────
 $ids          = array_keys($cart_items);
 $placeholders = implode(',', array_fill(0, count($ids), '?'));
@@ -36,9 +40,23 @@ $total_discount = 0;
 $pending_items  = [];
 
 foreach ($db_products as $prod) {
-    $qty             = (int)($cart_items[$prod['id']] ?? 0);
+    $p_id            = $prod['id'];
+    $item_type       = $cart_types[$p_id] ?? 'standard';
+    
+    // Filter if specific checkout requested
+    if ($checkout_type === 'autoship' && $item_type !== 'autoship') continue;
+    if ($checkout_type === 'standard' && $item_type === 'autoship') continue;
+
+    $qty             = (int)($cart_items[$p_id] ?? 0);
     $price           = (int)$prod['price'];
-    $effective_price = $prod['discount_price'] ? (int)$prod['discount_price'] : $price;
+    
+    if ($item_type === 'autoship') {
+        $auto_pct = !empty($prod['autoship_discount']) ? (int)$prod['autoship_discount'] : 15;
+        $effective_price = round($price * (1 - ($auto_pct / 100)));
+    } else {
+        $effective_price = $prod['discount_price'] ? (int)$prod['discount_price'] : $price;
+    }
+    
     $total_price    += $price * $qty;
     $total_discount += ($price - $effective_price) * $qty;
 
@@ -47,6 +65,8 @@ foreach ($db_products as $prod) {
         'product_name_snapshot' => $prod['name'],
         'qty'                   => $qty,
         'unit_price'            => $effective_price,
+        'is_autoship'           => ($item_type === 'autoship') ? 1 : 0,
+        'frequency'             => $cart_frequencies[$p_id] ?? '1_month'
     ];
 }
 
@@ -57,11 +77,25 @@ if ($final_total <= 0 || empty($pending_items)) {
     exit;
 }
 
-// ── Request payment authority from ZarinPal ───────────────────────────────────
+$duration_months = (int)($_GET['duration'] ?? 3);
+if (!in_array($duration_months, [3, 6, 12])) $duration_months = 3;
+$payment_model = ($_GET['model'] ?? 'monthly') === 'upfront' ? 'upfront' : 'monthly';
+
+// If autoship upfront payment, calculate total with 5% extra discount
+if ($checkout_type === 'autoship' && $payment_model === 'upfront') {
+    $payable_today = round(($final_total * $duration_months) * 0.95);
+    $order_desc = "خرید یک‌جا اشتراک {$duration_months} ماهه تحویل خودکار آسنا (" . count($pending_items) . " قلم)";
+} elseif ($checkout_type === 'autoship') {
+    $payable_today = $final_total;
+    $order_desc = "پرداخت نوبت ۱ از اشتراک {$duration_months} ماهه تحویل خودکار آسنا (" . count($pending_items) . " قلم)";
+} else {
+    $payable_today = $final_total;
+    $order_desc = "خرید از فروشگاه و داروخانه آسنا — " . count($pending_items) . " محصول";
+}
+
+// ── Request payment authority from ZarinPal / Mock Gateway ────────────────────
 $gateway      = new ZarinPalGateway();
-$callback_url = (isset($_SERVER['HTTPS']) ? 'https' : 'http')
-              . '://' . $_SERVER['HTTP_HOST']
-              . '/petshop/actions/complete_payment.php';
+$callback_url = get_app_base_url() . '/actions/complete_payment.php';
 
 // Fetch user details for ZarinPal metadata
 $user = $currentUser;
@@ -75,8 +109,8 @@ if (!empty($user['phone'])) {
 }
 
 $result = $gateway->requestPayment(
-    $final_total,
-    'خرید از فروشگاه پت‌شاپ — ' . count($pending_items) . ' محصول',
+    $payable_today,
+    $order_desc,
     $callback_url,
     $metadata
 );
@@ -89,11 +123,15 @@ if (!$result['success']) {
 
 // ── Store pending order snapshot — authority ties everything together ──────────
 $_SESSION['pending_order'] = [
-    'type'         => 'cart',
-    'items'        => $pending_items,
-    'total_amount' => $final_total,
-    'authority'    => $result['authority'],
-    'created_at'   => time(),
+    'type'            => 'cart',
+    'checkout_type'   => $checkout_type,
+    'items'           => $pending_items,
+    'total_amount'    => $payable_today,
+    'per_delivery'    => $final_total,
+    'duration_months' => $duration_months,
+    'payment_model'   => $payment_model,
+    'authority'       => $result['authority'],
+    'created_at'      => time(),
 ];
 
 // Redirect user to ZarinPal payment page

@@ -14,7 +14,6 @@ if (!$adminCheck || $adminCheck['role'] !== 'admin') {
     exit;
 }
 $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
-$active_model = $_SESSION['active_model'] ?? 'premium';
 ?>
 <!DOCTYPE html>
 <html dir="rtl" lang="fa">
@@ -150,20 +149,13 @@ $active_model = $_SESSION['active_model'] ?? 'premium';
             'orders' => ['icon' => 'local_shipping', 'title' => 'سفارشات و ارسال', 'url' => 'orders.php'],
             'clinic' => ['icon' => 'medical_services', 'title' => 'مدیریت کلینیک', 'url' => 'clinic_management.php'],
             'inventory' => ['icon' => 'shopping_bag', 'title' => 'انبار و فروشگاه', 'url' => 'inventory.php'],
-            'users' => ['icon' => 'group', 'title' => 'مدیریت کاربران', 'url' => 'user_management.php']
+            'users' => ['icon' => 'group', 'title' => 'مدیریت کاربران', 'url' => 'user_management.php'],
+            'subscriptions' => ['icon' => 'event_repeat', 'title' => 'مدیریت اشتراک‌ها', 'url' => 'subscriptions.php'],
+            'tickets' => ['icon' => 'support_agent', 'title' => 'تیکت و پشتیبانی', 'url' => 'tickets.php'],
+            'campaigns' => ['icon' => 'campaign', 'title' => 'مدیریت کمپین‌ها', 'url' => 'campaigns.php'],
+            'donations' => ['icon' => 'volunteer_activism', 'title' => 'گزارش کمک‌ها', 'url' => 'donations.php'],
+            'analytics' => ['icon' => 'analytics', 'title' => 'تحلیل و آمار', 'url' => 'analytics.php']
         ];
-        
-        if ($active_model !== 'basic') {
-            $navItems['subscriptions'] = ['icon' => 'event_repeat', 'title' => 'مدیریت اشتراک‌ها', 'url' => 'subscriptions.php'];
-            $navItems['tickets'] = ['icon' => 'support_agent', 'title' => 'تیکت و پشتیبانی', 'url' => 'tickets.php'];
-        }
-        
-        if ($active_model === 'premium') {
-            $navItems['campaigns'] = ['icon' => 'campaign', 'title' => 'مدیریت کمپین‌ها', 'url' => 'campaigns.php'];
-        }
-        
-        $navItems['donations'] = ['icon' => 'volunteer_activism', 'title' => 'گزارش کمک‌ها', 'url' => 'donations.php'];
-        $navItems['analytics'] = ['icon' => 'analytics', 'title' => 'تحلیل و آمار', 'url' => 'analytics.php'];
 
         foreach ($navItems as $key => $item):
             $isActive = ($page === $key);

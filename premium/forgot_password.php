@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <section class="w-full lg:w-5/12 bg-white flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12 relative overflow-y-auto">
     <!-- Mobile Top Bar -->
     <div class="absolute top-8 right-8 lg:right-24 flex items-center gap-2">
-        <a href="index.php" class="text-primary-container font-bold text-xl hover:opacity-80 transition-opacity">Paws&amp;Care</a>
+        <a href="index.php" class="text-primary-container font-bold text-xl hover:opacity-80 transition-opacity">ASENA</a>
         <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
             <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">pets</span>
         </div>
