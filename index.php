@@ -1,5 +1,5 @@
 <?php
-// ASENA Presentation Portal - Multi-Tier Enterprise, Pharmacy & Live UI Showcase
+// ASENA Presentation Portal - Multi-Tier Enterprise, Pharmacy & Interactive Dynamic Theme Showcase
 ?>
 <!DOCTYPE html>
 <html dir="rtl" lang="fa">
@@ -8,9 +8,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASENA | پلتفرم یکپارچه مدیریت کلینیک، پت‌شاپ و داروخانه دامپزشکی</title>
     
-    <!-- Vazirmatn Font for Beautiful Persian Typography -->
+    <!-- Vazirmatn Font & Google Icons -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
     
     <style>
         :root {
@@ -28,10 +29,22 @@
 
             --teal-pharma: #0f766e;
             --teal-light: #0d9488;
-            --teal-glow: rgba(15, 118, 110, 0.22);
+            --teal-glow: rgba(15, 118, 110, 0.25);
             
             --card-radius: 24px;
             --card-border: #e2e8f0;
+
+            --glow-color-1: rgba(0, 45, 114, 0.07);
+            --glow-color-2: rgba(234, 88, 12, 0.05);
+        }
+
+        /* Dynamic Pharmacy Theme Activated via Tab Switcher */
+        body.pharma-mode {
+            --primary: #0f766e;
+            --primary-light: #0d9488;
+            --primary-glow: rgba(15, 118, 110, 0.22);
+            --glow-color-1: rgba(15, 118, 110, 0.10);
+            --glow-color-2: rgba(13, 148, 136, 0.07);
         }
 
         * {
@@ -50,31 +63,34 @@
             flex-direction: column;
             overflow-x: hidden;
             position: relative;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         /* Ambient Glow Backgrounds */
         .bg-glow-1 {
             position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(0, 45, 114, 0.06) 0%, transparent 70%);
+            width: 650px;
+            height: 650px;
+            background: radial-gradient(circle, var(--glow-color-1) 0%, transparent 70%);
             border-radius: 50%;
             top: -100px;
             right: -150px;
             z-index: -1;
-            filter: blur(40px);
+            filter: blur(50px);
+            transition: all 0.5s ease;
         }
         
         .bg-glow-2 {
             position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(234, 88, 12, 0.05) 0%, transparent 70%);
+            width: 650px;
+            height: 650px;
+            background: radial-gradient(circle, var(--glow-color-2) 0%, transparent 70%);
             border-radius: 50%;
             top: 400px;
             left: -150px;
             z-index: -1;
-            filter: blur(50px);
+            filter: blur(60px);
+            transition: all 0.5s ease;
         }
 
         /* Navbar */
@@ -106,6 +122,7 @@
             gap: 8px;
             font-family: 'Outfit', sans-serif;
             direction: ltr;
+            transition: color 0.3s;
         }
 
         .nav-links {
@@ -124,22 +141,6 @@
 
         .nav-links a:hover {
             color: var(--secondary);
-        }
-
-        .nav-cta-btn {
-            background: var(--primary);
-            color: white !important;
-            padding: 8px 18px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 13px;
-            box-shadow: 0 4px 12px var(--primary-glow);
-            transition: all 0.2s;
-        }
-
-        .nav-cta-btn:hover {
-            background: var(--primary-light);
-            transform: translateY(-1px);
         }
 
         section {
@@ -188,6 +189,13 @@
             font-weight: 700;
             border: 1px solid #bfdbfe;
             margin-bottom: 18px;
+            transition: all 0.3s;
+        }
+
+        body.pharma-mode .hero-badge-top {
+            background: #f0fdfa;
+            color: var(--teal-pharma);
+            border-color: #99f6e4;
         }
 
         .hero h1 {
@@ -200,6 +208,7 @@
         
         .hero h1 span {
             color: var(--primary);
+            transition: color 0.3s;
         }
 
         .hero-action-buttons {
@@ -213,7 +222,7 @@
         .hero-btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             padding: 13px 26px;
             border-radius: 14px;
             font-weight: 700;
@@ -221,6 +230,10 @@
             text-decoration: none;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        }
+
+        .hero-btn .material-icons-round {
+            font-size: 20px;
         }
 
         .hero-btn.primary-btn {
@@ -268,7 +281,7 @@
             border: 1px solid var(--card-border);
             background: white;
             color: var(--text-muted);
-            transition: all 0.2s;
+            transition: all 0.25s;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
         }
 
@@ -302,7 +315,7 @@
             background: white;
             border: 1px solid var(--card-border);
             border-radius: var(--card-radius);
-            padding: 30px 26px;
+            padding: 32px 26px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -435,19 +448,15 @@
             color: #cbd5e1;
         }
 
-        /* Action & Login Box */
-        .card-action-box {
-            background: #f8fafc;
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
+        /* 3-Button Segmented Login Grid */
+        .login-grid {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 8px;
+            margin-top: auto;
         }
 
-        /* Prominent Live Storefront Button */
-        .storefront-main-btn {
+        .login-btn {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -455,72 +464,63 @@
             width: 100%;
             padding: 11px 14px;
             border-radius: 12px;
+            border: 1px solid rgba(0, 45, 114, 0.15);
+            background: rgba(0, 45, 114, 0.02);
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .login-btn .material-icons-round {
+            font-size: 18px;
+        }
+
+        .login-btn:hover {
+            background: rgba(0, 45, 114, 0.07);
+            border-color: rgba(0, 45, 114, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .login-btn.primary {
             background: var(--primary);
             color: white;
-            font-size: 13px;
-            font-weight: 800;
-            text-decoration: none;
+            border: none;
             box-shadow: 0 4px 12px var(--primary-glow);
-            transition: all 0.2s;
         }
 
-        .storefront-main-btn:hover {
+        .login-btn.primary:hover {
             background: var(--primary-light);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px var(--primary-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px var(--primary-glow);
         }
 
-        .storefront-main-btn.orange-btn {
+        .login-btn.cta-orange {
             background: linear-gradient(135deg, #ea580c, #f97316);
+            color: white;
+            border: none;
             box-shadow: 0 4px 12px var(--secondary-glow);
         }
 
-        .storefront-main-btn.orange-btn:hover {
+        .login-btn.cta-orange:hover {
             background: linear-gradient(135deg, #c2410c, #ea580c);
-            box-shadow: 0 6px 16px var(--secondary-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px var(--secondary-glow);
         }
 
-        .storefront-main-btn.teal-btn {
+        .login-btn.cta-teal {
             background: linear-gradient(135deg, #0f766e, #0d9488);
+            color: white;
+            border: none;
             box-shadow: 0 4px 12px var(--teal-glow);
         }
 
-        .storefront-main-btn.teal-btn:hover {
+        .login-btn.cta-teal:hover {
             background: linear-gradient(135deg, #115e59, #0f766e);
-            box-shadow: 0 6px 16px var(--teal-glow);
-        }
-
-        .panels-subgrid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-        }
-
-        .panel-sub-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            padding: 8px 4px;
-            border-radius: 10px;
-            background: white;
-            border: 1px solid #e2e8f0;
-            color: var(--text-main);
-            font-size: 11px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.2s;
-            text-align: center;
-        }
-
-        .panel-sub-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: #f1f5f9;
-        }
-
-        .panel-sub-btn .material-icons-round {
-            font-size: 14px;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px var(--teal-glow);
         }
 
         /* Design Showcase Grid */
@@ -701,9 +701,6 @@
             <a href="#models">مدل‌ها و پنل‌ها</a>
             <a href="#about">درباره ما</a>
             <a href="#contact">تماس با ما</a>
-            <a href="auto_login.php?model=standard&role=public" target="_blank" class="nav-cta-btn">
-                مشاهده دمو زنده سایت
-            </a>
         </div>
     </nav>
 
@@ -720,11 +717,11 @@
 
         <div class="hero-action-buttons">
             <a href="auto_login.php?model=standard&role=public" target="_blank" class="hero-btn primary-btn">
-                <span class="material-symbols-outlined">visibility</span>
+                <span class="material-icons-round">visibility</span>
                 <span>مشاهده دمو زنده سایت و فروشگاه (دیدگاه خریدار)</span>
             </a>
             <a href="auto_login.php?model=pharmacy&role=public" target="_blank" class="hero-btn pharma-btn">
-                <span class="material-symbols-outlined">local_pharmacy</span>
+                <span class="material-icons-round">local_pharmacy</span>
                 <span>مشاهده دمو زنده داروخانه تخصصی آنلاین</span>
             </a>
         </div>
@@ -800,7 +797,7 @@
     <section id="models">
         <div class="section-header">
             <h2 class="section-title">مدل‌ها و نسخه‌های نرم‌افزار</h2>
-            <p class="section-subtitle">حوزه فعالیت خود را انتخاب نمایید و قالب سایت یا پنل‌های دمو را با یک کلیک تست کنید.</p>
+            <p class="section-subtitle">حوزه فعالیت خود را انتخاب نمایید و نسخه‌های دمو را با یک کلیک به عنوان کاربر، پزشک یا مدیر بررسی کنید.</p>
         </div>
 
         <!-- Suite Category Switcher -->
@@ -839,25 +836,16 @@
                     </ul>
                 </div>
 
-                <div class="card-action-box">
-                    <a href="auto_login.php?model=basic&role=public" target="_blank" class="storefront-main-btn">
-                        <span class="material-icons-round" style="font-size: 16px;">visibility</span>
-                        <span>مشاهده ظاهر سایت (دیدگاه خریدار)</span>
+                <div class="login-grid">
+                    <a href="auto_login.php?model=basic&role=user" class="login-btn">
+                        <span class="material-icons-round">person</span> دمو پنل کاربر
                     </a>
-                    <div class="panels-subgrid">
-                        <a href="auto_login.php?model=basic&role=user" class="panel-sub-btn" title="پنل کاربر">
-                            <span class="material-icons-round">person</span>
-                            <span>کاربر</span>
-                        </a>
-                        <a href="auto_login.php?model=basic&role=doctor" class="panel-sub-btn" title="پنل پزشک">
-                            <span class="material-icons-round">medical_services</span>
-                            <span>پزشک</span>
-                        </a>
-                        <a href="auto_login.php?model=basic&role=admin" class="panel-sub-btn" title="پنل مدیریت">
-                            <span class="material-icons-round">admin_panel_settings</span>
-                            <span>مدیر</span>
-                        </a>
-                    </div>
+                    <a href="auto_login.php?model=basic&role=doctor" class="login-btn">
+                        <span class="material-icons-round">medical_services</span> دمو پنل پزشک
+                    </a>
+                    <a href="auto_login.php?model=basic&role=admin" class="login-btn primary">
+                        <span class="material-icons-round">admin_panel_settings</span> دمو پنل مدیریت
+                    </a>
                 </div>
             </div>
 
@@ -882,25 +870,16 @@
                     </ul>
                 </div>
 
-                <div class="card-action-box">
-                    <a href="auto_login.php?model=standard&role=public" target="_blank" class="storefront-main-btn orange-btn">
-                        <span class="material-icons-round" style="font-size: 16px;">visibility</span>
-                        <span>مشاهده ظاهر سایت (دیدگاه خریدار)</span>
+                <div class="login-grid">
+                    <a href="auto_login.php?model=standard&role=user" class="login-btn">
+                        <span class="material-icons-round">person</span> دمو پنل کاربر
                     </a>
-                    <div class="panels-subgrid">
-                        <a href="auto_login.php?model=standard&role=user" class="panel-sub-btn" title="پنل کاربر">
-                            <span class="material-icons-round">person</span>
-                            <span>کاربر</span>
-                        </a>
-                        <a href="auto_login.php?model=standard&role=doctor" class="panel-sub-btn" title="پنل پزشک">
-                            <span class="material-icons-round">medical_services</span>
-                            <span>پزشک</span>
-                        </a>
-                        <a href="auto_login.php?model=standard&role=admin" class="panel-sub-btn" style="color: var(--secondary); font-weight: 800;" title="پنل مدیریت">
-                            <span class="material-icons-round">admin_panel_settings</span>
-                            <span>مدیر</span>
-                        </a>
-                    </div>
+                    <a href="auto_login.php?model=standard&role=doctor" class="login-btn">
+                        <span class="material-icons-round">medical_services</span> دمو پنل پزشک
+                    </a>
+                    <a href="auto_login.php?model=standard&role=admin" class="login-btn cta-orange">
+                        <span class="material-icons-round">admin_panel_settings</span> دمو پنل مدیریت (پیشنهاد ویژه)
+                    </a>
                 </div>
             </div>
 
@@ -924,25 +903,16 @@
                     </ul>
                 </div>
 
-                <div class="card-action-box">
-                    <a href="auto_login.php?model=premium&role=public" target="_blank" class="storefront-main-btn">
-                        <span class="material-icons-round" style="font-size: 16px;">visibility</span>
-                        <span>مشاهده ظاهر سایت (دیدگاه خریدار)</span>
+                <div class="login-grid">
+                    <a href="auto_login.php?model=premium&role=user" class="login-btn">
+                        <span class="material-icons-round">person</span> دمو پنل کاربر
                     </a>
-                    <div class="panels-subgrid">
-                        <a href="auto_login.php?model=premium&role=user" class="panel-sub-btn" title="پنل کاربر">
-                            <span class="material-icons-round">person</span>
-                            <span>کاربر</span>
-                        </a>
-                        <a href="auto_login.php?model=premium&role=doctor" class="panel-sub-btn" title="پنل پزشک">
-                            <span class="material-icons-round">medical_services</span>
-                            <span>پزشک</span>
-                        </a>
-                        <a href="auto_login.php?model=premium&role=admin" class="panel-sub-btn" title="پنل مدیریت">
-                            <span class="material-icons-round">admin_panel_settings</span>
-                            <span>مدیر</span>
-                        </a>
-                    </div>
+                    <a href="auto_login.php?model=premium&role=doctor" class="login-btn">
+                        <span class="material-icons-round">medical_services</span> دمو پنل پزشک
+                    </a>
+                    <a href="auto_login.php?model=premium&role=admin" class="login-btn primary">
+                        <span class="material-icons-round">admin_panel_settings</span> دمو پنل مدیریت
+                    </a>
                 </div>
             </div>
 
@@ -972,25 +942,16 @@
                     </ul>
                 </div>
 
-                <div class="card-action-box">
-                    <a href="auto_login.php?model=pharmacy&role=public" target="_blank" class="storefront-main-btn teal-btn">
-                        <span class="material-icons-round" style="font-size: 16px;">visibility</span>
-                        <span>مشاهده ظاهر داروخانه (دیدگاه خریدار)</span>
+                <div class="login-grid">
+                    <a href="auto_login.php?model=pharmacy&role=user" class="login-btn">
+                        <span class="material-icons-round">person</span> دمو پنل خریدار دارو
                     </a>
-                    <div class="panels-subgrid">
-                        <a href="auto_login.php?model=pharmacy&role=user" class="panel-sub-btn" title="پنل خریدار">
-                            <span class="material-icons-round">person</span>
-                            <span>خریدار</span>
-                        </a>
-                        <a href="auto_login.php?model=pharmacy&role=doctor" class="panel-sub-btn" title="پنل داروساز">
-                            <span class="material-icons-round">medical_services</span>
-                            <span>داروساز</span>
-                        </a>
-                        <a href="auto_login.php?model=pharmacy&role=admin" class="panel-sub-btn" title="پنل مدیریت">
-                            <span class="material-icons-round">admin_panel_settings</span>
-                            <span>مدیر</span>
-                        </a>
-                    </div>
+                    <a href="auto_login.php?model=pharmacy&role=doctor" class="login-btn">
+                        <span class="material-icons-round">medical_services</span> دمو پنل داروساز
+                    </a>
+                    <a href="auto_login.php?model=pharmacy&role=admin" class="login-btn primary" style="background: var(--teal-pharma);">
+                        <span class="material-icons-round">local_pharmacy</span> دمو مدیریت داروخانه
+                    </a>
                 </div>
             </div>
 
@@ -1015,25 +976,16 @@
                     </ul>
                 </div>
 
-                <div class="card-action-box">
-                    <a href="auto_login.php?model=pharmacy&role=public" target="_blank" class="storefront-main-btn teal-btn">
-                        <span class="material-icons-round" style="font-size: 16px;">visibility</span>
-                        <span>مشاهده ظاهر داروخانه (دیدگاه خریدار)</span>
+                <div class="login-grid">
+                    <a href="auto_login.php?model=pharmacy&role=user" class="login-btn">
+                        <span class="material-icons-round">person</span> دمو پنل خریدار دارو
                     </a>
-                    <div class="panels-subgrid">
-                        <a href="auto_login.php?model=pharmacy&role=user" class="panel-sub-btn" title="پنل خریدار">
-                            <span class="material-icons-round">person</span>
-                            <span>خریدار</span>
-                        </a>
-                        <a href="auto_login.php?model=pharmacy&role=doctor" class="panel-sub-btn" title="پنل داروساز">
-                            <span class="material-icons-round">medical_services</span>
-                            <span>داروساز</span>
-                        </a>
-                        <a href="auto_login.php?model=pharmacy&role=admin" class="panel-sub-btn" style="color: var(--teal-pharma); font-weight: 800;" title="پنل مدیریت">
-                            <span class="material-icons-round">admin_panel_settings</span>
-                            <span>مدیر</span>
-                        </a>
-                    </div>
+                    <a href="auto_login.php?model=pharmacy&role=doctor" class="login-btn">
+                        <span class="material-icons-round">medical_services</span> دمو پنل داروساز
+                    </a>
+                    <a href="auto_login.php?model=pharmacy&role=admin" class="login-btn cta-teal">
+                        <span class="material-icons-round">local_pharmacy</span> دمو مدیریت داروخانه (پیشنهاد ویژه)
+                    </a>
                 </div>
             </div>
 
@@ -1057,25 +1009,16 @@
                     </ul>
                 </div>
 
-                <div class="card-action-box">
-                    <a href="auto_login.php?model=pharmacy&role=public" target="_blank" class="storefront-main-btn teal-btn">
-                        <span class="material-icons-round" style="font-size: 16px;">visibility</span>
-                        <span>مشاهده ظاهر داروخانه (دیدگاه خریدار)</span>
+                <div class="login-grid">
+                    <a href="auto_login.php?model=pharmacy&role=user" class="login-btn">
+                        <span class="material-icons-round">person</span> دمو پنل خریدار دارو
                     </a>
-                    <div class="panels-subgrid">
-                        <a href="auto_login.php?model=pharmacy&role=user" class="panel-sub-btn" title="پنل خریدار">
-                            <span class="material-icons-round">person</span>
-                            <span>خریدار</span>
-                        </a>
-                        <a href="auto_login.php?model=pharmacy&role=doctor" class="panel-sub-btn" title="پنل داروساز">
-                            <span class="material-icons-round">medical_services</span>
-                            <span>داروساز</span>
-                        </a>
-                        <a href="auto_login.php?model=pharmacy&role=admin" class="panel-sub-btn" title="پنل مدیریت">
-                            <span class="material-icons-round">admin_panel_settings</span>
-                            <span>مدیر</span>
-                        </a>
-                    </div>
+                    <a href="auto_login.php?model=pharmacy&role=doctor" class="login-btn">
+                        <span class="material-icons-round">medical_services</span> دمو پنل داروساز
+                    </a>
+                    <a href="auto_login.php?model=pharmacy&role=admin" class="login-btn primary" style="background: var(--teal-pharma);">
+                        <span class="material-icons-round">local_pharmacy</span> دمو مدیریت داروخانه
+                    </a>
                 </div>
             </div>
 
@@ -1139,11 +1082,13 @@
             pharmaDiv.style.display = 'grid';
             tabPetshopBtn.classList.remove('active');
             tabPharmaBtn.classList.add('active');
+            document.body.classList.add('pharma-mode');
         } else {
             petshopDiv.style.display = 'grid';
             pharmaDiv.style.display = 'none';
             tabPetshopBtn.classList.add('active');
             tabPharmaBtn.classList.remove('active');
+            document.body.classList.remove('pharma-mode');
         }
     }
     </script>
