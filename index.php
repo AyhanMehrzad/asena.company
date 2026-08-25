@@ -19,6 +19,7 @@
             --text-main: #0f172a;
             --text-muted: #475569;
             
+            /* Pet Care / Petshop Suite: Navy Blue & Warm Orange */
             --primary: #002d72;
             --primary-light: #1d4ed8;
             --primary-glow: rgba(0, 45, 114, 0.18);
@@ -27,9 +28,13 @@
             --secondary-light: #f97316;
             --secondary-glow: rgba(234, 88, 12, 0.22);
 
+            /* Pharmacy Suite: Deep Teal & Emerald Green */
             --teal-pharma: #0f766e;
             --teal-light: #0d9488;
             --teal-glow: rgba(15, 118, 110, 0.25);
+            --emerald-pharma: #059669;
+            --emerald-light: #10b981;
+            --emerald-glow: rgba(5, 150, 105, 0.25);
             
             --card-radius: 24px;
             --card-border: #e2e8f0;
@@ -38,13 +43,16 @@
             --glow-color-2: rgba(234, 88, 12, 0.05);
         }
 
-        /* Dynamic Pharmacy Theme Activated via Tab Switcher */
+        /* Dynamic Pharmacy Theme: Pure Teal + Emerald Harmony (No Orange) */
         body.pharma-mode {
             --primary: #0f766e;
             --primary-light: #0d9488;
             --primary-glow: rgba(15, 118, 110, 0.22);
-            --glow-color-1: rgba(15, 118, 110, 0.10);
-            --glow-color-2: rgba(13, 148, 136, 0.07);
+            --secondary: #059669;
+            --secondary-light: #10b981;
+            --secondary-glow: rgba(5, 150, 105, 0.22);
+            --glow-color-1: rgba(15, 118, 110, 0.12);
+            --glow-color-2: rgba(5, 150, 105, 0.09);
         }
 
         * {
@@ -249,13 +257,13 @@
         }
 
         .hero-btn.pharma-btn {
-            background: var(--teal-pharma);
+            background: linear-gradient(135deg, var(--teal-pharma), var(--emerald-pharma));
             color: white;
             box-shadow: 0 6px 18px var(--teal-glow);
         }
 
         .hero-btn.pharma-btn:hover {
-            background: var(--teal-light);
+            background: linear-gradient(135deg, #042f2e, var(--teal-pharma));
             transform: translateY(-2px);
             box-shadow: 0 10px 24px var(--teal-glow);
         }
@@ -298,7 +306,7 @@
         }
 
         .tab-btn.active.pharma-tab {
-            background: var(--teal-pharma);
+            background: linear-gradient(135deg, var(--teal-pharma), var(--emerald-pharma));
             border-color: var(--teal-pharma);
             box-shadow: 0 6px 16px var(--teal-glow);
         }
@@ -338,8 +346,8 @@
         }
 
         .pricing-card.best-deal-pharma {
-            border: 2px solid var(--teal-light);
-            box-shadow: 0 8px 28px var(--teal-glow);
+            border: 2px solid var(--emerald-pharma);
+            box-shadow: 0 8px 28px var(--emerald-glow);
             background: #ffffff;
         }
 
@@ -368,15 +376,21 @@
         }
 
         .card-pill-badge.best-pharma {
-            background: #ccfbf1;
-            color: #0f766e;
-            border: 1px solid #99f6e4;
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
         }
 
         .card-pill-badge.enterprise {
             background: #e0e7ff;
             color: #3730a3;
             border: 1px solid #c7d2fe;
+        }
+
+        .card-pill-badge.enterprise-pharma {
+            background: #ccfbf1;
+            color: #0f766e;
+            border: 1px solid #99f6e4;
         }
 
         .tier-header {
@@ -399,7 +413,7 @@
         }
 
         .tier-tagline.pharma {
-            color: var(--teal-pharma);
+            color: var(--emerald-pharma);
         }
 
         .tier-desc {
@@ -441,7 +455,7 @@
         }
 
         .feature-list li.pharma-icon .material-icons-round {
-            color: var(--teal-pharma);
+            color: var(--emerald-pharma);
         }
 
         .feature-list li.disabled .material-icons-round {
@@ -474,6 +488,12 @@
             text-decoration: none;
         }
 
+        body.pharma-mode .login-btn {
+            border-color: rgba(15, 118, 110, 0.18);
+            background: rgba(15, 118, 110, 0.03);
+            color: var(--teal-pharma);
+        }
+
         .login-btn .material-icons-round {
             font-size: 18px;
         }
@@ -482,6 +502,11 @@
             background: rgba(0, 45, 114, 0.07);
             border-color: rgba(0, 45, 114, 0.3);
             transform: translateY(-1px);
+        }
+
+        body.pharma-mode .login-btn:hover {
+            background: rgba(15, 118, 110, 0.08);
+            border-color: var(--teal-pharma);
         }
 
         .login-btn.primary {
@@ -510,17 +535,18 @@
             box-shadow: 0 8px 18px var(--secondary-glow);
         }
 
-        .login-btn.cta-teal {
-            background: linear-gradient(135deg, #0f766e, #0d9488);
+        /* Pharmacy Best Deal Button: Teal to Emerald Gradient */
+        .login-btn.cta-emerald {
+            background: linear-gradient(135deg, #0f766e, #059669);
             color: white;
             border: none;
-            box-shadow: 0 4px 12px var(--teal-glow);
+            box-shadow: 0 4px 12px var(--emerald-glow);
         }
 
-        .login-btn.cta-teal:hover {
-            background: linear-gradient(135deg, #115e59, #0f766e);
+        .login-btn.cta-emerald:hover {
+            background: linear-gradient(135deg, #042f2e, #047857);
             transform: translateY(-2px);
-            box-shadow: 0 8px 18px var(--teal-glow);
+            box-shadow: 0 8px 18px var(--emerald-glow);
         }
 
         /* Design Showcase Grid */
@@ -765,13 +791,13 @@
 
             <div class="showcase-item">
                 <div>
-                    <div class="showcase-icon" style="background: #fff7ed; color: var(--secondary);">
+                    <div class="showcase-icon" style="background: #ecfdf5; color: var(--emerald-pharma);">
                         <span class="material-icons-round">calendar_month</span>
                     </div>
                     <h3>نوبت‌دهی آنلاین کلینیک</h3>
                     <p>تقویم تعاملی انتخاب پزشک و ثبت آسان نوبت ویزیت.</p>
                 </div>
-                <a href="auto_login.php?model=standard&role=public" target="_blank" class="showcase-btn" style="color: var(--secondary);">
+                <a href="auto_login.php?model=standard&role=public" target="_blank" class="showcase-btn" style="color: var(--emerald-pharma);">
                     <span>پیش‌نمایش آنلاین</span>
                     <span class="material-icons-round" style="font-size: 14px;">arrow_back</span>
                 </a>
@@ -779,13 +805,13 @@
 
             <div class="showcase-item">
                 <div>
-                    <div class="showcase-icon" style="background: #eef2ff; color: var(--primary-light);">
+                    <div class="showcase-icon" style="background: #e0f2fe; color: #0284c7;">
                         <span class="material-icons-round">autorenew</span>
                     </div>
                     <h3>تحویل خودکار (Autoship)</h3>
                     <p>ارسال دوره‌ای منظم با تخفیف دائمی برای مشتریان وفادار.</p>
                 </div>
-                <a href="auto_login.php?model=standard&role=public" target="_blank" class="showcase-btn">
+                <a href="auto_login.php?model=standard&role=public" target="_blank" class="showcase-btn" style="color: #0284c7;">
                     <span>پیش‌نمایش آنلاین</span>
                     <span class="material-icons-round" style="font-size: 14px;">arrow_back</span>
                 </a>
@@ -918,7 +944,7 @@
 
         </div>
 
-        <!-- 2. Pharmacy Suites Section -->
+        <!-- 2. Pharmacy Suites Section (Teal & Emerald Harmonic Palette) -->
         <div id="pharmaSuites" class="pricing-grid" style="display: none;">
             
             <!-- Pharmacy Basic -->
@@ -949,13 +975,13 @@
                     <a href="auto_login.php?model=pharmacy&role=doctor" class="login-btn">
                         <span class="material-icons-round">medical_services</span> دمو پنل داروساز
                     </a>
-                    <a href="auto_login.php?model=pharmacy&role=admin" class="login-btn primary" style="background: var(--teal-pharma);">
+                    <a href="auto_login.php?model=pharmacy&role=admin" class="login-btn primary">
                         <span class="material-icons-round">local_pharmacy</span> دمو مدیریت داروخانه
                     </a>
                 </div>
             </div>
 
-            <!-- Pharmacy Standard (BEST VALUE) -->
+            <!-- Pharmacy Standard (BEST VALUE - Teal & Emerald) -->
             <div class="pricing-card best-deal-pharma">
                 <div>
                     <span class="card-pill-badge best-pharma">⭐ پیشنهاد طلایی داروخانه</span>
@@ -983,7 +1009,7 @@
                     <a href="auto_login.php?model=pharmacy&role=doctor" class="login-btn">
                         <span class="material-icons-round">medical_services</span> دمو پنل داروساز
                     </a>
-                    <a href="auto_login.php?model=pharmacy&role=admin" class="login-btn cta-teal">
+                    <a href="auto_login.php?model=pharmacy&role=admin" class="login-btn cta-emerald">
                         <span class="material-icons-round">local_pharmacy</span> دمو مدیریت داروخانه (پیشنهاد ویژه)
                     </a>
                 </div>
@@ -992,7 +1018,7 @@
             <!-- Pharmacy Enterprise -->
             <div class="pricing-card">
                 <div>
-                    <span class="card-pill-badge enterprise">💎 مراکز پخش و مرجع</span>
+                    <span class="card-pill-badge enterprise-pharma">💎 مراکز پخش و مرجع</span>
                     <div class="tier-header">
                         <h3 class="tier-name">داروخانه سازمانی</h3>
                         <span class="tier-tagline pharma">سامانه مراکز پخش و بیمارستان‌های دامپزشکی</span>
@@ -1016,7 +1042,7 @@
                     <a href="auto_login.php?model=pharmacy&role=doctor" class="login-btn">
                         <span class="material-icons-round">medical_services</span> دمو پنل داروساز
                     </a>
-                    <a href="auto_login.php?model=pharmacy&role=admin" class="login-btn primary" style="background: var(--teal-pharma);">
+                    <a href="auto_login.php?model=pharmacy&role=admin" class="login-btn primary">
                         <span class="material-icons-round">local_pharmacy</span> دمو مدیریت داروخانه
                     </a>
                 </div>
