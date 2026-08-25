@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASENA | پلتفرم سازمانی مدیریت کلینیک، پت‌شاپ و داروخانه دامپزشکی</title>
+    <title>ASENA | پلتفرم یکپارچه مدیریت کلینیک، پت‌شاپ و داروخانه دامپزشکی</title>
     
     <!-- Vazirmatn Font for Beautiful Persian Typography -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
@@ -14,27 +14,24 @@
     
     <style>
         :root {
-            /* Warm Blue, Teal & Orange Theme */
-            --bg-color: #f4f6f9;
-            --text-main: #001a48;
-            --text-muted: #444651;
+            --bg-color: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #475569;
             
-            --primary: #002d72; /* Premium Primary */
-            --primary-light: #3d5ca2;
-            --primary-glow: rgba(0, 45, 114, 0.25);
+            --primary: #002d72;
+            --primary-light: #1d4ed8;
+            --primary-glow: rgba(0, 45, 114, 0.18);
             
-            --secondary: #fd8100; /* Orange CTA */
-            --secondary-glow: rgba(253, 129, 0, 0.25);
+            --secondary: #ea580c;
+            --secondary-light: #f97316;
+            --secondary-glow: rgba(234, 88, 12, 0.22);
 
-            --teal-pharma: #0f766e; /* Pharmacy Teal */
-            --teal-light: #14b8a6;
-            --teal-glow: rgba(15, 118, 110, 0.25);
+            --teal-pharma: #0f766e;
+            --teal-light: #0d9488;
+            --teal-glow: rgba(15, 118, 110, 0.22);
             
-            --glass-bg: rgba(255, 255, 255, 0.78);
-            --glass-border: rgba(255, 255, 255, 0.6);
-            --glass-shadow: 0 10px 36px 0 rgba(0, 45, 114, 0.07);
-            
-            --card-radius: 28px;
+            --card-radius: 24px;
+            --card-border: #e2e8f0;
         }
 
         * {
@@ -55,36 +52,29 @@
             position: relative;
         }
 
-        /* Organic Background Glows */
-        .shape-1 {
+        /* Ambient Glow Backgrounds */
+        .bg-glow-1 {
             position: absolute;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(0, 45, 114, 0.08) 0%, transparent 70%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 45, 114, 0.06) 0%, transparent 70%);
             border-radius: 50%;
-            top: -200px;
-            right: -300px;
+            top: -100px;
+            right: -150px;
             z-index: -1;
             filter: blur(40px);
-            animation: float 12s infinite ease-in-out alternate;
         }
         
-        .shape-2 {
+        .bg-glow-2 {
             position: absolute;
-            width: 700px;
-            height: 700px;
-            background: radial-gradient(circle, rgba(253, 129, 0, 0.08) 0%, transparent 70%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(234, 88, 12, 0.05) 0%, transparent 70%);
             border-radius: 50%;
-            bottom: 10%;
-            left: -200px;
+            top: 400px;
+            left: -150px;
             z-index: -1;
             filter: blur(50px);
-            animation: float 15s infinite ease-in-out alternate-reverse;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(-40px) scale(1.08); }
         }
 
         /* Navbar */
@@ -93,27 +83,27 @@
             top: 0;
             left: 0;
             right: 0;
-            padding: 18px 40px;
+            padding: 16px 36px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 100;
-            background: rgba(244, 246, 249, 0.88);
+            background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255,255,255,0.6);
+            border-bottom: 1px solid var(--card-border);
             direction: ltr;
         }
 
         .nav-logo {
-            font-size: 26px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 1px;
             color: var(--primary);
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             font-family: 'Outfit', sans-serif;
             direction: ltr;
         }
@@ -128,8 +118,8 @@
             text-decoration: none;
             color: var(--text-main);
             font-weight: 600;
-            font-size: 15px;
-            transition: color 0.3s;
+            font-size: 14px;
+            transition: color 0.2s;
         }
 
         .nav-links a:hover {
@@ -139,40 +129,42 @@
         .nav-cta-btn {
             background: var(--primary);
             color: white !important;
-            padding: 9px 18px;
-            border-radius: 14px;
+            padding: 8px 18px;
+            border-radius: 12px;
             font-weight: 700;
-            box-shadow: 0 4px 14px var(--primary-glow);
-            transition: transform 0.2s;
+            font-size: 13px;
+            box-shadow: 0 4px 12px var(--primary-glow);
+            transition: all 0.2s;
         }
 
         .nav-cta-btn:hover {
-            transform: translateY(-2px);
+            background: var(--primary-light);
+            transform: translateY(-1px);
         }
 
         section {
-            padding: 80px 20px 50px;
-            max-width: 1280px;
+            padding: 70px 20px 40px;
+            max-width: 1240px;
             margin: 0 auto;
             width: 100%;
         }
 
         .section-header {
             text-align: center;
-            margin-bottom: 48px;
+            margin-bottom: 40px;
         }
 
         .section-title {
-            font-size: 38px;
+            font-size: 34px;
             font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 12px;
+            color: var(--text-main);
+            margin-bottom: 10px;
         }
         
         .section-subtitle {
-            font-size: 17px;
+            font-size: 16px;
             color: var(--text-muted);
-            max-width: 720px;
+            max-width: 700px;
             margin: 0 auto;
             line-height: 1.8;
         }
@@ -180,15 +172,29 @@
         /* Hero */
         .hero {
             text-align: center;
-            padding-top: 140px;
-            padding-bottom: 50px;
+            padding-top: 130px;
+            padding-bottom: 40px;
+        }
+
+        .hero-badge-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1px solid #bfdbfe;
+            margin-bottom: 18px;
         }
 
         .hero h1 {
-            font-size: 50px;
+            font-size: 46px;
             font-weight: 900;
             line-height: 1.35;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             color: var(--text-main);
         }
         
@@ -199,142 +205,74 @@
         .hero-action-buttons {
             display: flex;
             justify-content: center;
-            gap: 16px;
-            margin-top: 32px;
+            gap: 14px;
+            margin-top: 28px;
             flex-wrap: wrap;
         }
 
         .hero-btn {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            padding: 15px 32px;
-            border-radius: 18px;
-            font-weight: 800;
-            font-size: 15px;
+            gap: 8px;
+            padding: 13px 26px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 14px;
             text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
         }
 
         .hero-btn.primary-btn {
-            background: linear-gradient(135deg, #002d72, #3d5ca2);
+            background: var(--primary);
             color: white;
-            box-shadow: 0 8px 24px var(--primary-glow);
+            box-shadow: 0 6px 18px var(--primary-glow);
         }
 
         .hero-btn.primary-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 30px rgba(0, 45, 114, 0.35);
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px var(--primary-glow);
         }
 
         .hero-btn.pharma-btn {
-            background: linear-gradient(135deg, #0f766e, #14b8a6);
+            background: var(--teal-pharma);
             color: white;
-            box-shadow: 0 8px 24px var(--teal-glow);
+            box-shadow: 0 6px 18px var(--teal-glow);
         }
 
         .hero-btn.pharma-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 30px rgba(15, 118, 110, 0.35);
-        }
-
-        /* Live Design Showcase Feature Grid */
-        .showcase-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            margin-bottom: 60px;
-        }
-
-        .showcase-card {
-            background: white;
-            border-radius: 24px;
-            padding: 28px 24px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-shadow);
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .showcase-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 16px 36px rgba(0, 45, 114, 0.1);
-        }
-
-        .showcase-icon-box {
-            width: 56px;
-            height: 56px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 18px;
-        }
-
-        .showcase-icon-box .material-icons-round {
-            font-size: 30px;
-        }
-
-        .showcase-card h3 {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--text-main);
-            margin-bottom: 8px;
-        }
-
-        .showcase-card p {
-            font-size: 13px;
-            color: var(--text-muted);
-            line-height: 1.7;
-            margin-bottom: 20px;
-        }
-
-        .showcase-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            font-weight: 700;
-            text-decoration: none;
-            color: var(--primary);
-            transition: gap 0.2s;
-        }
-
-        .showcase-link:hover {
-            gap: 10px;
-            color: var(--secondary);
+            background: var(--teal-light);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px var(--teal-glow);
         }
 
         /* Category Switcher Tabs */
         .category-tabs {
             display: flex;
             justify-content: center;
-            gap: 14px;
-            margin-bottom: 40px;
+            gap: 12px;
+            margin-bottom: 36px;
             flex-wrap: wrap;
         }
 
         .tab-btn {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 14px 28px;
-            border-radius: 20px;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 14px;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
-            border: 1px solid rgba(0, 45, 114, 0.15);
+            border: 1px solid var(--card-border);
             background: white;
             color: var(--text-muted);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
         }
 
         .tab-btn:hover {
-            transform: translateY(-2px);
             border-color: var(--primary-light);
             color: var(--primary);
         }
@@ -343,126 +281,107 @@
             background: var(--primary);
             color: white;
             border-color: var(--primary);
-            box-shadow: 0 8px 24px var(--primary-glow);
+            box-shadow: 0 6px 16px var(--primary-glow);
         }
 
         .tab-btn.active.pharma-tab {
             background: var(--teal-pharma);
             border-color: var(--teal-pharma);
-            box-shadow: 0 8px 24px var(--teal-glow);
+            box-shadow: 0 6px 16px var(--teal-glow);
         }
 
-        /* Pricing & Model Cards Container */
-        .pricing-container {
-            display: flex;
-            justify-content: center;
+        /* 3-Column Symmetrical CSS Grid */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
             align-items: stretch;
-            gap: 28px;
-            flex-wrap: wrap;
         }
 
         .pricing-card {
-            flex: 1;
-            min-width: 320px;
-            max-width: 380px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-shadow);
+            background: white;
+            border: 1px solid var(--card-border);
             border-radius: var(--card-radius);
-            padding: 36px 30px;
+            padding: 30px 26px;
             display: flex;
             flex-direction: column;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            justify-content: space-between;
             position: relative;
-            overflow: hidden;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .pricing-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 45px rgba(0, 45, 114, 0.12);
-            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-5px);
+            box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+            border-color: #cbd5e1;
         }
 
-        /* Best Value / Standard Highlight */
+        /* Best Value (Standard) Highlight */
         .pricing-card.best-deal {
             border: 2px solid var(--secondary);
-            background: rgba(255, 255, 255, 0.95);
-            transform: scale(1.03);
-            box-shadow: 0 16px 40px var(--secondary-glow);
-        }
-
-        .pricing-card.best-deal:hover {
-            transform: scale(1.03) translateY(-8px);
-            box-shadow: 0 24px 50px rgba(253, 129, 0, 0.3);
+            box-shadow: 0 8px 28px var(--secondary-glow);
+            background: #ffffff;
         }
 
         .pricing-card.best-deal-pharma {
             border: 2px solid var(--teal-light);
-            background: rgba(255, 255, 255, 0.95);
-            transform: scale(1.03);
-            box-shadow: 0 16px 40px var(--teal-glow);
+            box-shadow: 0 8px 28px var(--teal-glow);
+            background: #ffffff;
         }
 
-        .pricing-card.best-deal-pharma:hover {
-            transform: scale(1.03) translateY(-8px);
-            box-shadow: 0 24px 50px rgba(20, 184, 166, 0.3);
-        }
-
-        .best-deal-badge {
-            position: absolute;
-            top: 20px;
-            left: -38px;
-            background: linear-gradient(135deg, #ea580c, #fd8100);
-            color: white;
+        /* Top Pill Badges */
+        .card-pill-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             font-size: 11px;
-            font-weight: 900;
-            padding: 6px 44px;
-            transform: rotate(-45deg);
-            letter-spacing: 1px;
-            box-shadow: 0 4px 12px var(--secondary-glow);
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 999px;
+            margin-bottom: 12px;
+            align-self: flex-start;
         }
 
-        .best-deal-pharma-badge {
-            position: absolute;
-            top: 20px;
-            left: -38px;
-            background: linear-gradient(135deg, #0f766e, #14b8a6);
-            color: white;
-            font-size: 11px;
-            font-weight: 900;
-            padding: 6px 44px;
-            transform: rotate(-45deg);
-            letter-spacing: 1px;
-            box-shadow: 0 4px 12px var(--teal-glow);
+        .card-pill-badge.normal {
+            background: #f1f5f9;
+            color: #475569;
         }
 
-        .enterprise-badge {
-            position: absolute;
-            top: 20px;
-            left: -38px;
-            background: var(--primary);
-            color: white;
-            font-size: 11px;
-            font-weight: 900;
-            padding: 6px 44px;
-            transform: rotate(-45deg);
-            letter-spacing: 1px;
+        .card-pill-badge.best {
+            background: #ffedd5;
+            color: #c2410c;
+            border: 1px solid #fed7aa;
+        }
+
+        .card-pill-badge.best-pharma {
+            background: #ccfbf1;
+            color: #0f766e;
+            border: 1px solid #99f6e4;
+        }
+
+        .card-pill-badge.enterprise {
+            background: #e0e7ff;
+            color: #3730a3;
+            border: 1px solid #c7d2fe;
+        }
+
+        .tier-header {
+            margin-bottom: 20px;
         }
 
         .tier-name {
-            font-size: 26px;
+            font-size: 22px;
             font-weight: 800;
-            margin-bottom: 6px;
             color: var(--text-main);
+            margin-bottom: 4px;
         }
 
         .tier-tagline {
             font-size: 12px;
             font-weight: 700;
             color: var(--secondary);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: block;
         }
 
@@ -472,26 +391,28 @@
 
         .tier-desc {
             color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 24px;
+            font-size: 13px;
             line-height: 1.7;
-            min-height: 48px;
+            min-height: 44px;
         }
 
         .feature-list {
             list-style: none;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
             flex-grow: 1;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 18px;
         }
 
         .feature-list li {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 13px;
-            font-size: 14px;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 11px;
+            font-size: 13px;
             color: var(--text-main);
             font-weight: 500;
+            line-height: 1.5;
         }
 
         .feature-list li.disabled {
@@ -500,9 +421,10 @@
         }
 
         .feature-list li .material-icons-round {
-            font-size: 20px;
+            font-size: 18px;
             color: var(--secondary);
             flex-shrink: 0;
+            margin-top: 1px;
         }
 
         .feature-list li.pharma-icon .material-icons-round {
@@ -513,28 +435,19 @@
             color: #cbd5e1;
         }
 
-        .login-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            margin-top: auto;
-            background: rgba(255, 255, 255, 0.6);
-            padding: 16px;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 45, 114, 0.08);
+        /* Action & Login Box */
+        .card-action-box {
+            background: #f8fafc;
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .grid-header-label {
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--text-muted);
-            text-align: center;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .login-btn {
+        /* Prominent Live Storefront Button */
+        .storefront-main-btn {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -542,202 +455,241 @@
             width: 100%;
             padding: 11px 14px;
             border-radius: 12px;
-            border: 1px solid rgba(0, 45, 114, 0.15);
-            background: white;
-            color: var(--primary);
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            text-decoration: none;
-        }
-
-        .login-btn:hover {
-            background: rgba(0, 45, 114, 0.06);
-            border-color: rgba(0, 45, 114, 0.3);
-            transform: translateY(-1px);
-        }
-
-        /* Prominent Live Storefront Button (See Design as Customer) */
-        .login-btn.storefront-btn {
-            background: linear-gradient(135deg, #001a48, #002d72);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 14px rgba(0, 45, 114, 0.25);
-            font-size: 14px;
-            padding: 13px 14px;
-            margin-bottom: 6px;
-        }
-
-        .login-btn.storefront-btn:hover {
-            background: linear-gradient(135deg, #002d72, #3d5ca2);
-            box-shadow: 0 8px 20px rgba(0, 45, 114, 0.35);
-            transform: translateY(-2px);
-        }
-
-        .login-btn.storefront-pharma-btn {
-            background: linear-gradient(135deg, #0f766e, #115e59);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25);
-            font-size: 14px;
-            padding: 13px 14px;
-            margin-bottom: 6px;
-        }
-
-        .login-btn.storefront-pharma-btn:hover {
-            background: linear-gradient(135deg, #115e59, #14b8a6);
-            box-shadow: 0 8px 20px rgba(15, 118, 110, 0.35);
-            transform: translateY(-2px);
-        }
-
-        .login-btn.primary {
             background: var(--primary);
             color: white;
-            border: none;
-            box-shadow: 0 4px 14px rgba(0, 45, 114, 0.18);
+            font-size: 13px;
+            font-weight: 800;
+            text-decoration: none;
+            box-shadow: 0 4px 12px var(--primary-glow);
+            transition: all 0.2s;
         }
 
-        .login-btn.primary:hover {
+        .storefront-main-btn:hover {
             background: var(--primary-light);
             transform: translateY(-1px);
+            box-shadow: 0 6px 16px var(--primary-glow);
         }
 
-        .login-btn.cta-orange {
-            background: linear-gradient(135deg, #ea580c, #fd8100);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 14px var(--secondary-glow);
+        .storefront-main-btn.orange-btn {
+            background: linear-gradient(135deg, #ea580c, #f97316);
+            box-shadow: 0 4px 12px var(--secondary-glow);
         }
 
-        .login-btn.cta-orange:hover {
+        .storefront-main-btn.orange-btn:hover {
             background: linear-gradient(135deg, #c2410c, #ea580c);
-            transform: translateY(-1px);
+            box-shadow: 0 6px 16px var(--secondary-glow);
         }
 
-        .login-btn.cta-teal {
-            background: linear-gradient(135deg, #0f766e, #14b8a6);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 14px var(--teal-glow);
+        .storefront-main-btn.teal-btn {
+            background: linear-gradient(135deg, #0f766e, #0d9488);
+            box-shadow: 0 4px 12px var(--teal-glow);
         }
 
-        .login-btn.cta-teal:hover {
+        .storefront-main-btn.teal-btn:hover {
             background: linear-gradient(135deg, #115e59, #0f766e);
-            transform: translateY(-1px);
+            box-shadow: 0 6px 16px var(--teal-glow);
         }
 
-        /* About & Contact Sections */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-shadow);
-            border-radius: var(--card-radius);
-            padding: 50px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .about-grid {
+        .panels-subgrid {
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 40px;
-            align-items: center;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
         }
-        
-        .about-text p {
-            font-size: 17px;
-            line-height: 1.9;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            text-align: justify;
-        }
-        
-        .about-image {
-            width: 100%;
-            height: 320px;
-            border-radius: 24px;
-            background: linear-gradient(135deg, rgba(0, 45, 114, 0.08), rgba(253, 129, 0, 0.05));
+
+        .panel-sub-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            border: 1px solid var(--glass-border);
+            gap: 4px;
+            padding: 8px 4px;
+            border-radius: 10px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: var(--text-main);
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+            text-align: center;
         }
-        
-        .about-image .material-icons-round {
-            font-size: 90px;
+
+        .panel-sub-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #f1f5f9;
+        }
+
+        .panel-sub-btn .material-icons-round {
+            font-size: 14px;
+        }
+
+        /* Design Showcase Grid */
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .showcase-item {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.25s;
+        }
+
+        .showcase-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+            border-color: #cbd5e1;
+        }
+
+        .showcase-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .showcase-icon .material-icons-round {
+            font-size: 26px;
+        }
+
+        .showcase-item h3 {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .showcase-item p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .showcase-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            transition: gap 0.2s;
+        }
+
+        .showcase-btn:hover {
+            gap: 8px;
             color: var(--secondary);
-            opacity: 0.9;
         }
-        
+
+        /* About & Contact */
+        .about-box {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1.4fr 0.6fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .about-box p {
+            font-size: 15px;
+            line-height: 1.9;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            text-align: justify;
+        }
+
+        .about-badge-icon {
+            width: 100%;
+            height: 200px;
+            border-radius: 20px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary);
+        }
+
+        .about-badge-icon .material-icons-round {
+            font-size: 80px;
+        }
+
         .contact-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
-            margin-top: 20px;
         }
-        
+
         .contact-card {
-            background: rgba(255,255,255,0.7);
-            padding: 26px;
-            border-radius: 20px;
-            text-align: center;
-            border: 1px solid var(--glass-border);
-            transition: transform 0.3s;
-        }
-        
-        .contact-card:hover {
-            transform: translateY(-5px);
             background: white;
-            box-shadow: 0 10px 24px rgba(0, 45, 114, 0.06);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 24px;
+            text-align: center;
+            transition: transform 0.2s;
         }
-        
+
+        .contact-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+        }
+
         .contact-card .material-icons-round {
-            font-size: 38px;
+            font-size: 32px;
             color: var(--secondary);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
-        
+
         .contact-card h4 {
-            font-size: 18px;
-            margin-bottom: 6px;
-            font-weight: 700;
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 4px;
         }
-        
+
         .contact-card p {
+            font-size: 13px;
             color: var(--text-muted);
-            font-weight: 500;
             font-family: 'Outfit', 'Vazirmatn', sans-serif;
         }
 
         footer {
             text-align: center;
-            padding: 36px;
+            padding: 30px;
             color: var(--text-muted);
-            font-weight: 500;
+            font-size: 13px;
             margin-top: 40px;
-            border-top: 1px solid rgba(0, 45, 114, 0.08);
+            border-top: 1px solid var(--card-border);
             direction: ltr;
         }
 
-        @media (max-width: 960px) {
-            .about-grid { grid-template-columns: 1fr; }
+        @media (max-width: 1024px) {
+            .pricing-grid { grid-template-columns: 1fr; }
+            .showcase-grid { grid-template-columns: repeat(2, 1fr); }
+            .about-box { grid-template-columns: 1fr; }
             .contact-grid { grid-template-columns: 1fr; }
-            .hero h1 { font-size: 34px; }
-            nav { padding: 18px 20px; }
+            .hero h1 { font-size: 32px; }
+            nav { padding: 14px 20px; }
             .nav-links { display: none; }
-            .pricing-card.best-deal, .pricing-card.best-deal-pharma { transform: none; }
-            .pricing-card.best-deal:hover, .pricing-card.best-deal-pharma:hover { transform: translateY(-8px); }
         }
     </style>
 </head>
 <body>
-    <div class="shape-1"></div>
-    <div class="shape-2"></div>
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
 
     <nav>
         <a href="#" class="nav-logo">
@@ -745,7 +697,7 @@
             ASENA
         </a>
         <div class="nav-links">
-            <a href="#showcase">پیش‌نمایش قالب و طراحی</a>
+            <a href="#showcase">پیش‌نمایش قالب</a>
             <a href="#models">مدل‌ها و پنل‌ها</a>
             <a href="#about">درباره ما</a>
             <a href="#contact">تماس با ما</a>
@@ -755,10 +707,15 @@
         </div>
     </nav>
 
+    <!-- HERO -->
     <section class="hero">
-        <h1>پلتفرم جامع مدیریت<br><span>کلینیک، پت‌شاپ و داروخانه دامپزشکی</span></h1>
+        <div class="hero-badge-top">
+            <span class="material-icons-round" style="font-size: 16px;">verified</span>
+            <span>نسل جدید سامانه‌های تخصصی کلینیک و داروخانه دامپزشکی</span>
+        </div>
+        <h1>پلتفرم جامع و یکپارچه<br><span>کلینیک، پت‌شاپ و داروخانه تخصصی</span></h1>
         <p class="section-subtitle">
-            قالب‌های مدرن و چشم‌نواز با طراحی ارگونومیک، هوشمند و واکنش‌گرا؛ متناسب با نیاز مشتریان، دامپزشکان و داروخانه‌های تخصصی سراسر کشور.
+            قالب‌های مدرن، متقاعدکننده و باکیفیت برای جذب حداکثری مشتریان و مدیریت آسان امور درمانی، انبارداری و تحویل خودکار دوره‌ای.
         </p>
 
         <div class="hero-action-buttons">
@@ -773,71 +730,69 @@
         </div>
     </section>
 
-    <!-- LIVE UI & DESIGN SHOWCASE -->
+    <!-- LIVE UI SHOWCASE -->
     <section id="showcase">
         <div class="section-header">
-            <h2 class="section-title">طراحی لوکس، مدرن و متقاعدکننده</h2>
-            <p class="section-subtitle">وب‌سایتی که مشتریان شما را در اولین نگاه شگفت‌زده می‌کند. تمام بخش‌ها از پایه با وسواس بالا در گرافیک و کاربری (UX) طراحی شده‌اند.</p>
+            <h2 class="section-title">طراحی مدرن، روان و کاربرپسند</h2>
+            <p class="section-subtitle">رابط کاربری چشم‌نوازی که مشتریان شما را در نگاه اول جذب و وفادار می‌سازد.</p>
         </div>
 
         <div class="showcase-grid">
-            
-            <div class="showcase-card">
+            <div class="showcase-item">
                 <div>
-                    <div class="showcase-icon-box" style="background: rgba(0, 45, 114, 0.1); color: var(--primary);">
+                    <div class="showcase-icon" style="background: #eff6ff; color: var(--primary);">
                         <span class="material-icons-round">storefront</span>
                     </div>
-                    <h3>ویترین فروشگاهی و بنر تعاملی</h3>
-                    <p>اسلایدر شیک، دسته‌بندی گونه‌ها، تخفیف‌های شگفت‌انگیز و پیشنهادهای هوشمند برای افزایش فوری نرخ تبدیل فروشگاه شما.</p>
+                    <h3>ویترین فروشگاه و بنرها</h3>
+                    <p>اسلایدر شیک، دسته‌بندی کالاها و بنرهای تبلیغاتی هوشمند.</p>
                 </div>
-                <a href="auto_login.php?model=standard&role=public" target="_blank" class="showcase-link">
-                    <span>پیش‌نمایش آنلاین صفحه اصلی</span>
-                    <span class="material-icons-round">arrow_back</span>
+                <a href="auto_login.php?model=standard&role=public" target="_blank" class="showcase-btn">
+                    <span>پیش‌نمایش آنلاین</span>
+                    <span class="material-icons-round" style="font-size: 14px;">arrow_back</span>
                 </a>
             </div>
 
-            <div class="showcase-card">
+            <div class="showcase-item">
                 <div>
-                    <div class="showcase-icon-box" style="background: rgba(15, 118, 110, 0.1); color: var(--teal-pharma);">
+                    <div class="showcase-icon" style="background: #f0fdfa; color: var(--teal-pharma);">
                         <span class="material-icons-round">medication</span>
                     </div>
-                    <h3>داروخانه تخصصی با تایید نسخه</h3>
-                    <p>فیلتر اختصاصی داروهای دام و طیور، سامانه آپلود نسخه الکترونیک داروساز، و توزیع بسته‌های دارویی با زنجیره سرد.</p>
+                    <h3>داروخانه و تایید نسخه</h3>
+                    <p>ثبت و تایید دیجیتال نسخه داروساز با زنجیره سرد.</p>
                 </div>
-                <a href="auto_login.php?model=pharmacy&role=public" target="_blank" class="showcase-link" style="color: var(--teal-pharma);">
-                    <span>پیش‌نمایش آنلاین داروخانه</span>
-                    <span class="material-icons-round">arrow_back</span>
+                <a href="auto_login.php?model=pharmacy&role=public" target="_blank" class="showcase-btn" style="color: var(--teal-pharma);">
+                    <span>پیش‌نمایش آنلاین</span>
+                    <span class="material-icons-round" style="font-size: 14px;">arrow_back</span>
                 </a>
             </div>
 
-            <div class="showcase-card">
+            <div class="showcase-item">
                 <div>
-                    <div class="showcase-icon-box" style="background: rgba(253, 129, 0, 0.1); color: var(--secondary);">
+                    <div class="showcase-icon" style="background: #fff7ed; color: var(--secondary);">
                         <span class="material-icons-round">calendar_month</span>
                     </div>
-                    <h3>رزرواسیون آنلاین نوبت کلینیک</h3>
-                    <p>تقویم تعاملی انتخاب پزشک، زمان‌بندی هوشمند، فرم شرح‌حال و صدور آنی نوبت ویزیت بدون معطلی و تماس تلفنی.</p>
+                    <h3>نوبت‌دهی آنلاین کلینیک</h3>
+                    <p>تقویم تعاملی انتخاب پزشک و ثبت آسان نوبت ویزیت.</p>
                 </div>
-                <a href="auto_login.php?model=standard&role=public" target="_blank" class="showcase-link" style="color: var(--secondary);">
-                    <span>مشاهده فرآیند نوبت‌دهی</span>
-                    <span class="material-icons-round">arrow_back</span>
+                <a href="auto_login.php?model=standard&role=public" target="_blank" class="showcase-btn" style="color: var(--secondary);">
+                    <span>پیش‌نمایش آنلاین</span>
+                    <span class="material-icons-round" style="font-size: 14px;">arrow_back</span>
                 </a>
             </div>
 
-            <div class="showcase-card">
+            <div class="showcase-item">
                 <div>
-                    <div class="showcase-icon-box" style="background: rgba(0, 45, 114, 0.1); color: var(--primary-light);">
+                    <div class="showcase-icon" style="background: #eef2ff; color: var(--primary-light);">
                         <span class="material-icons-round">autorenew</span>
                     </div>
-                    <h3>تحویل خودکار دوره‌ای (Autoship)</h3>
-                    <p>موتور درآمدساز تکرارشونده برای سفارش خودکار غذای خشک و داروهای دوره‌ای همراه با تخفیف دائمی و سبد خرید هوشمند.</p>
+                    <h3>تحویل خودکار (Autoship)</h3>
+                    <p>ارسال دوره‌ای منظم با تخفیف دائمی برای مشتریان وفادار.</p>
                 </div>
-                <a href="auto_login.php?model=standard&role=public" target="_blank" class="showcase-link">
-                    <span>مشاهده سبد خرید و Autoship</span>
-                    <span class="material-symbols-outlined">arrow_back</span>
+                <a href="auto_login.php?model=standard&role=public" target="_blank" class="showcase-btn">
+                    <span>پیش‌نمایش آنلاین</span>
+                    <span class="material-icons-round" style="font-size: 14px;">arrow_back</span>
                 </a>
             </div>
-
         </div>
     </section>
 
@@ -845,7 +800,7 @@
     <section id="models">
         <div class="section-header">
             <h2 class="section-title">مدل‌ها و نسخه‌های نرم‌افزار</h2>
-            <p class="section-subtitle">حوزه فعالیت خود را انتخاب نمایید؛ هم قالب عمومی سایت (دیدگاه خریدار) و هم پنل‌های کاربر، پزشک و مدیر را به صورت زنده تست کنید.</p>
+            <p class="section-subtitle">حوزه فعالیت خود را انتخاب نمایید و قالب سایت یا پنل‌های دمو را با یک کلیک تست کنید.</p>
         </div>
 
         <!-- Suite Category Switcher -->
@@ -861,234 +816,266 @@
         </div>
 
         <!-- 1. Petshop / Clinic Suites Section -->
-        <div id="petshopSuites" class="pricing-container">
+        <div id="petshopSuites" class="pricing-grid">
             
             <!-- Basic Tier -->
             <div class="pricing-card">
-                <h3 class="tier-name">مدل پایه</h3>
-                <span class="tier-tagline">امکانات ضروری فروشگاه و کلینیک</span>
-                <p class="tier-desc">مناسب برای کلینیک‌های تازه‌تاسیس و پت‌شاپ‌های کوچک جهت مدیریت آسان نوبت‌ها و فروش اقلام.</p>
-                
-                <ul class="feature-list">
-                    <li><span class="material-icons-round">check_circle</span> پرونده پزشکی و نوبت‌دهی آنلاین</li>
-                    <li><span class="material-icons-round">check_circle</span> فروشگاه الکترونیک اقلام و غذای حیوانات</li>
-                    <li><span class="material-icons-round">check_circle</span> پنل پزشک و مدیریت ویزیت‌ها</li>
-                    <li><span class="material-icons-round">check_circle</span> درگاه پرداخت آنلاین و مدیریت سفارشات</li>
-                    <li class="disabled"><span class="material-icons-round">cancel</span> سامانه تیکتینگ و پشتیبانی</li>
-                    <li class="disabled"><span class="material-icons-round">cancel</span> تحویل دوره‌ای خودکار (Autoship)</li>
-                    <li class="disabled"><span class="material-icons-round">cancel</span> دستیار هوشمند (هوش مصنوعی لئو)</li>
-                </ul>
+                <div>
+                    <span class="card-pill-badge normal">پایه و کاربردی</span>
+                    <div class="tier-header">
+                        <h3 class="tier-name">مدل پایه</h3>
+                        <span class="tier-tagline">امکانات ضروری کلینیک و پت‌شاپ</span>
+                        <p class="tier-desc">مناسب برای کلینیک‌های تازه‌تاسیس و پت‌شاپ‌های نوپا جهت نوبت‌دهی و فروش آنلاین.</p>
+                    </div>
 
-                <div class="login-grid">
-                    <p class="grid-header-label">پیش‌نمایش زنده قالب و پنل‌ها</p>
-                    
-                    <!-- View Live Public Storefront -->
-                    <a href="auto_login.php?model=basic&role=public" target="_blank" class="login-btn storefront-btn">
-                        <span class="material-icons-round">visibility</span>
-                        <span>مشاهده ظاهر سایت (دیدگاه مشتری)</span>
-                    </a>
+                    <ul class="feature-list">
+                        <li><span class="material-icons-round">check_circle</span> نوبت‌دهی آنلاین و پرونده سلامت</li>
+                        <li><span class="material-icons-round">check_circle</span> فروشگاه الکترونیک اقلام و غذای حیوانات</li>
+                        <li><span class="material-icons-round">check_circle</span> پنل پزشک و مدیریت ویزیت‌ها</li>
+                        <li><span class="material-icons-round">check_circle</span> درگاه پرداخت آنلاین و مدیریت سفارشات</li>
+                        <li class="disabled"><span class="material-icons-round">cancel</span> سامانه تیکتینگ و مشاوره</li>
+                        <li class="disabled"><span class="material-icons-round">cancel</span> تحویل دوره‌ای خودکار (Autoship)</li>
+                        <li class="disabled"><span class="material-icons-round">cancel</span> دستیار هوشمند (هوش مصنوعی لئو)</li>
+                    </ul>
+                </div>
 
-                    <a href="auto_login.php?model=basic&role=user" class="login-btn">
-                        <span class="material-icons-round">person</span> دمو پنل کاربر
+                <div class="card-action-box">
+                    <a href="auto_login.php?model=basic&role=public" target="_blank" class="storefront-main-btn">
+                        <span class="material-icons-round" style="font-size: 16px;">visibility</span>
+                        <span>مشاهده ظاهر سایت (دیدگاه خریدار)</span>
                     </a>
-                    <a href="auto_login.php?model=basic&role=doctor" class="login-btn">
-                        <span class="material-icons-round">medical_services</span> دمو پنل پزشک
-                    </a>
-                    <a href="auto_login.php?model=basic&role=admin" class="login-btn primary">
-                        <span class="material-icons-round">admin_panel_settings</span> دمو پنل مدیریت
-                    </a>
+                    <div class="panels-subgrid">
+                        <a href="auto_login.php?model=basic&role=user" class="panel-sub-btn" title="پنل کاربر">
+                            <span class="material-icons-round">person</span>
+                            <span>کاربر</span>
+                        </a>
+                        <a href="auto_login.php?model=basic&role=doctor" class="panel-sub-btn" title="پنل پزشک">
+                            <span class="material-icons-round">medical_services</span>
+                            <span>پزشک</span>
+                        </a>
+                        <a href="auto_login.php?model=basic&role=admin" class="panel-sub-btn" title="پنل مدیریت">
+                            <span class="material-icons-round">admin_panel_settings</span>
+                            <span>مدیر</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <!-- Standard Tier (BEST DEAL - HIGH CONVERTING) -->
+            <!-- Standard Tier (BEST VALUE) -->
             <div class="pricing-card best-deal">
-                <div class="best-deal-badge">🔥 پرفروش‌ترین پلن</div>
-                <h3 class="tier-name">مدل حرفه‌ای (استاندارد)</h3>
-                <span class="tier-tagline">⭐ بهترین و کامل‌ترین انتخاب برای ۹۰٪ مراکز</span>
-                <p class="tier-desc">بهترین تعادل میان امکانات پیشرفته، تحویل دوره‌ای درآمدزا (Autoship) و رضایت حداکثری مراجعین.</p>
-                
-                <ul class="feature-list">
-                    <li><span class="material-icons-round">check_circle</span> پرونده پزشکی کامل و نوبت‌دهی هوشمند</li>
-                    <li><span class="material-icons-round">check_circle</span> فروشگاه اختصاصی پت‌شاپ با دسته‌بندی گونه‌ها</li>
-                    <li><span class="material-icons-round">check_circle</span> <strong>تحویل دوره‌ای خودکار (Autoship) غذا و ملزومات</strong></li>
-                    <li><span class="material-icons-round">check_circle</span> سامانه تیکت و مشاوره آنلاین پزشک با کاربر</li>
-                    <li><span class="material-icons-round">check_circle</span> پنل نوبت‌دهی تقویمی ۷ روزه و مدیریت مالی</li>
-                    <li><span class="material-icons-round">check_circle</span> سیستم پیامک OTP و احراز هویت دومرحله‌ای</li>
-                    <li class="disabled"><span class="material-icons-round">cancel</span> دستیار هوشمند هوش مصنوعی (لئو)</li>
-                </ul>
+                <div>
+                    <span class="card-pill-badge best">🔥 پرفروش‌ترین پلن (پیشنهاد ویژه)</span>
+                    <div class="tier-header">
+                        <h3 class="tier-name">مدل حرفه‌ای (استاندارد)</h3>
+                        <span class="tier-tagline">⭐ بهترین و کامل‌ترین انتخاب برای ۹۰٪ مراکز</span>
+                        <p class="tier-desc">بهترین تعادل میان امکانات پیشرفته، تحویل دوره‌ای درآمدزا (Autoship) و رضایت مشتریان.</p>
+                    </div>
 
-                <div class="login-grid">
-                    <p class="grid-header-label">پیش‌نمایش زنده قالب و پنل‌ها</p>
+                    <ul class="feature-list">
+                        <li><span class="material-icons-round">check_circle</span> نوبت‌دهی تقویمی ۷ روزه و پرونده کامل</li>
+                        <li><span class="material-icons-round">check_circle</span> پت‌شاپ کامل با فیلتر انواع گونه‌ها</li>
+                        <li><span class="material-icons-round">check_circle</span> <strong>تحویل دوره‌ای خودکار (Autoship) با تخفیف</strong></li>
+                        <li><span class="material-icons-round">check_circle</span> سامانه تیکت و مشاوره مستقیم پزشک با خریدار</li>
+                        <li><span class="material-icons-round">check_circle</span> مدیریت مالی، تراکنش‌ها و انبارداری کامل</li>
+                        <li><span class="material-icons-round">check_circle</span> پیامک خودکار اطلاع‌رسانی و یادآوری</li>
+                        <li class="disabled"><span class="material-icons-round">cancel</span> دستیار هوشمند هوش مصنوعی (لئو)</li>
+                    </ul>
+                </div>
 
-                    <!-- View Live Public Storefront -->
-                    <a href="auto_login.php?model=standard&role=public" target="_blank" class="login-btn storefront-btn" style="background: linear-gradient(135deg, #001a48, #fd8100);">
-                        <span class="material-icons-round">visibility</span>
-                        <span>مشاهده ظاهر سایت (دیدگاه مشتری)</span>
+                <div class="card-action-box">
+                    <a href="auto_login.php?model=standard&role=public" target="_blank" class="storefront-main-btn orange-btn">
+                        <span class="material-icons-round" style="font-size: 16px;">visibility</span>
+                        <span>مشاهده ظاهر سایت (دیدگاه خریدار)</span>
                     </a>
-
-                    <a href="auto_login.php?model=standard&role=user" class="login-btn">
-                        <span class="material-icons-round">person</span> دمو پنل کاربر
-                    </a>
-                    <a href="auto_login.php?model=standard&role=doctor" class="login-btn">
-                        <span class="material-icons-round">medical_services</span> دمو پنل پزشک
-                    </a>
-                    <a href="auto_login.php?model=standard&role=admin" class="login-btn cta-orange">
-                        <span class="material-icons-round">admin_panel_settings</span> دمو پنل مدیریت (پیشنهاد ویژه)
-                    </a>
+                    <div class="panels-subgrid">
+                        <a href="auto_login.php?model=standard&role=user" class="panel-sub-btn" title="پنل کاربر">
+                            <span class="material-icons-round">person</span>
+                            <span>کاربر</span>
+                        </a>
+                        <a href="auto_login.php?model=standard&role=doctor" class="panel-sub-btn" title="پنل پزشک">
+                            <span class="material-icons-round">medical_services</span>
+                            <span>پزشک</span>
+                        </a>
+                        <a href="auto_login.php?model=standard&role=admin" class="panel-sub-btn" style="color: var(--secondary); font-weight: 800;" title="پنل مدیریت">
+                            <span class="material-icons-round">admin_panel_settings</span>
+                            <span>مدیر</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
             <!-- Enterprise / Premium Tier -->
             <div class="pricing-card">
-                <div class="enterprise-badge">ENTERPRISE</div>
-                <h3 class="tier-name">مدل سازمانی (پریمیوم)</h3>
-                <span class="tier-tagline">سامانه همه‌جانبه همراه با هوش مصنوعی</span>
-                <p class="tier-desc">پکیج فول‌آپشن آسنا مجهز به دستیار هوش مصنوعی لئو و باشگاه وفاداری برای بیمارستان‌ها و مراکز بزرگ.</p>
-                
-                <ul class="feature-list">
-                    <li><span class="material-icons-round">check_circle</span> تمامی امکانات نسخه حرفه‌ای</li>
-                    <li><span class="material-icons-round">check_circle</span> <strong>دستیار هوشمند هوش مصنوعی (لئو) با حافظه گفتگو</strong></li>
-                    <li><span class="material-icons-round">check_circle</span> سیستم پیشرفته بسته‌های اشتراکی سفارشی (Custom Box)</li>
-                    <li><span class="material-icons-round">check_circle</span> سیستم امتیازدهی و رتبه‌بندی بیزی پیشرفته کالاها</li>
-                    <li><span class="material-icons-round">check_circle</span> داشبورد آماری و تحلیل رفتار مشتریان</li>
-                    <li><span class="material-icons-round">check_circle</span> پشتیبانی اولویت‌دار ۲۴ ساعته و سرور اختصاصی</li>
-                </ul>
+                <div>
+                    <span class="card-pill-badge enterprise">💎 سازمانی و بیمارستانی</span>
+                    <div class="tier-header">
+                        <h3 class="tier-name">مدل سازمانی (پریمیوم)</h3>
+                        <span class="tier-tagline">سامانه همه‌جانبه همراه با هوش مصنوعی</span>
+                        <p class="tier-desc">مجهز به دستیار هوشمند لئو و تحلیل پیشرفته برای بیمارستان‌ها و مراکز بزرگ.</p>
+                    </div>
 
-                <div class="login-grid">
-                    <p class="grid-header-label">پیش‌نمایش زنده قالب و پنل‌ها</p>
+                    <ul class="feature-list">
+                        <li><span class="material-icons-round">check_circle</span> تمامی امکانات نسخه حرفه‌ای</li>
+                        <li><span class="material-icons-round">check_circle</span> <strong>دستیار هوشمند هوش مصنوعی (لئو) با حافظه</strong></li>
+                        <li><span class="material-icons-round">check_circle</span> بسته‌های اشتراکی سفارشی (Custom Box)</li>
+                        <li><span class="material-icons-round">check_circle</span> رتبه‌بندی بیزی پیشرفته کالاها و دیدگاه‌ها</li>
+                        <li><span class="material-icons-round">check_circle</span> داشبورد آماری و تحلیل رفتار مشتریان</li>
+                        <li><span class="material-icons-round">check_circle</span> پشتیبانی اولویت‌دار ۲۴ ساعته و سرور اختصاصی</li>
+                    </ul>
+                </div>
 
-                    <!-- View Live Public Storefront -->
-                    <a href="auto_login.php?model=premium&role=public" target="_blank" class="login-btn storefront-btn">
-                        <span class="material-icons-round">visibility</span>
-                        <span>مشاهده ظاهر سایت (دیدگاه مشتری)</span>
+                <div class="card-action-box">
+                    <a href="auto_login.php?model=premium&role=public" target="_blank" class="storefront-main-btn">
+                        <span class="material-icons-round" style="font-size: 16px;">visibility</span>
+                        <span>مشاهده ظاهر سایت (دیدگاه خریدار)</span>
                     </a>
-
-                    <a href="auto_login.php?model=premium&role=user" class="login-btn">
-                        <span class="material-icons-round">person</span> دمو پنل کاربر
-                    </a>
-                    <a href="auto_login.php?model=premium&role=doctor" class="login-btn">
-                        <span class="material-icons-round">medical_services</span> دمو پنل پزشک
-                    </a>
-                    <a href="auto_login.php?model=premium&role=admin" class="login-btn primary">
-                        <span class="material-icons-round">admin_panel_settings</span> دمو پنل مدیریت
-                    </a>
+                    <div class="panels-subgrid">
+                        <a href="auto_login.php?model=premium&role=user" class="panel-sub-btn" title="پنل کاربر">
+                            <span class="material-icons-round">person</span>
+                            <span>کاربر</span>
+                        </a>
+                        <a href="auto_login.php?model=premium&role=doctor" class="panel-sub-btn" title="پنل پزشک">
+                            <span class="material-icons-round">medical_services</span>
+                            <span>پزشک</span>
+                        </a>
+                        <a href="auto_login.php?model=premium&role=admin" class="panel-sub-btn" title="پنل مدیریت">
+                            <span class="material-icons-round">admin_panel_settings</span>
+                            <span>مدیر</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
         </div>
 
         <!-- 2. Pharmacy Suites Section -->
-        <div id="pharmaSuites" class="pricing-container" style="display: none;">
+        <div id="pharmaSuites" class="pricing-grid" style="display: none;">
             
             <!-- Pharmacy Basic -->
             <div class="pricing-card">
-                <h3 class="tier-name">داروخانه پایه</h3>
-                <span class="tier-tagline pharma">فروش آنلاین و تایید دیجیتال نسخه</span>
-                <p class="tier-desc">ویژه داروخانه‌های دامپزشکی مستقل برای فروش اینترنتی مکمل‌ها و ثبت و تایید نسخ دارویی (بدون نوبت‌دهی کلینیک).</p>
-                
-                <ul class="feature-list">
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> داروخانه آنلاین داروهای دام، طیور و پت</li>
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> آپلود نسخه الکترونیک و تایید داروساز</li>
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> سیستم توزیع امن با زنجیره سرد</li>
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> کنترل موجودی و تگ‌های دارویی</li>
-                    <li class="disabled"><span class="material-icons-round">cancel</span> بخش نوبت‌دهی و ویزیت کلینیک</li>
-                    <li class="disabled"><span class="material-icons-round">cancel</span> ارسال دوره‌ای خودکار دارو (Autoship)</li>
-                    <li class="disabled"><span class="material-icons-round">cancel</span> هوش مصنوعی پاسخگویی دارویی</li>
-                </ul>
+                <div>
+                    <span class="card-pill-badge normal">داروخانه آنلاین</span>
+                    <div class="tier-header">
+                        <h3 class="tier-name">داروخانه پایه</h3>
+                        <span class="tier-tagline pharma">فروش آنلاین و تایید دیجیتال نسخه</span>
+                        <p class="tier-desc">ویژه داروخانه‌های مستقل برای فروش دارو و تایید نسخ (بدون نوبت‌دهی کلینیک).</p>
+                    </div>
 
-                <div class="login-grid">
-                    <p class="grid-header-label">پیش‌نمایش زنده قالب و پنل‌ها</p>
+                    <ul class="feature-list">
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> داروخانه آنلاین داروهای دام، طیور و پت</li>
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> آپلود نسخه الکترونیک و تایید داروساز</li>
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> توزیع امن با بسته‌بندی زنجیره سرد</li>
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> کنترل انبار و تگ‌های دارویی</li>
+                        <li class="disabled"><span class="material-icons-round">cancel</span> بخش نوبت‌دهی و ویزیت کلینیک</li>
+                        <li class="disabled"><span class="material-icons-round">cancel</span> تحویل دوره‌ای خودکار (Autoship)</li>
+                        <li class="disabled"><span class="material-icons-round">cancel</span> هوش مصنوعی پاسخگویی دارویی</li>
+                    </ul>
+                </div>
 
-                    <!-- View Live Public Storefront -->
-                    <a href="auto_login.php?model=pharmacy&role=public" target="_blank" class="login-btn storefront-pharma-btn">
-                        <span class="material-icons-round">visibility</span>
+                <div class="card-action-box">
+                    <a href="auto_login.php?model=pharmacy&role=public" target="_blank" class="storefront-main-btn teal-btn">
+                        <span class="material-icons-round" style="font-size: 16px;">visibility</span>
                         <span>مشاهده ظاهر داروخانه (دیدگاه خریدار)</span>
                     </a>
-
-                    <a href="auto_login.php?model=pharmacy&role=user" class="login-btn">
-                        <span class="material-icons-round">person</span> دمو پنل خریدار دارو
-                    </a>
-                    <a href="auto_login.php?model=pharmacy&role=doctor" class="login-btn">
-                        <span class="material-icons-round">medical_services</span> دمو پنل داروساز
-                    </a>
-                    <a href="auto_login.php?model=pharmacy&role=admin" class="login-btn primary" style="background: var(--teal-pharma);">
-                        <span class="material-icons-round">local_pharmacy</span> دمو مدیریت داروخانه
-                    </a>
+                    <div class="panels-subgrid">
+                        <a href="auto_login.php?model=pharmacy&role=user" class="panel-sub-btn" title="پنل خریدار">
+                            <span class="material-icons-round">person</span>
+                            <span>خریدار</span>
+                        </a>
+                        <a href="auto_login.php?model=pharmacy&role=doctor" class="panel-sub-btn" title="پنل داروساز">
+                            <span class="material-icons-round">medical_services</span>
+                            <span>داروساز</span>
+                        </a>
+                        <a href="auto_login.php?model=pharmacy&role=admin" class="panel-sub-btn" title="پنل مدیریت">
+                            <span class="material-icons-round">admin_panel_settings</span>
+                            <span>مدیر</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <!-- Pharmacy Standard (BEST DEAL FOR PHARMACIES) -->
+            <!-- Pharmacy Standard (BEST VALUE) -->
             <div class="pricing-card best-deal-pharma">
-                <div class="best-deal-pharma-badge">⭐ پیشنهاد طلایی داروخانه</div>
-                <h3 class="tier-name">داروخانه حرفه‌ای (استاندارد)</h3>
-                <span class="tier-tagline pharma">🔥 پرفروش‌ترین و سودآورترین پلن داروخانه‌ای</span>
-                <p class="tier-desc">ترکیب قدرتمند داروخانه آنلاین، تایید نسخه، کلینیک و مشاوره، و ارسال دوره‌ای خودکار داروهای مزمن (Autoship).</p>
-                
-                <ul class="feature-list">
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> داروخانه کامل با فیلتر انواع گونه‌های دامی و خانگی</li>
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> تایید اصالت نسخه و پروتکل‌های دوز مصرفی</li>
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> <strong>ارسال خودکار و دوره‌ای داروهای مزمن (Autoship) با تخفیف</strong></li>
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> مشاوره تخصصی داروساز با بیمار از طریق تیکت آنلاین</li>
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> بخش کلینیک، پرونده واکسیناسیون و نوبت‌دهی</li>
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> رهگیری بسته‌های دارویی زنجیره سرد و دیسپچ سریع</li>
-                    <li class="disabled"><span class="material-icons-round">cancel</span> دستیار هوشمند هوش مصنوعی (لئو)</li>
-                </ul>
+                <div>
+                    <span class="card-pill-badge best-pharma">⭐ پیشنهاد طلایی داروخانه</span>
+                    <div class="tier-header">
+                        <h3 class="tier-name">داروخانه حرفه‌ای (استاندارد)</h3>
+                        <span class="tier-tagline pharma">🔥 پرفروش‌ترین و سودآورترین پلن داروخانه‌ای</span>
+                        <p class="tier-desc">داروخانه آنلاین، تایید نسخه، کلینیک و مشاوره، و ارسال دوره‌ای خودکار دارو (Autoship).</p>
+                    </div>
 
-                <div class="login-grid">
-                    <p class="grid-header-label">پیش‌نمایش زنده قالب و پنل‌ها</p>
+                    <ul class="feature-list">
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> داروخانه کامل با فیلتر انواع گونه‌های دامی و خانگی</li>
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> تایید اصالت نسخه و پروتکل‌های دوز مصرفی</li>
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> <strong>ارسال خودکار و دوره‌ای داروهای مزمن (Autoship)</strong></li>
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> مشاوره تخصصی داروساز با بیمار از طریق تیکت آنلاین</li>
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> بخش کلینیک، پرونده واکسیناسیون و نوبت‌دهی</li>
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> رهگیری بسته‌های دارویی زنجیره سرد و دیسپچ سریع</li>
+                        <li class="disabled"><span class="material-icons-round">cancel</span> دستیار هوشمند هوش مصنوعی (لئو)</li>
+                    </ul>
+                </div>
 
-                    <!-- View Live Public Storefront -->
-                    <a href="auto_login.php?model=pharmacy&role=public" target="_blank" class="login-btn storefront-pharma-btn" style="background: linear-gradient(135deg, #0f766e, #14b8a6);">
-                        <span class="material-icons-round">visibility</span>
+                <div class="card-action-box">
+                    <a href="auto_login.php?model=pharmacy&role=public" target="_blank" class="storefront-main-btn teal-btn">
+                        <span class="material-icons-round" style="font-size: 16px;">visibility</span>
                         <span>مشاهده ظاهر داروخانه (دیدگاه خریدار)</span>
                     </a>
-
-                    <a href="auto_login.php?model=pharmacy&role=user" class="login-btn">
-                        <span class="material-icons-round">person</span> دمو پنل خریدار دارو
-                    </a>
-                    <a href="auto_login.php?model=pharmacy&role=doctor" class="login-btn">
-                        <span class="material-icons-round">medical_services</span> دمو پنل داروساز
-                    </a>
-                    <a href="auto_login.php?model=pharmacy&role=admin" class="login-btn cta-teal">
-                        <span class="material-icons-round">local_pharmacy</span> دمو مدیریت داروخانه (پیشنهاد ویژه)
-                    </a>
+                    <div class="panels-subgrid">
+                        <a href="auto_login.php?model=pharmacy&role=user" class="panel-sub-btn" title="پنل خریدار">
+                            <span class="material-icons-round">person</span>
+                            <span>خریدار</span>
+                        </a>
+                        <a href="auto_login.php?model=pharmacy&role=doctor" class="panel-sub-btn" title="پنل داروساز">
+                            <span class="material-icons-round">medical_services</span>
+                            <span>داروساز</span>
+                        </a>
+                        <a href="auto_login.php?model=pharmacy&role=admin" class="panel-sub-btn" style="color: var(--teal-pharma); font-weight: 800;" title="پنل مدیریت">
+                            <span class="material-icons-round">admin_panel_settings</span>
+                            <span>مدیر</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
             <!-- Pharmacy Enterprise -->
             <div class="pricing-card">
-                <div class="enterprise-badge" style="background: var(--teal-pharma);">PHARMACY ENTERPRISE</div>
-                <h3 class="tier-name">داروخانه سازمانی</h3>
-                <span class="tier-tagline pharma">سامانه جامع مراکز پخش و داروخانه‌های مرجع</span>
-                <p class="tier-desc">مجهز به هوش مصنوعی تحلیل نسخه، پشتیبانی ۲۴ ساعته داروساز، توزیع عمده و باشگاه وفاداری مشتریان.</p>
-                
-                <ul class="feature-list">
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> تمامی امکانات داروخانه حرفه‌ای</li>
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> <strong>دستیار هوش مصنوعی لئو برای راهنمایی دارویی و عوارض</strong></li>
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> باشگاه وفاداری و امتیاز خرید دارو و مکمل‌ها</li>
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> تخصیص اتوماتیک سهمیه انبار به مشترکین دائمی</li>
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> یکپارچه‌سازی با نرم‌افزارهای حسابداری و انبارداری</li>
-                    <li class="pharma-icon"><span class="material-icons-round">check_circle</span> سامانه ثبت پرونده فارم‌ها و گله‌های پرورشی</li>
-                </ul>
+                <div>
+                    <span class="card-pill-badge enterprise">💎 مراکز پخش و مرجع</span>
+                    <div class="tier-header">
+                        <h3 class="tier-name">داروخانه سازمانی</h3>
+                        <span class="tier-tagline pharma">سامانه مراکز پخش و بیمارستان‌های دامپزشکی</span>
+                        <p class="tier-desc">مجهز به هوش مصنوعی تحلیل نسخه، سهمیه‌بندی انبار و باشگاه وفاداری.</p>
+                    </div>
 
-                <div class="login-grid">
-                    <p class="grid-header-label">پیش‌نمایش زنده قالب و پنل‌ها</p>
+                    <ul class="feature-list">
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> تمامی امکانات داروخانه حرفه‌ای</li>
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> <strong>دستیار هوش مصنوعی لئو برای راهنمایی دارویی و عوارض</strong></li>
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> باشگاه مشتریان و وفاداری در خرید مکمل‌ها</li>
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> تخصیص اتوماتیک سهمیه انبار به مشترکین دائمی</li>
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> یکپارچه‌سازی با نرم‌افزارهای حسابداری و انبارداری</li>
+                        <li class="pharma-icon"><span class="material-icons-round">check_circle</span> سامانه ثبت پرونده فارم‌ها و گله‌های پرورشی</li>
+                    </ul>
+                </div>
 
-                    <!-- View Live Public Storefront -->
-                    <a href="auto_login.php?model=pharmacy&role=public" target="_blank" class="login-btn storefront-pharma-btn">
-                        <span class="material-icons-round">visibility</span>
+                <div class="card-action-box">
+                    <a href="auto_login.php?model=pharmacy&role=public" target="_blank" class="storefront-main-btn teal-btn">
+                        <span class="material-icons-round" style="font-size: 16px;">visibility</span>
                         <span>مشاهده ظاهر داروخانه (دیدگاه خریدار)</span>
                     </a>
-
-                    <a href="auto_login.php?model=pharmacy&role=user" class="login-btn">
-                        <span class="material-icons-round">person</span> دمو پنل خریدار دارو
-                    </a>
-                    <a href="auto_login.php?model=pharmacy&role=doctor" class="login-btn">
-                        <span class="material-icons-round">medical_services</span> دمو پنل داروساز
-                    </a>
-                    <a href="auto_login.php?model=pharmacy&role=admin" class="login-btn primary" style="background: var(--teal-pharma);">
-                        <span class="material-icons-round">local_pharmacy</span> دمو مدیریت داروخانه
-                    </a>
+                    <div class="panels-subgrid">
+                        <a href="auto_login.php?model=pharmacy&role=user" class="panel-sub-btn" title="پنل خریدار">
+                            <span class="material-icons-round">person</span>
+                            <span>خریدار</span>
+                        </a>
+                        <a href="auto_login.php?model=pharmacy&role=doctor" class="panel-sub-btn" title="پنل داروساز">
+                            <span class="material-icons-round">medical_services</span>
+                            <span>داروساز</span>
+                        </a>
+                        <a href="auto_login.php?model=pharmacy&role=admin" class="panel-sub-btn" title="پنل مدیریت">
+                            <span class="material-icons-round">admin_panel_settings</span>
+                            <span>مدیر</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -1096,28 +1083,25 @@
 
     </section>
 
+    <!-- ABOUT -->
     <section id="about">
-        <div class="glass-panel">
-            <div class="section-header" style="margin-bottom: 24px;">
-                <h2 class="section-title">درباره آسنا</h2>
+        <div class="about-box">
+            <div>
+                <h2 class="section-title" style="text-align: right; margin-bottom: 16px;">درباره آسنا</h2>
+                <p>در آسنا، ما باور داریم که ارائه خدمات درمانی و دارویی حیوانات باید یکپارچه، دلسوزانه و فوق‌العاده کارآمد باشد. پلتفرم ما پلی دیجیتال میان صاحبان حیوانات، دامپزشکان دلسوز و داروخانه‌های تخصصی سراسر کشور است.</p>
+                <p>هدف ما تجهیز کلینیک‌ها و داروخانه‌ها به مدرن‌ترین ابزارهای روز دنیا شامل تحویل خودکار دوره‌ای (Autoship)، پرونده الکترونیک سلامت، و توزیع با زنجیره سرد است تا فرآیندها ساده و رضایت مراجعین چندبرابر گردد.</p>
             </div>
-            
-            <div class="about-grid">
-                <div class="about-text">
-                    <p>در آسنا، ما باور داریم که خدمات درمانی و دارویی حیوانات باید یکپارچه، دلسوزانه و فوق‌العاده کارآمد باشد. پلتفرم ما پلی دیجیتال میان صاحبان حیوانات، دامپزشکان دلسوز و داروخانه‌های تخصصی سراسر کشور است.</p>
-                    <p>ما پلتفرم آسنا را از پایه و اساس طراحی کردیم تا محیطی دیجیتال، امن و صمیمی فراهم کنیم و از فضای پیچیده نرم‌افزارهای سنتی فاصله بگیریم. هدف ما قدرت بخشیدن به کلینیک‌ها و داروخانه‌ها با ابزارهای نوین نظیر تحویل خودکار دوره‌ای (Autoship)، پرونده الکترونیک سلامت و توزیع با زنجیره سرد است.</p>
-                </div>
-                <div class="about-image">
-                    <span class="material-icons-round">favorite</span>
-                </div>
+            <div class="about-badge-icon">
+                <span class="material-icons-round">favorite</span>
             </div>
         </div>
     </section>
 
+    <!-- CONTACT -->
     <section id="contact">
         <div class="section-header">
             <h2 class="section-title">ارتباط با ما</h2>
-            <p class="section-subtitle">سوالی در مورد پلن‌های مختلف یا استقرار اختصاصی روی دامنه و سرور خود دارید؟ با ما در تماس باشید.</p>
+            <p class="section-subtitle">سوالی در مورد پلن‌های مختلف یا استقرار اختصاصی روی دامنه و سرور خود دارید؟ همواره پاسخگوی شما هستیم.</p>
         </div>
         
         <div class="contact-grid">
@@ -1152,11 +1136,11 @@
 
         if (suite === 'pharmacy') {
             petshopDiv.style.display = 'none';
-            pharmaDiv.style.display = 'flex';
+            pharmaDiv.style.display = 'grid';
             tabPetshopBtn.classList.remove('active');
             tabPharmaBtn.classList.add('active');
         } else {
-            petshopDiv.style.display = 'flex';
+            petshopDiv.style.display = 'grid';
             pharmaDiv.style.display = 'none';
             tabPetshopBtn.classList.add('active');
             tabPharmaBtn.classList.remove('active');
