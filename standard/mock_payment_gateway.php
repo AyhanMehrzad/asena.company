@@ -4,7 +4,7 @@ require_once 'includes/functions.php';
 
 $authority = trim($_GET['authority'] ?? $_GET['Authority'] ?? '');
 $amount = (int)($_GET['amount'] ?? 0);
-$desc = trim($_GET['desc'] ?? 'خرید اینترنتی از داروخانه و پت‌شاپ آسنا (دکتر گلزاری)');
+$desc = trim($_GET['desc'] ?? 'خرید اینترنتی از کلینیک و پت‌شاپ آسنا (دکتر گلزاری)');
 $callback_url = trim($_GET['callback'] ?? '');
 
 if (empty($authority) || $amount <= 0 || empty($callback_url)) {
@@ -54,7 +54,7 @@ $currentDate = $fmt->format(time());
         <div class="grid grid-cols-2 gap-4 text-xs">
             <div>
                 <span class="text-slate-500 block mb-1">پذیرنده فروشگاه:</span>
-                <strong class="text-slate-800 text-sm block">داروخانه و پت‌شاپ آنلاین آسنا</strong>
+                <strong class="text-slate-800 text-sm block">کلینیک و پت‌شاپ آنلاین آسنا</strong>
                 <span class="text-[11px] text-slate-500">شعبه تخصصی دکتر گلزاری</span>
             </div>
             <div class="text-left">

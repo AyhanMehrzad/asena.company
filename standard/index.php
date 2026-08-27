@@ -1096,7 +1096,7 @@ function resetInterval() {
 {
   "@context": "https://schema.org",
   "@type": "Pharmacy",
-  "name": "داروخانه آنلاین و پت‌شاپ تخصصی آسنا",
+  "name": "کلینیک و پت‌شاپ تخصصی آسنا",
   "alternateName": "ASENA Pet Care & Veterinary Pharmacy",
   "url": "http://localhost/asena/asena-pharmacy-golzari/",
   "logo": "http://localhost/asena/asena-pharmacy-golzari/assets/images/logo.png",

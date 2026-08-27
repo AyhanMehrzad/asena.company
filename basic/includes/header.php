@@ -47,7 +47,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<?php echo isset($page_title) ? htmlspecialchars($page_title) : 'داروخانه آنلاین و پت شاپ تخصصی آسنا'; ?>">
+    <meta name="twitter:title" content="<?php echo isset($page_title) ? htmlspecialchars($page_title) : 'کلینیک و پت‌شاپ تخصصی آسنا'; ?>">
     <meta name="twitter:description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'مرجع معتبر خرید آنلاین داروهای دامپزشکی و ملزومات پت با تاییدیه دامپزشکی'; ?>">
 
     <!-- Fonts & Icons -->

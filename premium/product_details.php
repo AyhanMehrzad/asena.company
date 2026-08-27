@@ -476,7 +476,7 @@ function addToCart(btn, productId) {
   "description": <?php echo json_encode(strip_tags($product['description'] ?? $product['name'])); ?>,
   "brand": {
     "@type": "Brand",
-    "name": <?php echo json_encode($product['brand'] ?? 'داروخانه آسنا'); ?>
+    "name": <?php echo json_encode($product['brand'] ?? 'پت‌شاپ آسنا'); ?>
   },
   "category": <?php echo json_encode($product['category'] ?? 'دامپزشکی'); ?>,
   "offers": {
@@ -489,7 +489,7 @@ function addToCart(btn, productId) {
     "availability": "<?php echo ($product['stock'] > 0) ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'; ?>",
     "seller": {
       "@type": "Pharmacy",
-      "name": "داروخانه آنلاین و تخصصی آسنا"
+      "name": "پت‌شاپ تخصصی آسنا"
     }
   }<?php if(!empty($product['rating_cache']) && $product['rating_cache'] > 0): ?>,
   "aggregateRating": {

@@ -90,7 +90,7 @@ if ($checkout_type === 'autoship' && $payment_model === 'upfront') {
     $order_desc = "پرداخت نوبت ۱ از اشتراک {$duration_months} ماهه تحویل خودکار آسنا (" . count($pending_items) . " قلم)";
 } else {
     $payable_today = $final_total;
-    $order_desc = "خرید از فروشگاه و داروخانه آسنا — " . count($pending_items) . " محصول";
+    $order_desc = "خرید از فروشگاه و پت‌شاپ آسنا — " . count($pending_items) . " محصول";
 }
 
 // ── Request payment authority from ZarinPal / Mock Gateway ────────────────────
