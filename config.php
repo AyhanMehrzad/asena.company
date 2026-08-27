@@ -1,26 +1,36 @@
 <?php
 /**
  * ASENA Corporate & Editions Master Configuration
- * 
- * Instructions for cPanel / Production Hosting:
- * 1. Create a MySQL Database in your cPanel (MySQL Database Wizard).
- * 2. Create a MySQL User and assign ALL PRIVILEGES to the database.
- * 3. Enter your database details below.
- * 4. Import the `asena_database.sql` file via phpMyAdmin.
+ * Auto-detects Localhost (XAMPP) vs cPanel Production.
  */
 
-// Database Host (usually 'localhost' or '127.0.0.1' on cPanel)
-define('DB_HOST', 'localhost');
+// Detect environment: Localhost vs Production (cPanel)
+$is_local = false;
+if (isset($_SERVER['HTTP_HOST'])) {
+    $host = $_SERVER['HTTP_HOST'];
+    if (strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false) {
+        $is_local = true;
+    }
+} elseif (php_sapi_name() === 'cli') {
+    if (file_exists('/opt/lampp')) {
+        $is_local = true;
+    }
+}
 
-// Database Name (e.g., 'yourcpaneluser_asena')
-define('DB_NAME', 'asena_premium');
+if ($is_local) {
+    // Local Development (XAMPP)
+    define('DB_HOST', 'localhost');
+    define('DB_NAME', 'asena_premium');
+    define('DB_USER', 'root');
+    define('DB_PASS', '');
+} else {
+    // Production Hosting (cPanel)
+    define('DB_HOST', 'localhost');
+    define('DB_NAME', 'asencomp_asena_db');
+    define('DB_USER', 'asencomp_admin');
+    define('DB_PASS', 'X3~YN,HY9M;j%]x(');
+}
 
-// Database Username (e.g., 'yourcpaneluser_dbuser')
-define('DB_USER', 'root');
-
-// Database Password
-define('DB_PASS', '');
-
-// Optional site root URL if needed (leave empty for auto-detection)
+// Optional site root URL (empty for auto-detection)
 define('SITE_URL', '');
 ?>
