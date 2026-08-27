@@ -29,20 +29,20 @@ if (isset($_SESSION['cart'])) {
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
-<html dir="rtl" lang="fa" style="">
+<html dir="rtl" lang="fa" data-edition="premium">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" name="viewport">
-    <title><?php echo isset($page_title) ? htmlspecialchars($page_title) : 'داروخانه آنلاین و پت شاپ تخصصی آسنا'; ?></title>
-    <meta name="description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'داروخانه آنلاین و تخصصی حیوانات خانگی و دامپزشکی آسنا - تامین مستقیم داروها، واکسن‌ها، مکمل‌ها و ملزومات انواع حیوانات خانگی و دام با تاییدیه دامپزشکی'; ?>">
+    <title><?php echo isset($page_title) ? htmlspecialchars($page_title) : 'سامانه جامع بیمارستان و کلینیک دامپزشکی آسنا (نسخه سازمانی)'; ?></title>
+    <meta name="description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'سامانه سازمانی و بیمارستانی آسنا - پرونده الکترونیک سلامت، نوبت‌دهی هوشمند و فروشگاه آنلاین'; ?>">
     <link rel="canonical" href="<?php echo htmlspecialchars((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"); ?>">
     
     <!-- Open Graph / Facebook / Telegram -->
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="داروخانه و پت‌شاپ آنلاین آسنا">
+    <meta property="og:site_name" content="سامانه بیمارستان دامپزشکی آسنا">
     <meta property="og:locale" content="fa_IR">
-    <meta property="og:title" content="<?php echo isset($page_title) ? htmlspecialchars($page_title) : 'داروخانه آنلاین و پت شاپ تخصصی آسنا'; ?>">
-    <meta property="og:description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'مرجع معتبر خرید آنلاین داروهای دامپزشکی، واکسن و ملزومات پت با زنجیره سرد و پشتیبانی ۲۴/۷ دکتر داروساز'; ?>">
+    <meta property="og:title" content="<?php echo isset($page_title) ? htmlspecialchars($page_title) : 'سامانه جامع بیمارستان و کلینیک دامپزشکی آسنا'; ?>">
+    <meta property="og:description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'پلتفرم سازمانی مدیریت بیمارستان‌ها و کلینیک‌های دامپزشکی'; ?>">
     <meta property="og:image" content="assets/images/logo.png">
     
     <!-- Twitter Card -->
@@ -59,6 +59,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <script src="assets/js/tailwindcss-cdn.js"></script>
     <script src="assets/js/tailwind-config.js?v=<?php echo time(); ?>"></script>
     <link rel="stylesheet" href="assets/css/style.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="assets/css/paw-loader.css">
+    <script src="assets/js/paw-loader.js" defer></script>
 </head>
 <body class="bg-background text-on-background overflow-x-hidden">
 <?php

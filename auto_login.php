@@ -5,9 +5,19 @@ $model = $_GET['model'] ?? 'premium';
 $role  = $_GET['role'] ?? 'public';
 
 // Validate model to prevent path traversal
-$allowed_models = ['basic', 'standard', 'premium', 'pharmacy'];
+$allowed_models = ['basic', 'standard', 'premium', 'pharmacy', 'pharmacy-basic', 'pharmacy-standard', 'pharmacy-premium'];
 if (!in_array($model, $allowed_models, true)) {
     die("Invalid model selected.");
+}
+
+if ($model === 'pharmacy') {
+    $model = 'pharmacy-standard';
+}
+
+$page = $_GET['page'] ?? $_GET['redirect'] ?? 'index.php';
+$allowed_pages = ['index.php', 'shop.php', 'pharmacy.php', 'booking.php', 'subscriptions.php', 'charity.php', 'cart.php'];
+if (!in_array($page, $allowed_pages, true)) {
+    $page = 'index.php';
 }
 
 // 1. If public/visitor view is requested (Viewing the normal storefront & design as a customer)
@@ -16,22 +26,7 @@ if ($role === 'public' || $role === 'visitor' || $role === 'guest') {
     unset($_SESSION['user_id'], $_SESSION['user_role'], $_SESSION['role'], $_SESSION['name']);
     $_SESSION['active_model'] = $model;
 
-    switch ($model) {
-        case 'pharmacy':
-            $target = '/asena/asena-pharmacy-golzari/index.php';
-            break;
-        case 'basic':
-            $target = '/asena/asena-basic/index.php';
-            break;
-        case 'standard':
-            $target = '/asena/asena-standard/index.php';
-            break;
-        case 'premium':
-        default:
-            $target = '/asena/asena-premium/index.php';
-            break;
-    }
-    
+    $target = "{$model}/{$page}";
     header("Location: " . $target);
     exit;
 }
@@ -60,26 +55,14 @@ if ($user) {
     if ($role === 'admin') {
         $subpath = 'admin/index.php';
     } elseif ($role === 'doctor') {
-        $subpath = 'doctor/index.php';
+        if ($model === 'pharmacy-basic') {
+            $subpath = 'index.php';
+        } else {
+            $subpath = 'doctor/index.php';
+        }
     }
 
-    // Determine target based on model
-    switch ($model) {
-        case 'pharmacy':
-            $target = '/asena/asena-pharmacy-golzari/' . $subpath;
-            break;
-        case 'basic':
-            $target = '/asena/asena-basic/' . $subpath;
-            break;
-        case 'standard':
-            $target = '/asena/asena-standard/' . $subpath;
-            break;
-        case 'premium':
-        default:
-            $target = '/asena/asena-premium/' . $subpath;
-            break;
-    }
-    
+    $target = "{$model}/{$subpath}";
     header("Location: " . $target);
     exit;
 } else {
