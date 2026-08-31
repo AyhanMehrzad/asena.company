@@ -2,7 +2,7 @@
 require_once '../includes/db.php';
 require_once '../includes/config.php';
 
-$provider = isset($_GET['provider']) ? $_GET['provider'] : '';
+$provider = isset($_GET['provider']) ? $_GET['provider'] : (isset($_POST['id_token']) ? 'apple' : 'google');
 
 if (!in_array($provider, ['google', 'apple'])) {
     die('Invalid provider');
