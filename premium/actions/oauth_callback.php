@@ -20,23 +20,38 @@ if ($provider === 'google') {
     
     // Exchange code for token
     $ch = curl_init('https://oauth2.googleapis.com/token');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
-        'code' => $_GET['code'],
-        'client_id' => GOOGLE_CLIENT_ID,
-        'client_secret' => GOOGLE_CLIENT_SECRET,
-        'redirect_uri' => GOOGLE_REDIRECT_URI,
-        'grant_type' => 'authorization_code'
-    ]));
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => http_build_query([
+            'code'          => $_GET['code'],
+            'client_id'     => GOOGLE_CLIENT_ID,
+            'client_secret' => GOOGLE_CLIENT_SECRET,
+            'redirect_uri'  => GOOGLE_REDIRECT_URI,
+            'grant_type'    => 'authorization_code'
+        ]),
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_TIMEOUT        => 10
+    ]);
     $response = curl_exec($ch);
+    $curl_err = curl_error($ch);
     curl_close($ch);
+
+    if ($curl_err) {
+        die('Google Token cURL Error: ' . htmlspecialchars($curl_err));
+    }
+
     $data = json_decode($response, true);
     
     if (isset($data['access_token'])) {
         // Get user info
         $ch2 = curl_init('https://www.googleapis.com/oauth2/v2/userinfo');
-        curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch2, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $data['access_token']]);
+        curl_setopt_array($ch2, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => ['Authorization: Bearer ' . $data['access_token']],
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_TIMEOUT        => 10
+        ]);
         $user_response = curl_exec($ch2);
         curl_close($ch2);
         
@@ -49,7 +64,8 @@ if ($provider === 'google') {
             die('Failed to retrieve user info from Google.');
         }
     } else {
-        die('Failed to get Google Access Token: ' . ($data['error_description'] ?? 'Unknown error'));
+        $err_msg = $data['error_description'] ?? ($data['error'] ?? 'Unknown error');
+        die('Failed to get Google Access Token: ' . htmlspecialchars($err_msg));
     }
 } elseif ($provider === 'apple') {
     // Apple POSTs to the callback

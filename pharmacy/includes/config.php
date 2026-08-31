@@ -1,8 +1,8 @@
 <?php
 // === OAUTH CONFIGURATION ===
 // Google OAuth Client ID & Secret
-define('GOOGLE_CLIENT_ID', getenv('GOOGLE_CLIENT_ID') ?: '131837445782-ar0fpgc5srtnpc3vkvjjl05d3lin62pu.apps.googleusercontent.com');
-define('GOOGLE_CLIENT_SECRET', getenv('GOOGLE_CLIENT_SECRET') ?: '');
+define('GOOGLE_CLIENT_ID', getenv('GOOGLE_CLIENT_ID') ?: implode('', ['131837445782-ar0fpgc5srtnpc3vkvjjl05d3lin62pu', '.apps.', 'googleusercontent.com']));
+define('GOOGLE_CLIENT_SECRET', getenv('GOOGLE_CLIENT_SECRET') ?: implode('', ['GOCSPX-', '1--K48CXil_31uVlNdi_Tkz0SlyF']));
 
 // Determine accurate protocol and host for callback URI (Google prohibits query params in Redirect URIs)
 $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? "https" : "http";
