@@ -1316,7 +1316,8 @@
             <div class="contact-card">
                 <span class="material-icons-round">email</span>
                 <h4>پست الکترونیک</h4>
-                <p>hello@asena.company</p>
+                <p><a href="mailto:asencomp@asena.company" style="color: inherit; text-decoration: none; font-weight: bold;">asencomp@asena.company</a></p>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;"><a href="mailto:mehrzad.ayhan@gmail.com" style="color: inherit; text-decoration: none;">mehrzad.ayhan@gmail.com</a></p>
             </div>
             <div class="contact-card">
                 <span class="material-icons-round">phone</span>
