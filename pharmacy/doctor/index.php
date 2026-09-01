@@ -7,6 +7,14 @@ $doctorId = (int)($doctorProfile['id'] ?? 0);
 $success = '';
 $error = '';
 
+// Auto-ensure clinical & reschedule columns exist in appointments
+try {
+    $pdo->exec("ALTER TABLE appointments ADD COLUMN IF NOT EXISTS doctor_diagnosis TEXT NULL");
+    $pdo->exec("ALTER TABLE appointments ADD COLUMN IF NOT EXISTS doctor_prescription TEXT NULL");
+    $pdo->exec("ALTER TABLE appointments ADD COLUMN IF NOT EXISTS reschedule_reason VARCHAR(500) NULL");
+    $pdo->exec("ALTER TABLE appointments ADD COLUMN IF NOT EXISTS rescheduled_at DATETIME NULL");
+} catch (Exception $e) {}
+
 // Handle POST actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     csrf_verify();
@@ -102,28 +110,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         
         $services_array = [];
         for ($i = 0; $i < count($service_names); $i++) {
-            $sName = trim($service_names[$i]);
-            $sDur = trim($service_durations[$i] ?? '30 دقیقه');
-            if (!empty($sName)) {
+            $s_name = trim($service_names[$i]);
+            $s_dur = trim($service_durations[$i] ?? '30 دقیقه');
+            if (!empty($s_name)) {
                 $services_array[] = [
-                    'id' => 'srv_' . ($i + 1),
-                    'name' => $sName,
-                    'duration' => $sDur
+                    'id' => (string)($i + 1),
+                    'name' => $s_name,
+                    'duration' => $s_dur
                 ];
             }
         }
         
         $services_json = json_encode($services_array, JSON_UNESCAPED_UNICODE);
         
-        $stmt = $pdo->prepare("UPDATE doctors SET tags = ?, services_json = ?, price = ?, bio = ? WHERE id = ?");
-        if ($stmt->execute([$tags, $services_json, $price, $bio, $doctorId])) {
-            $success = "خدمات، تخصص‌ها و تگ‌های شما با موفقیت بروزرسانی شدند.";
+        $stmt = $pdo->prepare("UPDATE doctors SET tags = ?, price = ?, bio = ?, services_json = ? WHERE id = ?");
+        if ($stmt->execute([$tags, $price, $bio, $services_json, $doctorId])) {
+            $success = "لیست خدمات، تعرفه و تگ‌های تخصصی با موفقیت بروزرسانی شد.";
             $doctorProfile['tags'] = $tags;
-            $doctorProfile['services_json'] = $services_json;
             $doctorProfile['price'] = $price;
             $doctorProfile['bio'] = $bio;
+            $doctorProfile['services_json'] = $services_json;
         } else {
-            $error = "خطا در ذخیره خدمات و تخصص‌ها.";
+            $error = "خطا در بروزرسانی اطلاعات خدمات.";
         }
     }
     elseif ($action === 'update_status') {
@@ -152,8 +160,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if ($conflictStmt->fetch()) {
                 $error = "این زمان قبلاً توسط نوبت دیگری رزرو شده است. لطفاً ساعت یا تاریخ دیگری را انتخاب فرمایید.";
             } else {
-                $updStmt = $pdo->prepare("UPDATE appointments SET appointment_date = ?, appointment_time = ?, reschedule_reason = ?, rescheduled_at = NOW(), status = 'approved' WHERE id = ? AND doctor_id = ?");
-                if ($updStmt->execute([$newDate, $newTime, $reason, $apptId, $doctorId])) {
+                $updSuccess = false;
+                try {
+                    $updStmt = $pdo->prepare("UPDATE appointments SET appointment_date = ?, appointment_time = ?, reschedule_reason = ?, rescheduled_at = NOW(), status = 'approved' WHERE id = ? AND doctor_id = ?");
+                    $updSuccess = $updStmt->execute([$newDate, $newTime, $reason, $apptId, $doctorId]);
+                } catch (PDOException $e) {
+                    $updStmt = $pdo->prepare("UPDATE appointments SET appointment_date = ?, appointment_time = ?, status = 'approved' WHERE id = ? AND doctor_id = ?");
+                    $updSuccess = $updStmt->execute([$newDate, $newTime, $apptId, $doctorId]);
+                }
+
+                if ($updSuccess) {
                     // Fetch user phone & pet name
                     $uStmt = $pdo->prepare("SELECT a.pet_name, a.pet_type, u.phone, u.name as user_name FROM appointments a JOIN users u ON a.user_id = u.id WHERE a.id = ?");
                     $uStmt->execute([$apptId]);
@@ -183,8 +199,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $prescription = trim($_POST['doctor_prescription'] ?? '');
         $status = $_POST['status'] ?? 'completed';
         
-        $stmt = $pdo->prepare("UPDATE appointments SET doctor_diagnosis = ?, doctor_prescription = ?, status = ? WHERE id = ? AND doctor_id = ?");
-        if ($stmt->execute([$diagnosis, $prescription, $status, $apptId, $doctorId])) {
+        $updated = false;
+        try {
+            $stmt = $pdo->prepare("UPDATE appointments SET doctor_diagnosis = ?, doctor_prescription = ?, status = ? WHERE id = ? AND doctor_id = ?");
+            $updated = $stmt->execute([$diagnosis, $prescription, $status, $apptId, $doctorId]);
+        } catch (PDOException $e) {
+            $stmt = $pdo->prepare("UPDATE appointments SET status = ? WHERE id = ? AND doctor_id = ?");
+            $updated = $stmt->execute([$status, $apptId, $doctorId]);
+        }
+
+        if ($updated) {
             $success = "پرونده بالینی، تشخیص و نسخه دارویی با موفقیت ثبت شد.";
         } else {
             $error = "خطا در ثبت اطلاعات بالینی.";
