@@ -191,11 +191,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
     }
     elseif ($action === 'upload_doc') {
-        $petId = !empty($_POST['pet_id']) ? (int)$_POST['pet_id'] : null;
-        $userId = !empty($_POST['user_id']) ? (int)$_POST['user_id'] : null;
+        $petId = !empty($_POST['pet_id']) ? (int)$_POST['pet_id'] : 0;
+        $userId = !empty($_POST['user_id']) ? (int)$_POST['user_id'] : 0;
         $docTitle = trim($_POST['title'] ?? 'سند بالینی پزشک');
         
         if ($userId && isset($_FILES['document']) && $_FILES['document']['error'] === UPLOAD_ERR_OK) {
+            // Ensure pet_id is not null/empty to satisfy NOT NULL database constraint
+            if (empty($petId)) {
+                $pStmt = $pdo->prepare("SELECT id FROM user_pets WHERE user_id = ? LIMIT 1");
+                $pStmt->execute([$userId]);
+                $existingPet = $pStmt->fetchColumn();
+                if ($existingPet) {
+                    $petId = (int)$existingPet;
+                } else {
+                    $insPet = $pdo->prepare("INSERT INTO user_pets (user_id, name, type) VALUES (?, ?, ?)");
+                    $insPet->execute([$userId, 'پت بیمار', 'حیوان خانگی']);
+                    $petId = (int)$pdo->lastInsertId();
+                }
+            }
+            
             $allowed_mimes = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'application/pdf' => 'pdf'];
             $file_tmp = $_FILES['document']['tmp_name'];
             $mime_type = mime_content_type($file_tmp);
