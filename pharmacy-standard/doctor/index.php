@@ -523,9 +523,9 @@ if (empty($myServices)) {
                                     <span class="material-symbols-outlined text-2xl">pets</span>
                                 </div>
                                 <div class="min-w-0 flex-1">
-                                    <h4 class="font-bold text-primary truncate"><?= htmlspecialchars($appt['pet_name'] ?: $appt['pet_type']) ?></h4>
+                                    <h4 class="font-bold text-primary truncate"><?= htmlspecialchars(!empty($appt['pet_name']) ? $appt['pet_name'] : ($appt['pet_type'] ?? 'پت')) ?></h4>
                                     <p class="text-xs text-on-surface-variant truncate">
-                                        <?= htmlspecialchars($appt['pet_type']) ?> <?= !empty($appt['pet_race']) ? '• ' . htmlspecialchars($appt['pet_race']) : '' ?>
+                                        <?= htmlspecialchars($appt['pet_type'] ?? 'پت') ?> <?= !empty($appt['pet_race']) ? '• ' . htmlspecialchars($appt['pet_race']) : '' ?>
                                     </p>
                                 </div>
                             </div>
@@ -533,9 +533,9 @@ if (empty($myServices)) {
                             <!-- Purpose of Visit Badge -->
                             <div class="mt-3 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-xs">
                                 <span class="text-indigo-700 font-bold bg-white/80 px-2 py-0.5 rounded-md truncate max-w-[200px]" title="<?= htmlspecialchars($appt['visit_purpose'] ?? 'معاینه عمومی') ?>">
-                                    🎯 <?= htmlspecialchars($appt['visit_purpose'] ?: 'معاینه عمومی و چکاپ') ?>
+                                    🎯 <?= htmlspecialchars($appt['visit_purpose'] ?? 'معاینه عمومی و چکاپ') ?>
                                 </span>
-                                <span class="text-slate-500 font-medium"><?= htmlspecialchars($appt['user_name']) ?></span>
+                                <span class="text-slate-500 font-medium"><?= htmlspecialchars($appt['user_name'] ?? 'بدون نام') ?></span>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -611,8 +611,8 @@ if (empty($myServices)) {
                                     <tr class="hover:bg-slate-50 cursor-pointer" onclick="openSmartPatientDossier(this)" data-appt="<?= htmlspecialchars(json_encode($appt, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8') ?>">
                                         <td class="p-3 font-bold text-slate-700" dir="ltr"><?= $appt['jalali_date'] ?></td>
                                         <td class="p-3 font-bold text-primary" dir="ltr"><?= substr($appt['appointment_time'], 0, 5) ?></td>
-                                        <td class="p-3 font-bold"><?= htmlspecialchars($appt['pet_name'] ?: $appt['pet_type']) ?></td>
-                                        <td class="p-3 text-slate-500 truncate max-w-[150px]"><?= htmlspecialchars($appt['visit_purpose'] ?: 'معاینه عمومی') ?></td>
+                                        <td class="p-3 font-bold"><?= htmlspecialchars(!empty($appt['pet_name']) ? $appt['pet_name'] : ($appt['pet_type'] ?? 'پت')) ?></td>
+                                        <td class="p-3 text-slate-500 truncate max-w-[150px]"><?= htmlspecialchars($appt['visit_purpose'] ?? 'معاینه عمومی') ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -854,13 +854,13 @@ if (empty($myServices)) {
                         <?php else: ?>
                             <?php foreach ($historyAppts as $appt): ?>
                                 <tr class="hover:bg-slate-50 cursor-pointer" onclick="openSmartPatientDossier(this)" data-appt="<?= htmlspecialchars(json_encode($appt, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8') ?>">
-                                    <td class="p-3 font-bold text-slate-700" dir="ltr"><?= $appt['jalali_date'] ?> <?= substr($appt['appointment_time'], 0, 5) ?></td>
-                                    <td class="p-3 font-bold text-primary"><?= htmlspecialchars($appt['pet_name'] ?: $appt['pet_type']) ?> (<?= htmlspecialchars($appt['pet_type']) ?>)</td>
-                                    <td class="p-3"><?= htmlspecialchars($appt['user_name']) ?> <span class="text-[10px] text-slate-400 block" dir="ltr"><?= htmlspecialchars($appt['phone']) ?></span></td>
-                                    <td class="p-3 text-indigo-700 font-medium"><?= htmlspecialchars($appt['visit_purpose'] ?: 'معاینه عمومی') ?></td>
+                                    <td class="p-3 font-bold text-slate-700" dir="ltr"><?= $appt['jalali_date'] ?? '' ?> <?= substr($appt['appointment_time'] ?? '', 0, 5) ?></td>
+                                    <td class="p-3 font-bold text-primary"><?= htmlspecialchars(!empty($appt['pet_name']) ? $appt['pet_name'] : ($appt['pet_type'] ?? 'پت')) ?> (<?= htmlspecialchars($appt['pet_type'] ?? 'نامشخص') ?>)</td>
+                                    <td class="p-3"><?= htmlspecialchars($appt['user_name'] ?? 'بدون نام') ?> <span class="text-[10px] text-slate-400 block" dir="ltr"><?= htmlspecialchars($appt['phone'] ?? '') ?></span></td>
+                                    <td class="p-3 text-indigo-700 font-medium"><?= htmlspecialchars($appt['visit_purpose'] ?? 'معاینه عمومی') ?></td>
                                     <td class="p-3">
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold <?= ($appt['status'] === 'completed') ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600' ?>">
-                                            <?= htmlspecialchars($appt['status']) ?>
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold <?= (($appt['status'] ?? '') === 'completed') ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600' ?>">
+                                            <?= htmlspecialchars($appt['status'] ?? '') ?>
                                         </span>
                                     </td>
                                     <td class="p-3 text-center">
