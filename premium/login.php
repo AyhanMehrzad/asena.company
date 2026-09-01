@@ -320,7 +320,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <a class="hover:text-primary transition-colors" href="#">قوانین و مقررات</a>
 <a class="hover:text-primary transition-colors" href="#">حریم خصوصی</a>
 <a class="hover:text-primary transition-colors" href="#">پشتیبانی</a>
-<span class="mr-auto hidden md:inline opacity-60">© 2024 ASENA Iran</span>
+<span class="mr-auto hidden md:inline opacity-60">© <?= date('Y') ?> ASENA</span>
 </div>
 </div>
 </section>
