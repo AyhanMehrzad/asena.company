@@ -24,8 +24,8 @@ class SmsService {
 
     public function __construct() {
         $this->apiKey   = getenv('MELIPAYAMAK_API_KEY') ?: 'd3cbc1e6-79e8-4a25-910e-35e86370cad0';
-        $this->username = getenv('MELIPAYAMAK_USERNAME') ?: '09146676978';
-        $this->password = getenv('MELIPAYAMAK_PASSWORD') ?: 'NZ456QM9L';
+        $this->username = getenv('MELIPAYAMAK_USERNAME') ?: '9146676978';
+        $this->password = getenv('MELIPAYAMAK_PASSWORD') ?: 'd3cbc1e6-79e8-4a25-910e-35e86370cad0';
         $this->from     = getenv('MELIPAYAMAK_FROM') ?: '2170007653';
     }
 
@@ -85,13 +85,12 @@ class SmsService {
     public function sendOtp($phone, $code) {
         $phone = self::normalizePhone($phone);
         $bodyId = self::getBodyId('otp');
-        // Try Console OTP API first
-        if (!empty($this->apiKey)) {
-            $url = "https://console.melipayamak.com/api/send/otp/{$this->apiKey}";
-            $res = $this->postJson($url, ['to' => $phone, 'text' => (string)$code]);
-            if (!empty($res['ok'])) return true;
+        $sent = $this->sendPatternRequest($phone, $bodyId, [(string)$code]);
+        if (!$sent) {
+            $text = "کد تایید شما در سامانه آسنا: $code\nasena.company";
+            return $this->sendDirectSms($phone, $text);
         }
-        return $this->sendPatternRequest($phone, $bodyId, [$code]);
+        return true;
     }
 
     /**
