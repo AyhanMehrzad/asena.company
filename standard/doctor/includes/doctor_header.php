@@ -154,23 +154,29 @@ if (!$doctorProfile) {
         </div>
     </div>
 
-    <nav class="flex-1 px-4 mt-4 space-y-1">
+    <nav class="flex-1 px-3 mt-4 space-y-1">
         <?php 
-        $page = $currentPage ?? 'dashboard';
+        $activeTabKey = $_GET['tab'] ?? 'calendar';
         
         $navItems = [
-            'dashboard' => ['icon' => 'dashboard', 'title' => 'پیشخوان پزشک', 'url' => 'index.php'],
+            'calendar' => ['icon' => 'calendar_month', 'title' => 'نوبت‌ها و تقویم روزانه', 'tab' => 'calendar-tab'],
+            'blocks'   => ['icon' => 'event_busy', 'title' => 'نوبت‌های تلفنی و مسدودی‌ها', 'tab' => 'blocks-tab'],
+            'schedule' => ['icon' => 'schedule', 'title' => 'برنامه کاری هفتگی', 'tab' => 'schedule-tab'],
+            'services' => ['icon' => 'loyalty', 'title' => 'خدمات، علت‌ها و تگ‌ها', 'tab' => 'services-tab'],
+            'reviews'  => ['icon' => 'reviews', 'title' => 'نظرات و بازخورد مراجعین', 'tab' => 'reviews-tab'],
+            'history'  => ['icon' => 'history', 'title' => 'آرشیو مراجعات و پرونده‌ها', 'tab' => 'history-tab'],
+            'profile'  => ['icon' => 'contact_phone', 'title' => 'اطلاعات تماس و پیامک نوبت', 'tab' => 'profile-tab'],
         ];
 
         foreach ($navItems as $key => $item):
-            $isActive = ($page === $key);
+            $isActive = ($activeTabKey === $key);
             $classes = $isActive 
-                ? "flex items-center gap-3 px-4 py-3 text-secondary-container font-bold border-r-4 border-secondary-container bg-white/5 transition-all"
-                : "flex items-center gap-3 px-4 py-3 text-on-tertiary-container hover:bg-white/10 hover:text-white transition-all";
+                ? "doctor-nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-white font-bold bg-secondary-container shadow-sm transition-all"
+                : "doctor-nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-on-tertiary-container hover:bg-white/10 hover:text-white transition-all";
         ?>
-        <a class="<?= $classes ?>" href="<?= $item['url'] ?>">
-            <span class="material-symbols-outlined"><?= $item['icon'] ?></span>
-            <span class="font-label-lg text-label-lg"><?= $item['title'] ?></span>
+        <a id="nav-item-<?= $key ?>" class="<?= $classes ?>" href="index.php?tab=<?= $key ?>" onclick="if(typeof switchTab === 'function') { switchTab('<?= $item['tab'] ?>'); if(window.innerWidth < 1024) toggleDoctorSidebar(); return false; }">
+            <span class="material-symbols-outlined text-[20px]"><?= $item['icon'] ?></span>
+            <span class="text-xs font-bold leading-tight"><?= $item['title'] ?></span>
         </a>
         <?php endforeach; ?>
     </nav>

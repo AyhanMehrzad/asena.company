@@ -421,36 +421,17 @@ if (empty($myServices)) {
         </div>
     </div>
 
-    <!-- Navigation Tabs -->
-    <div class="flex border-b border-outline-variant/30 gap-2 md:gap-8 overflow-x-auto custom-scrollbar text-sm font-bold">
-        <button onclick="switchTab('calendar-tab')" id="tab-btn-calendar" class="tab-btn pb-3 px-2 text-primary border-b-2 border-primary flex items-center gap-2 shrink-0">
-            <span class="material-symbols-outlined text-xl">calendar_month</span>
-            تقویم تعاملی روزانه و نوبت‌ها
-        </button>
-        <button onclick="switchTab('blocks-tab')" id="tab-btn-blocks" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2 shrink-0">
-            <span class="material-symbols-outlined text-xl">event_busy</span>
-            نوبت‌های تلفنی و مسدودی‌ها (<?= count($blockedSlots) ?>)
-        </button>
-        <button onclick="switchTab('services-tab')" id="tab-btn-services" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2 shrink-0">
-            <span class="material-symbols-outlined text-xl">loyalty</span>
-            خدمات، علت‌های مراجعه و تگ‌ها
-        </button>
-        <button onclick="switchTab('reviews-tab')" id="tab-btn-reviews" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2 shrink-0">
-            <span class="material-symbols-outlined text-xl">reviews</span>
-            نظرات و بازخورد مراجعین (<?= count($doctorReviews) ?>)
-        </button>
-        <button onclick="switchTab('schedule-tab')" id="tab-btn-schedule" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2 shrink-0">
-            <span class="material-symbols-outlined text-xl">schedule</span>
-            برنامه کاری هفتگی
-        </button>
-        <button onclick="switchTab('history-tab')" id="tab-btn-history" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2">
-            <span class="material-symbols-outlined text-xl">history</span>
-            آرشیو مراجعات گذشته
-        </button>
-        <button onclick="switchTab('profile-tab')" id="tab-btn-profile" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2">
-            <span class="material-symbols-outlined text-xl">contact_phone</span>
-            اطلاعات تماس و پیامک نوبت‌ها
-        </button>
+    <!-- Active Section Breadcrumb & Header -->
+    <div class="flex items-center justify-between pb-2 border-b border-outline-variant/30">
+        <div class="flex items-center gap-3">
+            <div id="active-section-icon-bg" class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <span id="active-section-icon" class="material-symbols-outlined text-2xl">calendar_month</span>
+            </div>
+            <div>
+                <h2 id="active-section-title" class="text-xl font-black text-primary">نوبت‌ها و تقویم روزانه</h2>
+                <p id="active-section-desc" class="text-xs text-on-surface-variant">مدیریت مراجعات روزانه، ویزیت‌های هوشمند و تایید وضعیت</p>
+            </div>
+        </div>
     </div>
 
     <!-- TAB 1: CALENDAR & DAILY TIMELINE -->
@@ -1309,23 +1290,64 @@ if (empty($myServices)) {
 // All Documents preloaded in JS
 const allDocumentsGrouped = <?= json_encode($groupedDocs, JSON_UNESCAPED_UNICODE) ?>;
 
-// Switch Navigation Tabs
+// Section Metadata for dynamic header update
+const sectionMeta = {
+    'calendar-tab': { title: 'نوبت‌ها و تقویم روزانه', desc: 'مدیریت مراجعات روزانه، ویزیت‌های هوشمند و تایید وضعیت', icon: 'calendar_month' },
+    'blocks-tab':   { title: 'نوبت‌های تلفنی و مسدودی‌ها', desc: 'مسدودسازی ساعات جراحی مطب، مرخصی و نوبت‌های خارج سامانه', icon: 'event_busy' },
+    'schedule-tab': { title: 'برنامه کاری هفتگی', desc: 'تعریف شیفت‌های حضور صبح و عصر برای روزهای کاری کلینیک', icon: 'schedule' },
+    'services-tab': { title: 'خدمات، علت‌ها و تگ‌های تخصصی', desc: 'تعیین خدمات ویزیت، مدت زمان تقریبی و تعرفه پذیرش', icon: 'loyalty' },
+    'reviews-tab':  { title: 'نظرات و بازخورد مراجعین', desc: 'مشاهده دیدگاه‌ها، امتیازات و تجربیات صاحبان پت', icon: 'reviews' },
+    'history-tab':  { title: 'آرشیو مراجعات و پرونده‌ها', desc: 'سابقه مراجعات قبلی، تشخیص‌ها، نسخه‌ها و اسناد بالینی', icon: 'history' },
+    'profile-tab':  { title: 'اطلاعات تماس و شماره پیامک نوبت‌ها', desc: 'تنظیمات نام نمایشی، تخصص و شماره همراه دریافت اعلان پیامکی نوبت جدید', icon: 'contact_phone' }
+};
+
+// Switch Navigation Tabs & Sync with Sidebar
 function switchTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('text-primary', 'border-b-2', 'border-primary');
-        btn.classList.add('text-on-surface-variant');
-    });
-
-    const activeTab = document.getElementById(tabId);
-    if (activeTab) activeTab.classList.remove('hidden');
-
-    const activeBtn = document.getElementById('tab-btn-' + tabId.replace('-tab', ''));
-    if (activeBtn) {
-        activeBtn.classList.remove('text-on-surface-variant');
-        activeBtn.classList.add('text-primary', 'border-b-2', 'border-primary');
+    if (!tabId.endsWith('-tab')) {
+        tabId = tabId + '-tab';
     }
+    const key = tabId.replace('-tab', '');
+
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+
+    // Show active tab
+    const activeTab = document.getElementById(tabId);
+    if (activeTab) {
+        activeTab.classList.remove('hidden');
+    }
+
+    // Update Header Title & Icon
+    if (sectionMeta[tabId]) {
+        const titleEl = document.getElementById('active-section-title');
+        const descEl  = document.getElementById('active-section-desc');
+        const iconEl  = document.getElementById('active-section-icon');
+        if (titleEl) titleEl.innerText = sectionMeta[tabId].title;
+        if (descEl)  descEl.innerText  = sectionMeta[tabId].desc;
+        if (iconEl)  iconEl.innerText  = sectionMeta[tabId].icon;
+    }
+
+    // Sync Sidebar Active Item
+    document.querySelectorAll('.doctor-nav-link').forEach(link => {
+        link.className = "doctor-nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-on-tertiary-container hover:bg-white/10 hover:text-white transition-all";
+    });
+    const activeNavLink = document.getElementById('nav-item-' + key);
+    if (activeNavLink) {
+        activeNavLink.className = "doctor-nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-white font-bold bg-secondary-container shadow-sm transition-all";
+    }
+
+    // Update URL query parameter without page reload
+    const url = new URL(window.location);
+    url.searchParams.set('tab', key);
+    window.history.replaceState({}, '', url);
 }
+
+// Auto open tab from URL on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialTab = urlParams.get('tab') || 'calendar';
+    switchTab(initialTab + '-tab');
+});
 
 function toggleTimeInputs(isFullDay) {
     const timeContainer = document.getElementById('time_inputs_container');

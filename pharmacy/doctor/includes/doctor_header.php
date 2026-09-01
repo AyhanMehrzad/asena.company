@@ -40,7 +40,85 @@ if (!$doctorProfile) {
     <link href="../assets/css/material-symbols.css" rel="stylesheet"/>
     <link href="../assets/css/geist.css" rel="stylesheet"/>
     <script src="../assets/js/tailwindcss-cdn.js"></script>
-    <script src="../assets/js/tailwind-config.js"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e2e2e2",
+                    "surface-container-high": "#e8e8e8",
+                    "secondary-container": "#fd8100",
+                    "tertiary": "#001f31",
+                    "on-primary-container": "#7a97e2",
+                    "on-tertiary-fixed": "#001e2f",
+                    "primary": "#001a48",
+                    "on-error": "#ffffff",
+                    "outline-variant": "#c4c6d2",
+                    "outline": "#747782",
+                    "primary-fixed-dim": "#b1c5ff",
+                    "tertiary-fixed": "#cae6ff",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed": "#301400",
+                    "surface-tint": "#3d5ca2",
+                    "surface-container-lowest": "#ffffff",
+                    "status-paused": "#757575",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#133449",
+                    "surface": "#f9f9f9",
+                    "inverse-surface": "#2f3131",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#954a00",
+                    "surface-dim": "#dadada",
+                    "primary-container": "#002d72",
+                    "secondary-fixed": "#ffdcc6",
+                    "on-secondary-fixed-variant": "#723700",
+                    "on-primary": "#ffffff",
+                    "on-surface-variant": "#444651",
+                    "status-warning": "#FFC60A",
+                    "on-secondary-container": "#5d2c00",
+                    "surface-container": "#eeeeee",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#ffb785",
+                    "on-background": "#1a1c1c",
+                    "tertiary-fixed-dim": "#abcae5",
+                    "surface-alt": "#F8F9FA",
+                    "on-surface": "#1a1c1c",
+                    "on-primary-fixed": "#001946",
+                    "status-active": "#2E7D32",
+                    "on-tertiary-container": "#7f9db6",
+                    "surface-container-highest": "#e2e2e2",
+                    "inverse-primary": "#b1c5ff",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed-variant": "#2c4a60",
+                    "on-primary-fixed-variant": "#224489",
+                    "inverse-on-surface": "#f0f1f1",
+                    "surface-container-low": "#f3f3f4",
+                    "background": "#f9f9f9",
+                    "surface-bright": "#f9f9f9",
+                    "primary-fixed": "#dae2ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Geist"],
+                    "label-lg": ["Geist"],
+                    "body-md": ["Geist"],
+                    "headline-lg-mobile": ["Geist"],
+                    "title-lg": ["Geist"],
+                    "headline-lg": ["Geist"],
+                    "headline-md": ["Geist"],
+                    "label-sm": ["Geist"],
+                    "display-lg": ["Geist"]
+            }
+          },
+        },
+      }
+    </script>
     <style>
         body { font-family: 'Geist', sans-serif; }
         .material-symbols-outlined {
@@ -76,23 +154,29 @@ if (!$doctorProfile) {
         </div>
     </div>
 
-    <nav class="flex-1 px-4 mt-4 space-y-1">
+    <nav class="flex-1 px-3 mt-4 space-y-1">
         <?php 
-        $page = $currentPage ?? 'dashboard';
+        $activeTabKey = $_GET['tab'] ?? 'calendar';
         
         $navItems = [
-            'dashboard' => ['icon' => 'dashboard', 'title' => 'پیشخوان پزشک', 'url' => 'index.php'],
+            'calendar' => ['icon' => 'calendar_month', 'title' => 'نوبت‌ها و تقویم روزانه', 'tab' => 'calendar-tab'],
+            'blocks'   => ['icon' => 'event_busy', 'title' => 'نوبت‌های تلفنی و مسدودی‌ها', 'tab' => 'blocks-tab'],
+            'schedule' => ['icon' => 'schedule', 'title' => 'برنامه کاری هفتگی', 'tab' => 'schedule-tab'],
+            'services' => ['icon' => 'loyalty', 'title' => 'خدمات، علت‌ها و تگ‌ها', 'tab' => 'services-tab'],
+            'reviews'  => ['icon' => 'reviews', 'title' => 'نظرات و بازخورد مراجعین', 'tab' => 'reviews-tab'],
+            'history'  => ['icon' => 'history', 'title' => 'آرشیو مراجعات و پرونده‌ها', 'tab' => 'history-tab'],
+            'profile'  => ['icon' => 'contact_phone', 'title' => 'اطلاعات تماس و پیامک نوبت', 'tab' => 'profile-tab'],
         ];
 
         foreach ($navItems as $key => $item):
-            $isActive = ($page === $key);
+            $isActive = ($activeTabKey === $key);
             $classes = $isActive 
-                ? "flex items-center gap-3 px-4 py-3 text-secondary-container font-bold border-r-4 border-secondary-container bg-white/5 transition-all"
-                : "flex items-center gap-3 px-4 py-3 text-on-tertiary-container hover:bg-white/10 hover:text-white transition-all";
+                ? "doctor-nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-white font-bold bg-secondary-container shadow-sm transition-all"
+                : "doctor-nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-on-tertiary-container hover:bg-white/10 hover:text-white transition-all";
         ?>
-        <a class="<?= $classes ?>" href="<?= $item['url'] ?>">
-            <span class="material-symbols-outlined"><?= $item['icon'] ?></span>
-            <span class="font-label-lg text-label-lg"><?= $item['title'] ?></span>
+        <a id="nav-item-<?= $key ?>" class="<?= $classes ?>" href="index.php?tab=<?= $key ?>" onclick="if(typeof switchTab === 'function') { switchTab('<?= $item['tab'] ?>'); if(window.innerWidth < 1024) toggleDoctorSidebar(); return false; }">
+            <span class="material-symbols-outlined text-[20px]"><?= $item['icon'] ?></span>
+            <span class="text-xs font-bold leading-tight"><?= $item['title'] ?></span>
         </a>
         <?php endforeach; ?>
     </nav>
