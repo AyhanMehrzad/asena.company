@@ -211,8 +211,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $dbPath = 'uploads/clinical_docs/' . $fileName;
                 
                 if (move_uploaded_file($file_tmp, $targetFile)) {
-                    $stmt = $pdo->prepare("INSERT INTO pet_documents (pet_id, user_id, title, file_name, file_path, uploaded_by_doctor_id) VALUES (?, ?, ?, ?, ?, ?)");
-                    if ($stmt->execute([$petId, $userId, $docTitle, $fileName, $dbPath, $doctorId])) {
+                    $inserted = false;
+                    try {
+                        $stmt = $pdo->prepare("INSERT INTO pet_documents (pet_id, user_id, title, file_name, file_path, uploaded_by_doctor_id) VALUES (?, ?, ?, ?, ?, ?)");
+                        $inserted = $stmt->execute([$petId, $userId, $docTitle, $fileName, $dbPath, $doctorId]);
+                    } catch (PDOException $e) {
+                        $stmt = $pdo->prepare("INSERT INTO pet_documents (pet_id, user_id, title, file_name, file_path) VALUES (?, ?, ?, ?, ?)");
+                        $inserted = $stmt->execute([$petId, $userId, $docTitle, $fileName, $dbPath]);
+                    }
+                    if ($inserted) {
                         $success = "سند بالینی با موفقیت در پرونده بیمار ذخیره شد.";
                     } else {
                         $error = "خطا در ثبت سند در دیتابیس.";
