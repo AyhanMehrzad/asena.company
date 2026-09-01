@@ -66,5 +66,7 @@
         // It checks its own lock file so it only actually runs once a day.
         fetch('actions/autoship_worker.php', { method: 'POST' }).catch(() => {});
     </script>
+
+    <?php require_once __DIR__ . '/cookie_consent.php'; ?>
 </body>
 </html>

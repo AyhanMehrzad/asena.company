@@ -22,7 +22,7 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 
-// Fetch booked slots for the next 14 days
+// Fetch booked and blocked slots for the next 14 days
 $booked_slots = [];
 try {
     $stmt = $pdo->query("SELECT doctor_id, appointment_date, appointment_time FROM appointments WHERE appointment_date >= CURDATE() AND appointment_date <= DATE_ADD(CURDATE(), INTERVAL 14 DAY) AND status != 'cancelled'");
@@ -38,6 +38,35 @@ try {
             $booked_slots[$docId][$date] = [];
         }
         $booked_slots[$docId][$date][] = $time;
+    }
+
+    // Merge doctor blocked slots (e.g. phone bookings, surgical blocks, leaves)
+    $bStmt = $pdo->query("SELECT doctor_id, block_date, start_time, end_time FROM doctor_blocked_slots WHERE block_date >= CURDATE() AND block_date <= DATE_ADD(CURDATE(), INTERVAL 14 DAY)");
+    $blocks = $bStmt->fetchAll(PDO::FETCH_ASSOC);
+    $allPossibleSlots = ['08:00', '08:45', '09:00', '09:30', '09:45', '10:00', '10:15', '10:30', '11:00', '11:15', '11:45', '12:00', '12:30', '13:00', '16:00', '16:30', '16:45', '17:00', '17:30', '18:00', '18:15', '18:30', '19:00', '19:30', '19:45', '20:00', '20:30', '21:00'];
+    foreach ($blocks as $blk) {
+        $docId = $blk['doctor_id'];
+        $date = $blk['block_date'];
+        $sTime = substr($blk['start_time'] ?? '00:00', 0, 5);
+        $eTime = substr($blk['end_time'] ?? '23:59', 0, 5);
+        
+        if (!isset($booked_slots[$docId])) {
+            $booked_slots[$docId] = [];
+        }
+        if (!isset($booked_slots[$docId][$date])) {
+            $booked_slots[$docId][$date] = [];
+        }
+
+        foreach ($allPossibleSlots as $slot) {
+            if ($sTime === '00:00' && $eTime === '23:59') {
+                $booked_slots[$docId][$date][] = $slot;
+            } elseif ($slot >= $sTime && $slot <= $eTime) {
+                $booked_slots[$docId][$date][] = $slot;
+            } elseif ($slot === $sTime) {
+                $booked_slots[$docId][$date][] = $slot;
+            }
+        }
+        $booked_slots[$docId][$date] = array_values(array_unique($booked_slots[$docId][$date]));
     }
 } catch (PDOException $e) {
     // ignore

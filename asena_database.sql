@@ -892,7 +892,77 @@ LOCK TABLES `wishlist` WRITE;
 /*!40000 ALTER TABLE `wishlist` DISABLE KEYS */;
 INSERT INTO `wishlist` VALUES (1,6,31,'2026-07-25 01:58:06'),(2,6,2,'2026-07-25 02:31:06'),(3,7,31,'2026-07-25 12:08:41');
 /*!40000 ALTER TABLE `wishlist` ENABLE KEYS */;
+--
+-- Table structure for table `site_settings`
+--
+
+DROP TABLE IF EXISTS `site_settings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `site_settings` (
+  `setting_key` varchar(100) NOT NULL,
+  `setting_value` text DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`setting_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `site_settings`
+--
+
+LOCK TABLES `site_settings` WRITE;
+/*!40000 ALTER TABLE `site_settings` DISABLE KEYS */;
+INSERT INTO `site_settings` (`setting_key`, `setting_value`) VALUES
+('admin_notification_phones', '09146676978'),
+('admin_sms_on_order', '1'),
+('admin_sms_on_booking', '1'),
+('doctor_sms_on_booking', '1');
+/*!40000 ALTER TABLE `site_settings` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `doctor_blocked_slots`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `doctor_blocked_slots` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `doctor_id` int(11) NOT NULL,
+  `block_date` date NOT NULL,
+  `start_time` varchar(20) DEFAULT NULL,
+  `end_time` varchar(20) DEFAULT NULL,
+  `reason` varchar(255) DEFAULT 'نوبت تلفنی / خارج از سامانه',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `doctor_id` (`doctor_id`),
+  CONSTRAINT `doctor_blocked_slots_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `admin_notes`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `admin_notes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `admin_id` int(11) NOT NULL,
+  `note_date` date NOT NULL,
+  `note_time` varchar(20) DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `content` text DEFAULT NULL,
+  `priority` enum('normal','important','urgent') DEFAULT 'normal',
+  `is_completed` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `admin_id` (`admin_id`),
+  CONSTRAINT `admin_notes_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

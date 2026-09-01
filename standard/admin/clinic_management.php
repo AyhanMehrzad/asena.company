@@ -36,8 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         
         $baseline_rating = !empty($_POST['baseline_rating']) ? (float)$_POST['baseline_rating'] : 4.9;
         if ($user) {
-            $stmt = $pdo->prepare("INSERT INTO doctors (user_id, name, specialty, price, rating, review_count, image_url, baseline_rating) VALUES (?, ?, ?, ?, ?, 0, ?, ?)");
-            if ($stmt->execute([$user_id, $user['name'], $specialty, $price, $baseline_rating, $image_url, $baseline_rating])) {
+            $phone = trim($_POST['phone'] ?? $user['phone'] ?? '');
+            $stmt = $pdo->prepare("INSERT INTO doctors (user_id, name, specialty, price, rating, review_count, image_url, baseline_rating, phone) VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?)");
+            if ($stmt->execute([$user_id, $user['name'], $specialty, $price, $baseline_rating, $image_url, $baseline_rating, $phone])) {
                 $doc_new_id = $pdo->lastInsertId();
                 recalculate_bayesian_rating($pdo, 'doctor', $doc_new_id);
                 $success = "پزشک جدید با موفقیت اضافه شد.";
@@ -51,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $doc_id = (int)$_POST['doctor_id'];
         $specialty = trim(strip_tags($_POST['specialty']));
         $price = (int)$_POST['price'];
+        $phone = trim($_POST['phone'] ?? '');
         $baseline_rating = !empty($_POST['baseline_rating']) ? (float)$_POST['baseline_rating'] : 4.9;
         
         $image_url = null;
@@ -66,11 +68,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
         
         if ($image_url) {
-            $stmt = $pdo->prepare("UPDATE doctors SET specialty = ?, price = ?, image_url = ?, baseline_rating = ? WHERE id = ?");
-            $res = $stmt->execute([$specialty, $price, $image_url, $baseline_rating, $doc_id]);
+            $stmt = $pdo->prepare("UPDATE doctors SET specialty = ?, price = ?, phone = ?, image_url = ?, baseline_rating = ? WHERE id = ?");
+            $res = $stmt->execute([$specialty, $price, $phone, $image_url, $baseline_rating, $doc_id]);
         } else {
-            $stmt = $pdo->prepare("UPDATE doctors SET specialty = ?, price = ?, baseline_rating = ? WHERE id = ?");
-            $res = $stmt->execute([$specialty, $price, $baseline_rating, $doc_id]);
+            $stmt = $pdo->prepare("UPDATE doctors SET specialty = ?, price = ?, phone = ?, baseline_rating = ? WHERE id = ?");
+            $res = $stmt->execute([$specialty, $price, $phone, $baseline_rating, $doc_id]);
         }
         recalculate_bayesian_rating($pdo, 'doctor', $doc_id);
         
@@ -181,19 +183,25 @@ $pendingAppointments = count(array_filter($appointments, fn($a) => $a['status'] 
                                     <span>امتیاز: <?= $doctor['rating'] ?></span>
                                 </div>
                                 <div class="flex gap-1">
-                                    <button onclick="openEditDoctorModal(<?= $doctor['id'] ?>, '<?= htmlspecialchars($doctor['specialty'], ENT_QUOTES) ?>', <?= $doctor['price'] ?>)" class="w-8 h-8 rounded bg-surface-container-low text-primary flex items-center justify-center hover:bg-primary-container hover:text-on-primary-container transition-colors">
+                                    <button onclick="openEditDoctorModal(<?= $doctor['id'] ?>, '<?= htmlspecialchars($doctor['specialty'], ENT_QUOTES) ?>', <?= $doctor['price'] ?>, '<?= htmlspecialchars($doctor['phone'] ?? '', ENT_QUOTES) ?>')" class="w-8 h-8 rounded bg-surface-container-low text-primary flex items-center justify-center hover:bg-primary-container hover:text-on-primary-container transition-colors" title="ویرایش اطلاعات">
                                         <span class="material-symbols-outlined text-sm">edit</span>
                                     </button>
                                     <form method="POST" onsubmit="return confirm('آیا از حذف این پزشک اطمینان دارید؟');" class="inline m-0">
                                         <?= csrf_field() ?>
                                         <input type="hidden" name="action" value="delete_doctor">
                                         <input type="hidden" name="doctor_id" value="<?= $doctor['id'] ?>">
-                                        <button type="submit" class="w-8 h-8 rounded bg-surface-container-low text-error flex items-center justify-center hover:bg-error-container hover:text-on-error-container transition-colors">
+                                        <button type="submit" class="w-8 h-8 rounded bg-surface-container-low text-error flex items-center justify-center hover:bg-error-container hover:text-on-error-container transition-colors" title="حذف">
                                             <span class="material-symbols-outlined text-sm">delete</span>
                                         </button>
                                     </form>
                                 </div>
                             </div>
+                            <?php if (!empty($doctor['phone'])): ?>
+                            <div class="mt-2 pt-2 border-t border-outline-variant/20 flex items-center justify-between text-[11px] text-on-surface-variant">
+                                <span>شماره پیامک نوبت:</span>
+                                <span class="font-mono font-bold text-primary" dir="ltr"><?= htmlspecialchars($doctor['phone']) ?></span>
+                            </div>
+                            <?php endif; ?>
                         </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -354,6 +362,11 @@ $pendingAppointments = count(array_filter($appointments, fn($a) => $a['status'] 
                 </div>
                 
                 <div class="space-y-2">
+                    <label class="text-sm font-bold text-on-surface-variant">شماره موبایل پزشک جهت پیامک نوبت‌ها</label>
+                    <input type="text" name="phone" placeholder="09123456789" class="w-full text-sm rounded-lg border-outline-variant focus:ring-primary focus:border-primary p-2 font-mono text-left" dir="ltr">
+                </div>
+
+                <div class="space-y-2">
                     <label class="text-sm font-bold text-on-surface-variant">هزینه ویزیت (تومان)</label>
                     <input type="number" name="price" required min="0" step="10000" class="w-full text-sm rounded-lg border-outline-variant focus:ring-primary focus:border-primary p-2" dir="ltr">
                 </div>
@@ -396,6 +409,11 @@ $pendingAppointments = count(array_filter($appointments, fn($a) => $a['status'] 
                 </div>
                 
                 <div class="space-y-2">
+                    <label class="text-sm font-bold text-on-surface-variant">شماره موبایل پزشک جهت پیامک نوبت‌ها</label>
+                    <input type="text" name="phone" id="edit_phone" placeholder="09123456789" class="w-full text-sm rounded-lg border-outline-variant focus:ring-primary focus:border-primary p-2 font-mono text-left" dir="ltr">
+                </div>
+
+                <div class="space-y-2">
                     <label class="text-sm font-bold text-on-surface-variant">هزینه ویزیت (تومان)</label>
                     <input type="number" name="price" id="edit_price" required min="0" step="10000" class="w-full text-sm rounded-lg border-outline-variant focus:ring-primary focus:border-primary p-2" dir="ltr">
                 </div>
@@ -415,10 +433,11 @@ $pendingAppointments = count(array_filter($appointments, fn($a) => $a['status'] 
 </div>
 
 <script>
-function openEditDoctorModal(id, specialty, price) {
+function openEditDoctorModal(id, specialty, price, phone) {
     document.getElementById('edit_doctor_id').value = id;
     document.getElementById('edit_specialty').value = specialty;
     document.getElementById('edit_price').value = price;
+    document.getElementById('edit_phone').value = phone || '';
     
     document.getElementById('editDoctorModal').classList.remove('hidden');
     document.getElementById('editDoctorModal').classList.add('flex');

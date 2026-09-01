@@ -169,30 +169,84 @@ try {
     }
 } // End of else block for regular orders
 
-    // 3. Loyalty points and booking approval
+    // 3. Loyalty points, booking approval & SMS Notifications
+    require_once '../includes/SmsService.php';
+    $sms = new SmsService();
+
+    // Fetch user phone
+    $u_stmt = $pdo->prepare("SELECT phone, name FROM users WHERE id = ?");
+    $u_stmt->execute([$user_id]);
+    $u = $u_stmt->fetch(PDO::FETCH_ASSOC);
+    $userPhone = $u['phone'] ?? '';
+
     if ($is_booking && !empty($pending['booking_id'])) {
         $pdo->prepare("UPDATE appointments SET status = 'approved' WHERE id = ?")
             ->execute([$pending['booking_id']]);
         $pdo->prepare("UPDATE users SET loyalty_points = loyalty_points + 20 WHERE id = ?")
             ->execute([$user_id]);
             
-        // Send SMS Booking Confirmation
-        require_once '../includes/SmsService.php';
-        $u_stmt = $pdo->prepare("SELECT phone FROM users WHERE id = ?");
-        $u_stmt->execute([$user_id]);
-        $u = $u_stmt->fetch(PDO::FETCH_ASSOC);
-        if ($u && !empty($u['phone'])) {
-            $a_stmt = $pdo->prepare("SELECT appointment_date, appointment_time FROM appointments WHERE id = ?");
-            $a_stmt->execute([$pending['booking_id']]);
-            $appt = $a_stmt->fetch(PDO::FETCH_ASSOC);
-            if ($appt) {
-                $sms = new SmsService();
-                $sms->sendBookingConfirmation($u['phone'], $appt['appointment_date'], $appt['appointment_time']);
+        // 1. Fetch appointment & doctor details
+        $doc_stmt = $pdo->prepare("
+            SELECT d.name as doctor_name, d.phone as doctor_phone, a.pet_name, a.pet_type, a.appointment_date, a.appointment_time, u_doc.phone as doc_user_phone
+            FROM appointments a 
+            JOIN doctors d ON a.doctor_id = d.id 
+            LEFT JOIN users u_doc ON d.user_id = u_doc.id
+            WHERE a.id = ?
+        ");
+        $doc_stmt->execute([$pending['booking_id']]);
+        $apptDoc = $doc_stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($apptDoc) {
+            // Send Booking Confirmation SMS to User
+            if (!empty($userPhone)) {
+                $sms->sendBookingConfirmation($userPhone, $apptDoc['appointment_date'], $apptDoc['appointment_time']);
+            }
+
+            // 2. Send SMS to Doctor if doctor notifications enabled
+            $doctorSmsEnabled = get_setting($pdo, 'doctor_sms_on_booking', '1');
+            $docPhone = !empty($apptDoc['doctor_phone']) ? $apptDoc['doctor_phone'] : ($apptDoc['doc_user_phone'] ?? '');
+            if ($doctorSmsEnabled === '1' && !empty($docPhone)) {
+                $petDisplay = !empty($apptDoc['pet_name']) ? $apptDoc['pet_name'] : (!empty($apptDoc['pet_type']) ? $apptDoc['pet_type'] : 'پت بیمار');
+                $sms->sendDoctorNewAppointmentAlert($docPhone, $apptDoc['doctor_name'], $petDisplay, $apptDoc['appointment_date'], $apptDoc['appointment_time']);
+            }
+
+            // 3. Send SMS to Admin if admin booking notifications enabled
+            $adminBookingSmsEnabled = get_setting($pdo, 'admin_sms_on_booking', '1');
+            if ($adminBookingSmsEnabled === '1') {
+                $adminPhones = get_setting($pdo, 'admin_notification_phones', '09146676978');
+                if (!empty($adminPhones)) {
+                    $textAdmin = "مدیر گرامی، نوبت جدید برای دکتر {$apptDoc['doctor_name']} در تاریخ {$apptDoc['appointment_date']} ساعت {$apptDoc['appointment_time']} در سامانه آسنا ثبت شد.\nasena.company";
+                    $phoneList = preg_split('/[,\s;]+/', $adminPhones);
+                    foreach ($phoneList as $ap) {
+                        $ap = SmsService::normalizePhone($ap);
+                        if (!empty($ap)) $sms->sendDirectSms($ap, $textAdmin);
+                    }
+                }
             }
         }
     } else {
         $pdo->prepare("UPDATE users SET loyalty_points = loyalty_points + 50 WHERE id = ?")
             ->execute([$user_id]);
+
+        if ($is_subscription) {
+            // Subscription Confirmation SMS to User
+            if (!empty($userPhone)) {
+                $sms->sendSubscriptionSent($userPhone, $pending['plan_name'] ?? 'ماهانه');
+            }
+        } else {
+            // Regular Order Confirmation SMS to Buyer
+            if (!empty($userPhone) && !empty($order_id)) {
+                $sms->sendShippingUpdate($userPhone, $order_id);
+            }
+
+            // Send Admin New Order Notification
+            $adminOrderSmsEnabled = get_setting($pdo, 'admin_sms_on_order', '1');
+            if ($adminOrderSmsEnabled === '1' && !empty($order_id)) {
+                $adminPhones = get_setting($pdo, 'admin_notification_phones', '09146676978');
+                $orderTotalAmount = $total_amount ?? ($pending['final_amount'] ?? ($pending['amount'] ?? 0));
+                $sms->sendAdminNewOrderAlert($adminPhones, $order_id, $orderTotalAmount);
+            }
+        }
     }
 
     $pdo->commit();

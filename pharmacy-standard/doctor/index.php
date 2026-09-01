@@ -12,7 +12,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     csrf_verify();
     $action = $_POST['action'];
     
-    if ($action === 'update_schedule') {
+    if ($action === 'update_profile_contact') {
+        $name = trim($_POST['name'] ?? '');
+        $specialty = trim($_POST['specialty'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+        $phone = SmsService::normalizePhone($phone);
+        
+        if (!empty($phone) && strlen($phone) >= 10) {
+            $stmt = $pdo->prepare("UPDATE doctors SET name = ?, specialty = ?, phone = ? WHERE id = ?");
+            $stmt->execute([$name, $specialty, $phone, $doctorId]);
+            
+            if (!empty($doctorProfile['user_id'])) {
+                $stmt = $pdo->prepare("UPDATE users SET name = ?, phone = ? WHERE id = ?");
+                $stmt->execute([$name, $phone, $doctorProfile['user_id']]);
+            }
+            
+            $doctorProfile['name'] = $name;
+            $doctorProfile['specialty'] = $specialty;
+            $doctorProfile['phone'] = $phone;
+            $success = "اطلاعات تماس و شماره پیامک پزشک با موفقیت بروزرسانی شد.";
+        } else {
+            $error = "لطفاً یک شماره موبایل معتبر (مثال: 09123456789) وارد نمایید.";
+        }
+    }
+    elseif ($action === 'block_slot') {
+        $blockDate = trim($_POST['block_date'] ?? '');
+        $startTime = trim($_POST['start_time'] ?? '');
+        $endTime   = trim($_POST['end_time'] ?? '');
+        $reason    = trim($_POST['reason'] ?? 'نوبت تلفنی / خارج از سامانه');
+        $isFullDay = isset($_POST['is_full_day']);
+
+        if (!empty($blockDate)) {
+            if ($isFullDay || (empty($startTime) && empty($endTime))) {
+                $startTime = '00:00';
+                $endTime   = '23:59';
+            } elseif (empty($endTime)) {
+                $endTime = $startTime;
+            }
+            $insStmt = $pdo->prepare("INSERT INTO doctor_blocked_slots (doctor_id, block_date, start_time, end_time, reason) VALUES (?, ?, ?, ?, ?)");
+            if ($insStmt->execute([$doctorId, $blockDate, $startTime, $endTime, $reason])) {
+                $success = "بازه زمانی نوبت با موفقیت مسدود شد و از دسترس رزرو کاربران در سایت خارج گردید.";
+            } else {
+                $error = "خطا در ثبت مسدودسازی زمان.";
+            }
+        } else {
+            $error = "لطفاً تاریخ مسدودسازی را وارد نمایید.";
+        }
+    }
+    elseif ($action === 'unblock_slot') {
+        $blockId = (int)$_POST['block_id'];
+        $delStmt = $pdo->prepare("DELETE FROM doctor_blocked_slots WHERE id = ? AND doctor_id = ?");
+        if ($delStmt->execute([$blockId, $doctorId])) {
+            $success = "مسدودسازی زمان با موفقیت لغو شد و نوبت مجدداً آزاد و قابل رزرو است.";
+        } else {
+            $error = "خطا در رفع مسدودی زمان.";
+        }
+    }
+    elseif ($action === 'update_schedule') {
         $schedule_data = [];
         $days = ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri'];
         foreach ($days as $day) {
@@ -263,6 +319,18 @@ $doctorReviews = $reviewsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $fmtDate = new IntlDateFormatter('fa_IR@calendar=persian', IntlDateFormatter::FULL, IntlDateFormatter::NONE, 'Asia/Tehran', IntlDateFormatter::TRADITIONAL, 'yyyy/MM/dd');
 
+// Fetch Doctor Blocked Slots (e.g. phone bookings, holidays, emergencies)
+$blockedSlots = [];
+try {
+    $blockedStmt = $pdo->prepare("SELECT * FROM doctor_blocked_slots WHERE doctor_id = ? AND block_date >= CURDATE() ORDER BY block_date ASC, start_time ASC");
+    $blockedStmt->execute([$doctorId]);
+    $blockedSlots = $blockedStmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($blockedSlots as &$blk) {
+        $blk['jalali_date'] = $fmtDate->format(new DateTime($blk['block_date']));
+    }
+    unset($blk);
+} catch (Exception $e) {}
+
 foreach ($todayAppts as &$appt) { $appt['jalali_date'] = $fmtDate->format(new DateTime($appt['appointment_date'])); }
 foreach ($upcomingAppts as &$appt) { $appt['jalali_date'] = $fmtDate->format(new DateTime($appt['appointment_date'])); }
 foreach ($historyAppts as &$appt) { $appt['jalali_date'] = $fmtDate->format(new DateTime($appt['appointment_date'])); }
@@ -355,25 +423,33 @@ if (empty($myServices)) {
 
     <!-- Navigation Tabs -->
     <div class="flex border-b border-outline-variant/30 gap-2 md:gap-8 overflow-x-auto custom-scrollbar text-sm font-bold">
-        <button onclick="switchTab('calendar-tab')" id="tab-btn-calendar" class="tab-btn pb-3 px-2 text-primary border-b-2 border-primary flex items-center gap-2">
+        <button onclick="switchTab('calendar-tab')" id="tab-btn-calendar" class="tab-btn pb-3 px-2 text-primary border-b-2 border-primary flex items-center gap-2 shrink-0">
             <span class="material-symbols-outlined text-xl">calendar_month</span>
             تقویم تعاملی روزانه و نوبت‌ها
         </button>
-        <button onclick="switchTab('services-tab')" id="tab-btn-services" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2">
+        <button onclick="switchTab('blocks-tab')" id="tab-btn-blocks" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2 shrink-0">
+            <span class="material-symbols-outlined text-xl">event_busy</span>
+            نوبت‌های تلفنی و مسدودی‌ها (<?= count($blockedSlots) ?>)
+        </button>
+        <button onclick="switchTab('services-tab')" id="tab-btn-services" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2 shrink-0">
             <span class="material-symbols-outlined text-xl">loyalty</span>
             خدمات، علت‌های مراجعه و تگ‌ها
         </button>
-        <button onclick="switchTab('reviews-tab')" id="tab-btn-reviews" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2">
+        <button onclick="switchTab('reviews-tab')" id="tab-btn-reviews" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2 shrink-0">
             <span class="material-symbols-outlined text-xl">reviews</span>
             نظرات و بازخورد مراجعین (<?= count($doctorReviews) ?>)
         </button>
-        <button onclick="switchTab('schedule-tab')" id="tab-btn-schedule" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2">
+        <button onclick="switchTab('schedule-tab')" id="tab-btn-schedule" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2 shrink-0">
             <span class="material-symbols-outlined text-xl">schedule</span>
             برنامه کاری هفتگی
         </button>
         <button onclick="switchTab('history-tab')" id="tab-btn-history" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2">
             <span class="material-symbols-outlined text-xl">history</span>
             آرشیو مراجعات گذشته
+        </button>
+        <button onclick="switchTab('profile-tab')" id="tab-btn-profile" class="tab-btn pb-3 px-2 text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-xl">contact_phone</span>
+            اطلاعات تماس و پیامک نوبت‌ها
         </button>
     </div>
 
@@ -819,6 +895,203 @@ if (empty($myServices)) {
             </div>
         </div>
     </div>
+
+    <!-- TAB 6: DOCTOR PROFILE & SMS NOTIFICATION SETTINGS -->
+    <div id="profile-tab" class="tab-content space-y-6 hidden">
+        <form method="POST" class="bg-white p-6 md:p-8 rounded-3xl stat-card-shadow border border-outline-variant/30 space-y-6">
+            <?= csrf_field() ?>
+            <input type="hidden" name="action" value="update_profile_contact">
+
+            <div class="border-b border-outline-variant/20 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div>
+                    <h3 class="text-xl font-bold text-primary flex items-center gap-2">
+                        <span class="material-symbols-outlined text-secondary-container">contact_phone</span>
+                        اطلاعات تماس و تنظیمات پیامک نوبت‌ها
+                    </h3>
+                    <p class="text-xs text-on-surface-variant mt-1">شماره موبایل پزشک جهت دریافت پیامک خودکار هنگام ثبت نوبت جدید توسط بیماران</p>
+                </div>
+                <div class="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold border border-emerald-200">
+                    <span class="material-symbols-outlined text-sm">verified</span>
+                    <span>سرویس پیامک فعال</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-primary">نام و نام خانوادگی پزشک</label>
+                    <input type="text" name="name" value="<?= htmlspecialchars($doctorProfile['name'] ?? $doctorName) ?>" class="w-full p-3.5 rounded-xl border border-outline-variant text-sm focus:ring-2 focus:ring-primary outline-none" required>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-primary">تخصص پزشک</label>
+                    <input type="text" name="specialty" value="<?= htmlspecialchars($doctorProfile['specialty'] ?? 'پزشک عمومی') ?>" class="w-full p-3.5 rounded-xl border border-outline-variant text-sm focus:ring-2 focus:ring-primary outline-none" required>
+                </div>
+
+                <div class="space-y-2 md:col-span-2">
+                    <label class="block text-sm font-bold text-primary flex items-center justify-between">
+                        <span>شماره موبایل جهت دریافت پیامک نوبت‌های جدید</span>
+                        <span class="text-xs text-secondary font-bold">فرمت: 09123456789</span>
+                    </label>
+                    <div class="relative">
+                        <input type="text" name="phone" value="<?= htmlspecialchars($doctorProfile['phone'] ?? ($docCheck['phone'] ?? '')) ?>" class="w-full p-3.5 pl-10 rounded-xl border border-outline-variant text-sm font-mono text-left focus:ring-2 focus:ring-secondary-container outline-none" placeholder="09123456789" dir="ltr" required>
+                        <span class="material-symbols-outlined absolute left-3 top-3.5 text-outline text-[20px]">smartphone</span>
+                    </div>
+                    <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
+                        هنگامی که هر مراجعه‌کننده‌ای در سامانه آسنا وقت ویزیت شما را رزرو کند، یک پیامک خدماتی حاوی نام پت، تاریخ و ساعت نوبت بلافاصله به این شماره ارسال خواهد شد.
+                    </p>
+                </div>
+            </div>
+
+            <!-- SMS Notification Preview Card -->
+            <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-2">
+                <p class="text-xs font-bold text-primary flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm text-secondary-container">sms</span>
+                    نمونه پیامکی که هنگام ثبت نوبت برای شما ارسال می‌شود:
+                </p>
+                <div class="p-3 bg-white rounded-xl text-xs text-slate-700 font-sans border border-outline-variant/20 leading-relaxed" dir="rtl">
+                    دکتر <?= htmlspecialchars($doctorProfile['name'] ?? $doctorName) ?> گرامی، نوبت جدید برای پت (میلو) در تاریخ ۱۴۰۴/۰۶/۲۰ ساعت ۱۷:۳۰ در آسنا ثبت شد.<br>
+                    <span class="text-[10px] text-slate-400">asena.company</span>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-outline-variant/20">
+                <button type="submit" class="bg-primary hover:bg-primary/90 text-white font-bold py-3.5 px-8 rounded-xl flex items-center gap-2 shadow-lg shadow-primary/20 transition-all">
+                    <span class="material-symbols-outlined">save</span>
+                    <span>ذخیره اطلاعات تماس و شماره پیامک</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- TAB 7: SCHEDULE BLOCKING (نوبت‌های تلفنی، مرخصی و مسدودسازی زمان) -->
+    <div id="blocks-tab" class="tab-content space-y-6 hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left Column: Add Block Form -->
+            <div class="lg:col-span-5 bg-white p-6 md:p-8 rounded-3xl stat-card-shadow border border-outline-variant/30 space-y-6">
+                <div class="border-b border-outline-variant/20 pb-4">
+                    <h3 class="text-lg font-bold text-primary flex items-center gap-2">
+                        <span class="material-symbols-outlined text-secondary-container">event_busy</span>
+                        مسدودسازی بازه زمانی / ثبت نوبت تلفنی
+                    </h3>
+                    <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                        هنگامی که مراجعه‌کننده‌ای به صورت تلفنی وقت می‌گیرد یا قصد مرخصی و جراحی خارج از نوبت‌های آنلاین را دارید، زمان مورد نظر را مسدود نمایید تا بیماران نتوانند در آن ساعت نوبت بگیرند.
+                    </p>
+                </div>
+
+                <form method="POST" class="space-y-4">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="action" value="block_slot">
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">📅 تاریخ مسدودسازی</label>
+                        <input type="date" name="block_date" value="<?= date('Y-m-d') ?>" min="<?= date('Y-m-d') ?>" required class="w-full p-3 rounded-xl border border-outline-variant text-xs bg-surface-container-lowest outline-none focus:ring-2 focus:ring-primary font-mono text-left" dir="ltr">
+                    </div>
+
+                    <div class="p-3 bg-surface-container-low rounded-xl flex items-center justify-between border border-outline-variant/30">
+                        <div>
+                            <span class="text-xs font-bold text-primary block">مسدودسازی کل روز</span>
+                            <span class="text-[11px] text-on-surface-variant">تمامی ساعات این روز غیرفعال شود</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="is_full_day" id="block_is_full_day" onchange="toggleTimeInputs(this.checked)" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                    </div>
+
+                    <div id="time_inputs_container" class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">⏰ از ساعت</label>
+                            <input type="time" name="start_time" id="block_start_time" value="09:00" class="w-full p-2.5 rounded-xl border border-outline-variant text-xs bg-surface-container-lowest outline-none focus:ring-2 focus:ring-primary font-mono text-left" dir="ltr">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">⏰ تا ساعت</label>
+                            <input type="time" name="end_time" id="block_end_time" value="13:00" class="w-full p-2.5 rounded-xl border border-outline-variant text-xs bg-surface-container-lowest outline-none focus:ring-2 focus:ring-primary font-mono text-left" dir="ltr">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">علت / عنوان مسدودی</label>
+                        <input type="text" name="reason" id="block_reason_input" value="نوبت تلفنی بیمار" placeholder="مثال: نوبت تلفنی، عمل جراحی، مرخصی" required class="w-full p-3 rounded-xl border border-outline-variant text-xs bg-surface-container-lowest outline-none focus:ring-2 focus:ring-primary">
+                        
+                        <!-- Quick reason buttons -->
+                        <div class="flex flex-wrap gap-1.5 mt-2">
+                            <button type="button" onclick="document.getElementById('block_reason_input').value='نوبت تلفنی بیمار'" class="px-2.5 py-1 rounded-lg bg-surface-container-high text-[11px] font-bold text-slate-700 hover:bg-primary/10 hover:text-primary transition-colors">📞 نوبت تلفنی</button>
+                            <button type="button" onclick="document.getElementById('block_reason_input').value='عمل جراحی خارج از نوبت'" class="px-2.5 py-1 rounded-lg bg-surface-container-high text-[11px] font-bold text-slate-700 hover:bg-primary/10 hover:text-primary transition-colors">🩺 جراحی مطب</button>
+                            <button type="button" onclick="document.getElementById('block_reason_input').value='مرخصی و استراحت پزشک'" class="px-2.5 py-1 rounded-lg bg-surface-container-high text-[11px] font-bold text-slate-700 hover:bg-primary/10 hover:text-primary transition-colors">🏖️ مرخصی</button>
+                            <button type="button" onclick="document.getElementById('block_reason_input').value='جلسه و امور اداری کلینیک'" class="px-2.5 py-1 rounded-lg bg-surface-container-high text-[11px] font-bold text-slate-700 hover:bg-primary/10 hover:text-primary transition-colors">📋 امور کلینیک</button>
+                        </div>
+                    </div>
+
+                    <div class="pt-3">
+                        <button type="submit" class="w-full py-3 bg-secondary-container hover:opacity-95 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-md transition-all">
+                            <span class="material-symbols-outlined text-base">block</span>
+                            <span>ثبت مسدودی و بستن نوبت در سایت</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Active Blocked Slots List -->
+            <div class="lg:col-span-7 bg-white p-6 md:p-8 rounded-3xl stat-card-shadow border border-outline-variant/30 space-y-6">
+                <div class="border-b border-outline-variant/20 pb-4 flex justify-between items-center">
+                    <div>
+                        <h3 class="text-lg font-bold text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">list_alt</span>
+                            لیست زمان‌های مسدود شده فعال
+                        </h3>
+                        <p class="text-xs text-on-surface-variant mt-1">نوبت‌هایی که در روزهای آینده توسط شما مسدود شده و غیرقابل رزرو هستند</p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">
+                        <?= count($blockedSlots) ?> زمان مسدود
+                    </span>
+                </div>
+
+                <?php if (empty($blockedSlots)): ?>
+                    <div class="py-12 text-center text-on-surface-variant space-y-3">
+                        <div class="w-14 h-14 mx-auto rounded-full bg-surface-container-low flex items-center justify-center text-outline">
+                            <span class="material-symbols-outlined text-3xl">event_available</span>
+                        </div>
+                        <p class="text-sm font-bold">هیچ بازه مسدود شده‌ای ثبت نشده است.</p>
+                        <p class="text-xs text-outline">تمام بازه‌های زمانی طبق برنامه هفتگی شما برای رزرو مراجعین باز و فعال هستند.</p>
+                    </div>
+                <?php else: ?>
+                    <div class="space-y-3 max-h-[500px] overflow-y-auto custom-scrollbar pr-1">
+                        <?php foreach ($blockedSlots as $blk): 
+                            $isAllDay = ($blk['start_time'] === '00:00' && $blk['end_time'] === '23:59');
+                        ?>
+                            <div class="p-4 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest hover:border-secondary-container/50 transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl <?= $isAllDay ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600' ?> flex items-center justify-center shrink-0">
+                                        <span class="material-symbols-outlined text-xl"><?= $isAllDay ? 'today' : 'schedule' ?></span>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-bold text-xs text-primary"><?= htmlspecialchars($blk['jalali_date']) ?> (<?= $blk['block_date'] ?>)</span>
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full <?= $isAllDay ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800' ?>">
+                                                <?= $isAllDay ? 'کل روز' : substr($blk['start_time'], 0, 5) . ' تا ' . substr($blk['end_time'], 0, 5) ?>
+                                            </span>
+                                        </div>
+                                        <p class="text-xs text-on-surface-variant mt-1 font-medium">
+                                            علت: <span class="text-slate-800"><?= htmlspecialchars($blk['reason']) ?></span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <form method="POST" onsubmit="return confirm('آیا از رفع مسدودی این زمان و فعال‌سازی مجدد رزرو اطمینان دارید؟');" class="m-0">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="action" value="unblock_slot">
+                                    <input type="hidden" name="block_id" value="<?= $blk['id'] ?>">
+                                    <button type="submit" class="px-3 py-1.5 rounded-xl border border-rose-200 text-rose-600 bg-rose-50 hover:bg-rose-600 hover:text-white transition-all text-xs font-bold flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-sm">lock_open</span>
+                                        <span>آزادسازی نوبت</span>
+                                    </button>
+                                </form>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- ========================================================================= -->
@@ -1051,6 +1324,13 @@ function switchTab(tabId) {
     if (activeBtn) {
         activeBtn.classList.remove('text-on-surface-variant');
         activeBtn.classList.add('text-primary', 'border-b-2', 'border-primary');
+    }
+}
+
+function toggleTimeInputs(isFullDay) {
+    const timeContainer = document.getElementById('time_inputs_container');
+    if (timeContainer) {
+        timeContainer.style.display = isFullDay ? 'none' : 'grid';
     }
 }
 

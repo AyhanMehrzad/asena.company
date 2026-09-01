@@ -26,20 +26,19 @@
                     </nav>
                 </div>
                 <div class="flex flex-col gap-5">
-                    <h4 class="font-bold text-lg text-primary">داروخانه تخصصی</h4>
+                    <h4 class="font-bold text-lg text-primary">خدمات درمانی</h4>
                     <nav class="flex flex-col gap-3">
-                        <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors" href="pharmacy.php">داروهای دامپزشکی</a>
-                        <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors" href="pharmacy.php?tag=vaccines">واکسن و سرم</a>
-                        <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors" href="pharmacy.php?tag=antibiotics">آنتی‌بیوتیک‌ها</a>
+                        <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors" href="#">رزرو ویزیت</a>
+                        <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors" href="#">مشاوره هوشمند</a>
+                        <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors" href="#">واکسیناسیون</a>
                     </nav>
                 </div>
                 <div class="flex flex-col gap-5">
-                    <h4 class="font-bold text-lg text-primary">راهنما و پشتیبانی</h4>
+                    <h4 class="font-bold text-lg text-primary">راهنما</h4>
                     <nav class="flex flex-col gap-3">
-                        <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors" href="pharmacy.php">راهنمای ثبت نسخه</a>
-                        <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors" href="pharmacy.php">شرایط زنجیره سرد</a>
+                        <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors" href="#">سوالات متداول</a>
                     </nav>
-                </div>
+            </div>
         </div>
     </footer>
 
@@ -60,5 +59,14 @@
             </div>
         </div>
     </div>
+
+    <!-- Autoship Web Worker Trigger (Poor Man's Cron) -->
+    <script>
+        // Trigger the autoship worker asynchronously. 
+        // It checks its own lock file so it only actually runs once a day.
+        fetch('actions/autoship_worker.php', { method: 'POST' }).catch(() => {});
+    </script>
+
+    <?php require_once __DIR__ . '/cookie_consent.php'; ?>
 </body>
 </html>

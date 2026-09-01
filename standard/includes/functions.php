@@ -227,5 +227,48 @@ function get_curated_recommendations(PDO $pdo, string $slot_type, int $limit = 4
     }
 }
 
+/**
+ * Ensure site_settings table exists and retrieve setting
+ */
+function get_setting(PDO $pdo, string $key, $default = null) {
+    try {
+        $stmt = $pdo->prepare("SELECT setting_value FROM site_settings WHERE setting_key = ?");
+        $stmt->execute([$key]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row !== false && $row['setting_value'] !== null) {
+            return $row['setting_value'];
+        }
+    } catch (Exception $e) {
+        // Table might not exist yet, create it
+        try {
+            $pdo->exec("CREATE TABLE IF NOT EXISTS site_settings (
+                setting_key VARCHAR(100) NOT NULL PRIMARY KEY,
+                setting_value TEXT DEFAULT NULL,
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        } catch (Exception $ex) {}
+    }
+    return $default;
+}
 
-
+/**
+ * Save setting to site_settings table
+ */
+function set_setting(PDO $pdo, string $key, $value): bool {
+    try {
+        $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
+        return $stmt->execute([$key, $value]);
+    } catch (Exception $e) {
+        try {
+            $pdo->exec("CREATE TABLE IF NOT EXISTS site_settings (
+                setting_key VARCHAR(100) NOT NULL PRIMARY KEY,
+                setting_value TEXT DEFAULT NULL,
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
+            return $stmt->execute([$key, $value]);
+        } catch (Exception $ex) {
+            return false;
+        }
+    }
+}

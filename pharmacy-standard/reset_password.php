@@ -125,20 +125,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p class="text-sm text-on-surface-variant leading-relaxed">برای شماره <?php echo htmlspecialchars($phone); ?></p>
         </div>
 
-        <?php if(isset($_SESSION['mock_otp'])): ?>
-            <div class="flex items-start gap-3 bg-blue-50/80 border border-blue-200 text-blue-800 p-4 rounded-2xl shadow-sm mb-6 backdrop-blur-sm transition-all">
-                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
-                    <span class="material-symbols-outlined text-blue-600 text-[18px]">sms</span>
-                </div>
-                <div class="flex-1">
-                    <h4 class="font-bold text-sm text-blue-900">پیامک تایید (نسخه آزمایشی)</h4>
-                    <p class="text-xs opacity-90 mt-1 leading-relaxed font-bold tracking-wider">
-                        <?php echo htmlspecialchars($_SESSION['mock_otp']); unset($_SESSION['mock_otp']); ?>
-                    </p>
-                </div>
-            </div>
-        <?php endif; ?>
-
         <?php if($success): ?>
             <div class="flex items-start gap-3 bg-emerald-50/80 border border-emerald-200 text-emerald-800 p-4 rounded-2xl shadow-sm mb-6 backdrop-blur-sm transition-all">
                 <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center mt-0.5">

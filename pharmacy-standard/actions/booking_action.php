@@ -86,6 +86,21 @@ try {
         exit;
     }
 
+    // ── Check if doctor blocked this slot (for phone bookings/leaves) ───────────
+    $blkStmt = $pdo->prepare(
+        "SELECT id FROM doctor_blocked_slots
+         WHERE doctor_id = ? AND block_date = ? 
+         AND ((start_time = '00:00' AND end_time = '23:59') OR (? BETWEEN start_time AND end_time) OR start_time = ?)
+         LIMIT 1"
+    );
+    $blkStmt->execute([$doctor_id, $date, $time, $time]);
+    if ($blkStmt->fetch()) {
+        $pdo->rollBack();
+        $_SESSION['booking_error'] = 'این زمان توسط پزشک جهت نوبت‌های تلفنی یا استراحت مسدود شده است. لطفاً زمان دیگری را انتخاب نمایید.';
+        header('Location: ../booking.php');
+        exit;
+    }
+
     // ── Insert appointment with visit_purpose and pet_notes ───────────────────
     $stmt = $pdo->prepare(
         "INSERT INTO appointments (user_id, doctor_id, appointment_date, appointment_time, pet_type, pet_race, visit_purpose, pet_notes, status)

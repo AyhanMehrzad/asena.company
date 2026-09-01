@@ -52,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $pdo->prepare("DELETE FROM login_attempts WHERE ip_address = ?")->execute([$_SERVER['REMOTE_ADDR'] ?? '127.0.0.1']);
                     
                     unset($_SESSION['signup_data']);
-                    unset($_SESSION['mock_otp']);
                     header("Location: index.php");
                     exit;
                 } else {
@@ -93,7 +92,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'password' => $password,
                             'otp' => $otp
                         ];
-                        $_SESSION['mock_otp'] = $otp;
                     }
                 } elseif ($mode === 'login') {
                     $stmt = $pdo->prepare("SELECT id, role, password FROM users WHERE phone = ?");
@@ -182,20 +180,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2 class="text-3xl font-bold text-on-surface mb-2">تایید شماره موبایل</h2>
         <p class="text-sm text-on-surface-variant">کد ۶ رقمی ارسال شده به <?php echo htmlspecialchars($_SESSION['signup_data']['phone']); ?> را وارد کنید.</p>
     </div>
-    
-    <?php if(isset($_SESSION['mock_otp'])): ?>
-        <div class="flex items-start gap-3 bg-blue-50/80 border border-blue-200 text-blue-800 p-4 rounded-2xl shadow-sm mb-6 backdrop-blur-sm transition-all">
-            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
-                <span class="material-symbols-outlined text-blue-600 text-[18px]">sms</span>
-            </div>
-            <div class="flex-1">
-                <h4 class="font-bold text-sm text-blue-900">پیامک تایید (نسخه آزمایشی)</h4>
-                <p class="text-xs opacity-90 mt-1 leading-relaxed font-bold tracking-wider">
-                    <?php echo htmlspecialchars($_SESSION['mock_otp']); unset($_SESSION['mock_otp']); ?>
-                </p>
-            </div>
-        </div>
-    <?php endif; ?>
 
     <?php if($error): ?>
         <div class="flex items-start gap-3 bg-red-50/80 border border-red-200 text-red-800 p-4 rounded-2xl shadow-sm mb-6 backdrop-blur-sm transition-all">

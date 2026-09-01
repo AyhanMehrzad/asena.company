@@ -155,7 +155,9 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
             'tickets' => ['icon' => 'support_agent', 'title' => 'تیکت و پشتیبانی', 'url' => 'tickets.php'],
             'campaigns' => ['icon' => 'campaign', 'title' => 'مدیریت کمپین‌ها', 'url' => 'campaigns.php'],
             'donations' => ['icon' => 'volunteer_activism', 'title' => 'گزارش کمک‌ها', 'url' => 'donations.php'],
-            'analytics' => ['icon' => 'analytics', 'title' => 'تحلیل و آمار', 'url' => 'analytics.php']
+            'calendar_notes' => ['icon' => 'calendar_month', 'title' => 'تقویم کاری و یادداشت‌ها', 'url' => 'calendar_notes.php'],
+            'analytics' => ['icon' => 'analytics', 'title' => 'تحلیل و آمار', 'url' => 'analytics.php'],
+            'sms_settings' => ['icon' => 'sms', 'title' => 'تنظیمات پیامک و اعلان', 'url' => 'sms_settings.php']
         ];
 
         foreach ($navItems as $key => $item):

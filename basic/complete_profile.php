@@ -52,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $sms = new SmsService();
                 $sms->sendOtp($phone_input, $otp);
                 
-                $_SESSION['mock_otp'] = "کد تایید شما (ارسال شده پیامک): $otp";
                 $step = 2;
             }
         }
@@ -71,7 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $step = 3;
             
             unset($_SESSION['oauth_otp_code']);
-            unset($_SESSION['mock_otp']);
         }
     } elseif (isset($_POST['save_address'])) {
         // Step 3: Save Address
@@ -133,20 +131,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 else echo 'ورود موفقیت‌آمیز بود. لطفا شماره موبایل خود را تایید کنید.'; 
                 ?>
             </p>
-
-            <?php if(isset($_SESSION['mock_otp'])): ?>
-                <div class="flex items-start gap-3 bg-blue-50/80 border border-blue-200 text-blue-800 p-4 rounded-2xl shadow-sm mb-6 backdrop-blur-sm transition-all">
-                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
-                        <span class="material-symbols-outlined text-blue-600 text-[18px]">sms</span>
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-sm text-blue-900">پیامک تایید</h4>
-                        <p class="text-xs opacity-90 mt-1 leading-relaxed font-bold tracking-wider">
-                            <?php echo htmlspecialchars($_SESSION['mock_otp']); ?>
-                        </p>
-                    </div>
-                </div>
-            <?php endif; ?>
 
             <?php if($error): ?>
                 <div class="flex items-start gap-3 bg-red-50/80 border border-red-200 text-red-800 p-4 rounded-2xl shadow-sm mb-6 backdrop-blur-sm transition-all">
