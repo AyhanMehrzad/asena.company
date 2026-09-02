@@ -140,38 +140,90 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
 
     </div>
 
-    <nav class="flex-1 px-4 mt-4 space-y-1">
+    <nav class="flex-1 px-3 mt-2 space-y-4">
         <?php 
-        $page = $currentPage ?? 'dashboard';
+        $currentFile = basename($_SERVER['PHP_SELF']);
         
-        $navItems = [
-            'dashboard' => ['icon' => 'dashboard', 'title' => 'پیشخوان مدیریت', 'url' => 'index.php'],
-            'orders' => ['icon' => 'local_shipping', 'title' => 'سفارشات و ارسال', 'url' => 'orders.php'],
-            'clinic' => ['icon' => 'medical_services', 'title' => 'مدیریت کلینیک', 'url' => 'clinic_management.php'],
-            'inventory' => ['icon' => 'shopping_bag', 'title' => 'انبار و فروشگاه', 'url' => 'inventory.php'],
-            'recommendations' => ['icon' => 'auto_awesome', 'title' => 'پیشنهادات و بنرها', 'url' => 'recommendations.php'],
-            'users' => ['icon' => 'group', 'title' => 'مدیریت کاربران', 'url' => 'user_management.php'],
-            'subscriptions' => ['icon' => 'event_repeat', 'title' => 'مدیریت اشتراک‌ها', 'url' => 'subscriptions.php'],
-            'tickets' => ['icon' => 'support_agent', 'title' => 'تیکت و پشتیبانی', 'url' => 'tickets.php'],
-            'campaigns' => ['icon' => 'campaign', 'title' => 'مدیریت کمپین‌ها', 'url' => 'campaigns.php'],
-            'donations' => ['icon' => 'volunteer_activism', 'title' => 'گزارش کمک‌ها', 'url' => 'donations.php'],
-            'calendar_notes' => ['icon' => 'calendar_month', 'title' => 'تقویم کاری و یادداشت‌ها', 'url' => 'calendar_notes.php'],
-            'analytics' => ['icon' => 'analytics', 'title' => 'تحلیل و آمار', 'url' => 'analytics.php'],
-            'sms_settings' => ['icon' => 'sms', 'title' => 'تنظیمات پیامک و اعلان', 'url' => 'sms_settings.php'],
-            'blog' => ['icon' => 'auto_stories', 'title' => 'وبلاگ و پایگاه دانش', 'url' => '../knowledge_base.php'],
-            'guide' => ['icon' => 'menu_book', 'title' => 'راهنمای کاربری ادمین', 'url' => 'guide.php']
+        // Auto-detect active page key intelligently based on current file and $currentPage
+        $activeKey = $currentPage ?? '';
+        if ($currentFile === 'subscriptions.php' || $currentFile === 'subscription_details.php' || $activeKey === 'user_subscriptions') {
+            $activeKey = 'subscriptions';
+        } elseif ($currentFile === 'index.php' || $currentFile === 'dashboard.php') {
+            $activeKey = 'dashboard';
+        } elseif ($currentFile === 'orders.php' || $currentFile === 'export_orders.php') {
+            $activeKey = 'orders';
+        } elseif ($currentFile === 'inventory.php') {
+            $activeKey = 'inventory';
+        } elseif ($currentFile === 'clinic_management.php') {
+            $activeKey = 'clinic';
+        } elseif ($currentFile === 'user_management.php' || $currentFile === 'user_details.php') {
+            $activeKey = 'users';
+        } elseif ($currentFile === 'tickets.php') {
+            $activeKey = 'tickets';
+        } elseif ($currentFile === 'campaigns.php') {
+            $activeKey = 'campaigns';
+        } elseif ($currentFile === 'donations.php') {
+            $activeKey = 'donations';
+        } elseif ($currentFile === 'calendar_notes.php') {
+            $activeKey = 'calendar_notes';
+        } elseif ($currentFile === 'analytics.php') {
+            $activeKey = 'analytics';
+        } elseif ($currentFile === 'sms_settings.php') {
+            $activeKey = 'sms_settings';
+        } elseif ($currentFile === 'guide.php') {
+            $activeKey = 'guide';
+        }
+
+        $navSections = [
+            'مدیریت و پیشخوان' => [
+                'dashboard' => ['icon' => 'dashboard', 'title' => 'پیشخوان مدیریت', 'url' => 'index.php'],
+                'analytics' => ['icon' => 'analytics', 'title' => 'تحلیل و آمار', 'url' => 'analytics.php'],
+                'calendar_notes' => ['icon' => 'calendar_month', 'title' => 'تقویم کاری و یادداشت‌ها', 'url' => 'calendar_notes.php'],
+            ],
+            'فروشگاه و اشتراک' => [
+                'orders' => ['icon' => 'local_shipping', 'title' => 'سفارشات و ارسال', 'url' => 'orders.php'],
+                'inventory' => ['icon' => 'inventory_2', 'title' => 'انبار و فروشگاه', 'url' => 'inventory.php'],
+                'subscriptions' => ['icon' => 'event_repeat', 'title' => 'مدیریت اشتراک‌ها (Autoship)', 'url' => 'subscriptions.php'],
+                'recommendations' => ['icon' => 'auto_awesome', 'title' => 'پیشنهادات و بنرها', 'url' => 'recommendations.php'],
+            ],
+            'کلینیک و خدمات' => [
+                'clinic' => ['icon' => 'medical_services', 'title' => 'مدیریت کلینیک و پزشکان', 'url' => 'clinic_management.php'],
+                'donations' => ['icon' => 'volunteer_activism', 'title' => 'گزارش کمک‌های خیریه', 'url' => 'donations.php'],
+            ],
+            'کاربران و پشتیبانی' => [
+                'users' => ['icon' => 'group', 'title' => 'مدیریت کاربران', 'url' => 'user_management.php'],
+                'tickets' => ['icon' => 'support_agent', 'title' => 'تیکت و پشتیبانی', 'url' => 'tickets.php'],
+                'campaigns' => ['icon' => 'campaign', 'title' => 'مدیریت کمپین‌ها', 'url' => 'campaigns.php'],
+                'sms_settings' => ['icon' => 'sms', 'title' => 'تنظیمات پیامک و اعلان', 'url' => 'sms_settings.php'],
+            ],
+            'محتوا و راهنما' => [
+                'blog' => ['icon' => 'auto_stories', 'title' => 'وبلاگ و پایگاه دانش', 'url' => '../knowledge_base.php', 'external' => true],
+                'guide' => ['icon' => 'menu_book', 'title' => 'راهنمای پنل ادمین', 'url' => 'guide.php'],
+            ]
         ];
 
-        foreach ($navItems as $key => $item):
-            $isActive = ($page === $key);
-            $classes = $isActive 
-                ? "flex items-center gap-3 px-4 py-3 text-secondary-container font-bold border-r-4 border-secondary-container bg-white/5 transition-all"
-                : "flex items-center gap-3 px-4 py-3 text-on-tertiary-container hover:bg-white/10 hover:text-white transition-all";
+        foreach ($navSections as $sectionTitle => $items):
         ?>
-        <a class="<?= $classes ?>" href="<?= $item['url'] ?>">
-            <span class="material-symbols-outlined"><?= $item['icon'] ?></span>
-            <span class="font-label-lg text-label-lg"><?= $item['title'] ?></span>
-        </a>
+        <div class="space-y-1">
+            <div class="px-3 pt-2 pb-1 text-[11px] font-extrabold uppercase tracking-wider text-on-tertiary-container/50 flex items-center gap-1.5">
+                <span><?= $sectionTitle ?></span>
+                <div class="flex-1 h-[1px] bg-white/5"></div>
+            </div>
+            <?php foreach ($items as $key => $item): 
+                $isActive = ($activeKey === $key);
+                $classes = $isActive 
+                    ? "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-secondary-container font-bold border-r-4 border-secondary-container bg-white/10 shadow-sm transition-all"
+                    : "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-on-tertiary-container hover:bg-white/10 hover:text-white transition-all";
+            ?>
+            <a class="<?= $classes ?>" href="<?= $item['url'] ?>" <?= !empty($item['external']) ? 'target="_blank"' : '' ?>>
+                <span class="material-symbols-outlined text-[20px] <?= $isActive ? 'text-secondary-container' : '' ?>"><?= $item['icon'] ?></span>
+                <span class="text-xs font-bold leading-tight"><?= $item['title'] ?></span>
+                <?php if (!empty($item['external'])): ?>
+                    <span class="material-symbols-outlined text-xs mr-auto opacity-70">north_east</span>
+                <?php endif; ?>
+            </a>
+            <?php endforeach; ?>
+        </div>
         <?php endforeach; ?>
     </nav>
 

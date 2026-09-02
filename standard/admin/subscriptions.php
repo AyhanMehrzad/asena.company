@@ -2,7 +2,7 @@
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 
-$currentPage = 'user_subscriptions';
+$currentPage = 'subscriptions';
 
 // Handle Quick Dispatch Action
 $flash_success = '';
