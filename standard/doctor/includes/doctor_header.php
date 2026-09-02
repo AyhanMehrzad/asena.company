@@ -181,7 +181,12 @@ if (!$doctorProfile) {
         <?php endforeach; ?>
     </nav>
 
-    <div class="p-4 border-t border-white/10">
+        <div class="px-1 mb-2">
+            <a href="guide.php" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all">
+                <span class="material-symbols-outlined text-[20px]">menu_book</span>
+                <span>راهنمای کاربری پزشک</span>
+            </a>
+        </div>
         <a href="../index.php" class="w-full bg-secondary-container text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 active:translate-x-1 duration-200">
             <span class="material-symbols-outlined">storefront</span>
             <span class="font-label-lg text-label-lg">بازگشت به سایت</span>

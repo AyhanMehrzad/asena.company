@@ -157,7 +157,8 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
             'donations' => ['icon' => 'volunteer_activism', 'title' => 'گزارش کمک‌ها', 'url' => 'donations.php'],
             'calendar_notes' => ['icon' => 'calendar_month', 'title' => 'تقویم کاری و یادداشت‌ها', 'url' => 'calendar_notes.php'],
             'analytics' => ['icon' => 'analytics', 'title' => 'تحلیل و آمار', 'url' => 'analytics.php'],
-            'sms_settings' => ['icon' => 'sms', 'title' => 'تنظیمات پیامک و اعلان', 'url' => 'sms_settings.php']
+            'sms_settings' => ['icon' => 'sms', 'title' => 'تنظیمات پیامک و اعلان', 'url' => 'sms_settings.php'],
+            'guide' => ['icon' => 'menu_book', 'title' => 'راهنمای کاربری ادمین', 'url' => 'guide.php']
         ];
 
         foreach ($navItems as $key => $item):

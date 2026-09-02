@@ -115,6 +115,34 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         <priority>0.8</priority>
     </url>
 
+    <!-- 4. Knowledge Base Hub & High-Ranking Medical/Service Articles -->
+    <url>
+        <loc><?= htmlspecialchars($site_url . '/standard/knowledge_base.php') ?></loc>
+        <lastmod><?= date('Y-m-d') ?></lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <?php
+    $kb_slugs = [
+        'vaccination-schedule-dogs-cats' => '0.85',
+        'pet-poisoning-emergency-guide' => '0.85',
+        'human-vs-veterinary-medications' => '0.85',
+        'best-dry-food-selection-guide' => '0.85',
+        'how-autoship-works-guide' => '0.85',
+        'how-to-book-vet-appointment' => '0.8',
+        'pharmacy-prescription-verification-guide' => '0.8',
+        'charity-stray-pet-healthcare-guide' => '0.8'
+    ];
+    foreach ($kb_slugs as $slug => $prio):
+    ?>
+    <url>
+        <loc><?= htmlspecialchars($site_url . '/standard/knowledge_base.php?article=' . $slug) ?></loc>
+        <lastmod><?= date('Y-m-d') ?></lastmod>
+        <changefreq>weekly</changefreq>
+        <priority><?= $prio ?></priority>
+    </url>
+    <?php endforeach; ?>
+
     <!-- 4. High-Intent Pet Categories -->
     <?php
     $pet_categories = [

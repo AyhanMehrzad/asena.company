@@ -34,11 +34,26 @@
                     </nav>
                 </div>
                 <div class="flex flex-col gap-5">
-                    <h4 class="font-bold text-lg text-primary">راهنما</h4>
+                    <h4 class="font-bold text-lg text-primary">پایگاه دانش و راهنما</h4>
                     <nav class="flex flex-col gap-3">
-                        <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors" href="#">سوالات متداول</a>
+                        <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors flex items-center gap-1.5" href="knowledge_base.php">
+                            <span class="material-symbols-outlined text-[16px] text-primary">auto_stories</span>
+                            پایگاه دانش و مقالات تخصصی
+                        </a>
+                        <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors flex items-center gap-1.5" href="knowledge_base.php?article=vaccination-schedule-dogs-cats">
+                            <span class="material-symbols-outlined text-[16px] text-primary">vaccines</span>
+                            جدول واکسیناسیون سگ و گربه
+                        </a>
+                        <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors flex items-center gap-1.5" href="knowledge_base.php?article=how-autoship-works-guide">
+                            <span class="material-symbols-outlined text-[16px] text-primary">autorenew</span>
+                            راهنمای تحویل خودکار (Autoship)
+                        </a>
+                        <a class="text-sm text-on-surface-variant hover:text-secondary-container transition-colors flex items-center gap-1.5" href="knowledge_base.php?article=pet-poisoning-emergency-guide">
+                            <span class="material-symbols-outlined text-[16px] text-primary">emergency</span>
+                            راهنمای مسمومیت حیوانات
+                        </a>
                     </nav>
-            </div>
+                </div>
         </div>
     </footer>
 

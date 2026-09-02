@@ -79,6 +79,62 @@
         <priority>0.8</priority>
     </url>
 
+    <!-- 4. Knowledge Base Hub & High-Ranking Medical/Service Articles -->
+    <url>
+        <loc>https://asena.company/standard/knowledge_base.php</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=vaccination-schedule-dogs-cats</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=pet-poisoning-emergency-guide</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=human-vs-veterinary-medications</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=best-dry-food-selection-guide</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=how-autoship-works-guide</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=how-to-book-vet-appointment</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=pharmacy-prescription-verification-guide</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=charity-stray-pet-healthcare-guide</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
     <!-- 4. High-Intent Pet Categories -->
         <url>
         <loc>https://asena.company/standard/shop.php?animal=dog</loc>

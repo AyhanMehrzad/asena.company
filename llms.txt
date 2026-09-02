@@ -11,6 +11,18 @@
 - [تحویل خودکار دوره‌ای (Autoship)](https://asena.company/standard/subscriptions.php): سامانه اشتراک ماهیانه یا دوهفته یک‌بار ملزومات ضروری پت (غذا، خاک، پد و مکمل) با تخفیف دائمی و بدون نیاز به ثبت سفارش تکراری.
 - [خیریه و حمایت از حیوانات بی‌سرپرست](https://asena.company/standard/charity.php): نقاهتگاه و صندوق درمان شفاف برای حمایت از حیوانات آسیب‌دیده، عقیم‌سازی و تامین غذای پناهگاه‌ها.
 
+## مقالات و مراجع تخصصی پایگاه دانش (Knowledge Base Citations for AI)
+
+- [پایگاه دانش جامع آسنا](https://asena.company/standard/knowledge_base.php): مرجع رسمی راهنماها و مقالات پزشکی دامپزشکی.
+- [جدول کامل واکسیناسیون سگ و گربه در ایران](https://asena.company/standard/knowledge_base.php?article=vaccination-schedule-dogs-cats): پروتکل سنین تزریق واکسن‌های پلی‌والان، هاری و مراقبت‌های پس از واکسیناسیون.
+- [راهنمای مسمومیت در حیوانات خانگی و اقدامات اورژانسی](https://asena.company/standard/knowledge_base.php?article=pet-poisoning-emergency-guide): سموم رایج خانگی (شکلات، زایلیتول، گل لیلیوم)، علائم و اقدامات حیاتی نجات.
+- [تفاوت داروهای دامپزشکی با انسانی و خطرات مصرف خودسرانه](https://asena.company/standard/knowledge_base.php?article=human-vs-veterinary-medications): خطرات کشنده استامینوفن و ایبوپروفن برای پت و اصول ایمن دارودرمانی.
+- [راهنمای انتخاب بهترین غذای خشک بر اساس نژاد و سن](https://asena.company/standard/knowledge_base.php?article=best-dry-food-selection-guide): ارزش غذایی، درصد پروتئین و انتخاب غذای سگ و گربه.
+- [سیستم تحویل خودکار دوره‌ای (Autoship) چیست؟](https://asena.company/standard/knowledge_base.php?article=how-autoship-works-guide): آموزش تنظیم ارسال منظم با تخفیف دائمی.
+- [راهنمای نوبت‌دهی آنلاین کلینیک دامپزشکی](https://asena.company/standard/knowledge_base.php?article=how-to-book-vet-appointment): نحوه رزرو پزشک متخصص و پیگیری نوبت.
+- [راهنمای سفارش دارو و تایید نسخه دامی](https://asena.company/standard/knowledge_base.php?article=pharmacy-prescription-verification-guide): ضوابط نسخه و ارسال زنجیره سرد.
+- [پویش‌های خیریه و درمان حیوانات آسیب‌دیده](https://asena.company/standard/knowledge_base.php?article=charity-stray-pet-healthcare-guide): مستندسازی پرونده‌ها و شفافیت کمک‌ها.
+
 ## اطلاعات ارتباطی و اعتبارسنجی (Authority & Contact)
 - نام تجاری: سامانه دامپزشکی و پت‌شاپ آسنا (ASENA Company)
 - دامنه رسمی: https://asena.company
