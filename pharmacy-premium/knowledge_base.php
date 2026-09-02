@@ -386,6 +386,95 @@ HTML
         'faqs' => [
             ['q' => 'چگونه از مصرف درست کمک‌های مالی اطمینان حاصل کنم؟', 'a' => 'تمامی صورت‌حساب‌های کلینیک و ویدیوهای ترخیص در صفحه پرونده منتشر شده و توسط ناظر مالی تایید می‌شود.']
         ]
+    ],
+
+    'admin-panel-guide' => [
+        'title' => 'راهنمای جامع کاربری پنل مدیریت آسنا (ASENA Admin Guide)',
+        'short_desc' => 'مستندات کامل مدیریت سفارشات، انبارداری، تقویم شیفت پزشکان، ورکر خودکار ارسال دوره‌ای Autoship و تنظیمات پیامک ملی‌پیامک.',
+        'category' => 'platform',
+        'category_name' => 'راهنمای سامانه آسنا',
+        'read_time' => '۶ دقیقه مطالعه',
+        'author' => 'تیم فنی و توسعه آسنا',
+        'author_role' => 'واحد امنیت و مدیریت زیرساخت ASENA',
+        'updated_at' => '۲۰۲۶-۰۹-۰۲',
+        'icon' => 'admin_panel_settings',
+        'accent_color' => 'from-slate-800 to-blue-900',
+        'content' => <<<HTML
+<h3>معرفی کنسول مدیریت یکپارچه آسنا</h3>
+<p>پنل مدیریت آسنا قلب تپنده عملیات پلتفرم است که کلیه بخش‌های تجارت الکترونیک، پرونده‌های پزشکی کلینیک، اشتراک‌های دوره‌ای و درگاه‌های ارتباطی را در یک محیط متمرکز قرار داده است.</p>
+
+<h3>بخش‌های کلیدی پنل ادمین و نحوه کار با آنها:</h3>
+<div class="space-y-4 my-6">
+    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+        <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-1 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+            ۱. مدیریت و ارسال سفارشات (orders.php)
+        </h4>
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">سفارشات جدید در این بخش با جزییات کامل خریدار، اقلام و آدرس پستی نمایش داده می‌شوند. با تغییر وضعیت به «ارسال شده»، پیامک رهگیری به طور خودکار به خریدار ارسال می‌شود.</p>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+        <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-1 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px]">inventory_2</span>
+            ۲. انبارداری و کنترل موجودی (inventory.php)
+        </h4>
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">ثبت محصولات جدید، تعیین قیمت و تخفیف و هشدار کمبود موجودی زیر ۵ عدد به صورت هوشمند برای پیشگیری از اتمام کالا در انبار.</p>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+        <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-1 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px]">medical_services</span>
+            ۳. مدیریت کلینیک و شیفت پزشکان (clinic_management.php)
+        </h4>
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">تعریف پزشکان معالج، تخصص‌ها، قیمت ویزیت و امکان مسدودسازی فوری ساعت‌های مرخصی اضطراری پزشک.</p>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+        <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-1 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px]">autorenew</span>
+            ۴. چرخه خودکار اشتراک‌های دوره‌ای (subscriptions.php)
+        </h4>
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">پیگیری وضعیت مشترکین ماهانه و ارسال خودکار سفارشات دوره‌ای ملزومات پت بدون نیاز به اقدام دستی مشتری.</p>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+        <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-1 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px]">sms</span>
+            ۵. تنظیمات وب‌سرویس ملی‌پیامک (sms_settings.php)
+        </h4>
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">بررسی اعتبار پنل پیامک، لاگ‌های ارسال کد تایید OTP و تایید هماهنگی IP خروجی سرور در لیست سفید ملی‌پیامک.</p>
+    </div>
+</div>
+HTML
+        ,
+        'faqs' => [
+            ['q' => 'چگونه می‌توان به پنل مدیریت وارد شد؟', 'a' => 'از طریق ورود با شماره همراه کاربر ادمین، سیستم به صورت خودکار نقش کاربر را شناسایی و دسترسی به پنل مدیریت را فعال می‌نماید.']
+        ]
+    ],
+
+    'doctor-panel-guide' => [
+        'title' => 'راهنمای جامع کاربری پنل پزشکان آسنا (ASENA Doctor Guide)',
+        'short_desc' => 'راهنمای ثبت و تایید نوبت‌های ویزیت، بستن ساعت‌های مرخصی، مشاهده سوابق سلامت پت و دریافت پیامک‌های لحظه‌ای ویزیت.',
+        'category' => 'platform',
+        'category_name' => 'راهنمای سامانه آسنا',
+        'read_time' => '۵ دقیقه مطالعه',
+        'author' => 'مدیریت کلینیک دامپزشکی آسنا',
+        'author_role' => 'شورای عالی پزشکی آسنا',
+        'updated_at' => '۲۰۲۶-۰۹-۰۲',
+        'icon' => 'stethoscope',
+        'accent_color' => 'from-cyan-700 to-blue-800',
+        'content' => <<<HTML
+<h3>میز کار بالینی پزشکان کلینیک آسنا</h3>
+<p>پنل اختصاصی پزشکان برای مدیریت ساده و سریع نوبت‌های حضوری و آنلاین، بررسی مشخصات و سوابق بیمار و تنظیم ساعت‌های حضور طراحی شده است.</p>
+
+<h3>امکانات اصلی پنل پزشک:</h3>
+<ul class="list-disc pr-6 my-4 space-y-3 text-slate-700 dark:text-slate-300">
+    <li><strong>تقویم روزانه نوبت‌ها:</strong> مشاهده لیست کامل بیمارانی که برای امروز وقت رزرو کرده‌اند به همراه نژاد پت، سن و علت مراجعه.</li>
+    <li><strong>بستن اسلات‌ها و ثبت نوبت تلفنی:</strong> در صورتی که در ساعتی خاص امکان ویزیت ندارید، با یک کلیک آن ساعت را از دسترس رزرو اینترنتی خارج کنید.</li>
+    <li><strong>برنامه کاری هفتگی:</strong> امکان فعال‌سازی یا تغییر ساعات شیفت صبح و عصر در روزهای مختلف هفته.</li>
+    <li><strong>پیامک اطلاع‌رسانی آنی:</strong> با ثبت شماره همراه پزشک در تب پروفایل، هر رزرو جدید بلافاصله از طریق پیامک به اطلاع پزشک می‌رسد.</li>
+</ul>
+HTML
+        ,
+        'faqs' => [
+            ['q' => 'آیا پزشک می‌تواند نوبت بیماری را لغو یا جابجا کند؟', 'a' => 'بله، از طریق تقویم نوبت‌ها می‌توانید وضعیت نوبت را به لغو شده یا تغییر زمان ویرایش نمایید که بلافاصله از طریق پیامک به بیمار اطلاع داده می‌شود.']
+        ]
     ]
 ];
 
@@ -686,11 +775,11 @@ require_once __DIR__ . '/includes/header.php';
                 </p>
             </div>
             <div class="flex items-center gap-3 shrink-0">
-                <a href="admin/guide.php" class="px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs hover:opacity-90 transition-all flex items-center gap-1.5 shadow-sm">
+                <a href="knowledge_base.php?article=admin-panel-guide" class="px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs hover:opacity-90 transition-all flex items-center gap-1.5 shadow-sm">
                     <span class="material-symbols-outlined text-base">dashboard_customize</span>
                     راهنمای پنل مدیریت (Admin)
                 </a>
-                <a href="doctor/guide.php" class="px-4 py-2.5 rounded-xl bg-primary text-white font-bold text-xs hover:bg-blue-800 transition-all flex items-center gap-1.5 shadow-sm">
+                <a href="knowledge_base.php?article=doctor-panel-guide" class="px-4 py-2.5 rounded-xl bg-primary text-white font-bold text-xs hover:bg-blue-800 transition-all flex items-center gap-1.5 shadow-sm">
                     <span class="material-symbols-outlined text-base">stethoscope</span>
                     راهنمای پنل پزشک (Doctor)
                 </a>

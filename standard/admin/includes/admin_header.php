@@ -158,6 +158,7 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
             'calendar_notes' => ['icon' => 'calendar_month', 'title' => 'تقویم کاری و یادداشت‌ها', 'url' => 'calendar_notes.php'],
             'analytics' => ['icon' => 'analytics', 'title' => 'تحلیل و آمار', 'url' => 'analytics.php'],
             'sms_settings' => ['icon' => 'sms', 'title' => 'تنظیمات پیامک و اعلان', 'url' => 'sms_settings.php'],
+            'blog' => ['icon' => 'auto_stories', 'title' => 'وبلاگ و پایگاه دانش', 'url' => '../knowledge_base.php'],
             'guide' => ['icon' => 'menu_book', 'title' => 'راهنمای کاربری ادمین', 'url' => 'guide.php']
         ];
 
@@ -205,8 +206,17 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
             </div>
         </div>
         
-        <div class="flex items-center gap-4">
-            <div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+        <div class="flex items-center gap-3">
+            <a href="../knowledge_base.php" target="_blank" class="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-primary dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-primary hover:text-white transition-all text-xs font-bold shadow-sm">
+                <span class="material-symbols-outlined text-base">auto_stories</span>
+                <span>وبلاگ و پایگاه دانش</span>
+                <span class="material-symbols-outlined text-xs">north_east</span>
+            </a>
+            <a href="guide.php" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition-all text-xs font-bold">
+                <span class="material-symbols-outlined text-base">help_outline</span>
+                <span>راهنمای پنل</span>
+            </a>
+            <div class="h-8 w-[1px] bg-outline-variant mx-1"></div>
             <div class="flex items-center gap-3 pl-2">
                 <div class="text-left">
                     <p class="font-label-lg text-label-lg text-on-surface leading-tight"><?= htmlspecialchars($adminName) ?></p>
