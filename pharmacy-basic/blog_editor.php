@@ -238,45 +238,99 @@ $init_status = $post['status'] ?? 'published';
         </div>
 
         <!-- Sticky Floating WYSIWYG Formatting Toolbar -->
-        <div class="sticky top-20 z-40 my-4 p-2 rounded-2xl border border-white/60 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-lg flex flex-wrap items-center gap-1.5 text-slate-700 dark:text-slate-200">
-            <button type="button" onclick="formatDoc('bold')" class="toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center font-bold" title="بولد (ضخیم)">
+        <div class="sticky top-20 z-40 my-4 p-2.5 rounded-2xl border border-white/60 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-xl flex flex-wrap items-center gap-1.5 text-slate-700 dark:text-slate-200">
+            
+            <!-- Font Size Dropdown -->
+            <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 rounded-xl px-2.5 py-1 border border-slate-200 dark:border-slate-700">
+                <span class="material-symbols-outlined text-[17px] text-slate-500">format_size</span>
+                <select id="fontSizeSelect" onchange="setFontSize(this.value); this.value='';" class="text-xs font-bold bg-transparent outline-none cursor-pointer text-slate-700 dark:text-slate-200">
+                    <option value="">اندازه قلم</option>
+                    <option value="12px">بسیار کوچک (12px)</option>
+                    <option value="14px">کوچک (14px)</option>
+                    <option value="16px">استاندارد (16px)</option>
+                    <option value="18px">بزرگ (18px)</option>
+                    <option value="22px">خیلی بزرگ (22px)</option>
+                    <option value="26px">تیتر برجسته (26px)</option>
+                    <option value="32px">عظیم (32px)</option>
+                </select>
+            </div>
+
+            <!-- Font Color Picker -->
+            <label class="toolbar-btn flex items-center gap-1 px-2.5 h-9 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" title="تغییر رنگ قلم (Font Color)">
+                <span class="material-symbols-outlined text-[19px] text-primary">format_color_text</span>
+                <span class="text-xs font-bold hidden sm:inline">رنگ متن</span>
+                <input type="color" onchange="formatDoc('foreColor', this.value)" value="#0f172a" class="w-5 h-5 rounded-md cursor-pointer border-0 p-0 bg-transparent shadow-sm">
+            </label>
+
+            <!-- Highlight Background Color Picker -->
+            <label class="toolbar-btn flex items-center gap-1 px-2.5 h-9 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" title="هایلایت و رنگ پس‌زمینه متن">
+                <span class="material-symbols-outlined text-[19px] text-amber-500">format_ink_highlighter</span>
+                <span class="text-xs font-bold hidden sm:inline">هایلایت</span>
+                <input type="color" onchange="formatDoc('hiliteColor', this.value)" value="#fef08a" class="w-5 h-5 rounded-md cursor-pointer border-0 p-0 bg-transparent shadow-sm">
+            </label>
+
+            <div class="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+
+            <!-- Standard Formatting (Bold, Italic, Underline) -->
+            <button type="button" onclick="formatDoc('bold')" class="toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center font-bold hover:bg-slate-100 dark:hover:bg-slate-800" title="بولد / ضخیم (Ctrl+B)">
                 <span class="material-symbols-outlined text-[19px]">format_bold</span>
             </button>
-            <button type="button" onclick="formatDoc('italic')" class="toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center" title="ایتالیک (مایل)">
+            <button type="button" onclick="formatDoc('italic')" class="toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="ایتالیک / مایل (Ctrl+I)">
                 <span class="material-symbols-outlined text-[19px]">format_italic</span>
             </button>
-            <button type="button" onclick="formatDoc('underline')" class="toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center" title="زیرخط (Underline)">
+            <button type="button" onclick="formatDoc('underline')" class="toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="زیرخط / Underline (Ctrl+U)">
                 <span class="material-symbols-outlined text-[19px]">format_underlined</span>
             </button>
+            
             <div class="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
-            <button type="button" onclick="formatDoc('formatBlock', '<h2>')" class="toolbar-btn px-2.5 h-9 rounded-xl flex items-center justify-center font-black text-xs" title="تیتر اصلی (H2)">
+            <!-- Headings -->
+            <button type="button" onclick="formatDoc('formatBlock', '<h2>')" class="toolbar-btn px-2.5 h-9 rounded-xl flex items-center justify-center font-black text-xs hover:bg-slate-100 dark:hover:bg-slate-800" title="تیتر اصلی (H2)">
                 H2
             </button>
-            <button type="button" onclick="formatDoc('formatBlock', '<h3>')" class="toolbar-btn px-2.5 h-9 rounded-xl flex items-center justify-center font-black text-xs" title="زیرتیتر (H3)">
+            <button type="button" onclick="formatDoc('formatBlock', '<h3>')" class="toolbar-btn px-2.5 h-9 rounded-xl flex items-center justify-center font-black text-xs hover:bg-slate-100 dark:hover:bg-slate-800" title="زیرتیتر (H3)">
                 H3
             </button>
+
             <div class="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
-            <button type="button" onclick="formatDoc('insertUnorderedList')" class="toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center" title="لیست نشانه‌دار">
+            <!-- Alignment -->
+            <button type="button" onclick="formatDoc('justifyRight')" class="toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="راست‌چین">
+                <span class="material-symbols-outlined text-[18px]">format_align_right</span>
+            </button>
+            <button type="button" onclick="formatDoc('justifyCenter')" class="toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="وسط‌چین">
+                <span class="material-symbols-outlined text-[18px]">format_align_center</span>
+            </button>
+            <button type="button" onclick="formatDoc('justifyLeft')" class="toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="چپ‌چین">
+                <span class="material-symbols-outlined text-[18px]">format_align_left</span>
+            </button>
+
+            <div class="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+
+            <!-- Lists & Links -->
+            <button type="button" onclick="formatDoc('insertUnorderedList')" class="toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="لیست نشانه‌دار">
                 <span class="material-symbols-outlined text-[19px]">format_list_bulleted</span>
             </button>
-            <button type="button" onclick="formatDoc('insertOrderedList')" class="toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center" title="لیست شماره‌دار">
+            <button type="button" onclick="formatDoc('insertOrderedList')" class="toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="لیست شماره‌دار">
                 <span class="material-symbols-outlined text-[19px]">format_list_numbered</span>
             </button>
-            <button type="button" onclick="insertLinkPrompt()" class="toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center" title="افزودن پیوند / لینک">
+            <button type="button" onclick="insertLinkPrompt()" class="toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="افزودن پیوند / لینک">
                 <span class="material-symbols-outlined text-[19px]">link</span>
             </button>
+            <button type="button" onclick="formatDoc('removeFormat')" class="toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30" title="پاک‌کردن قالب‌بندی">
+                <span class="material-symbols-outlined text-[18px]">format_clear</span>
+            </button>
+
             <div class="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
             <!-- COMPONENT 1: Callout / Quote Box (Image 3) -->
-            <button type="button" onclick="insertCalloutBox()" class="toolbar-btn px-3 h-9 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 font-bold text-xs flex items-center gap-1.5 border border-teal-300 dark:border-teal-800" title="درج کادر ویژه / نقل‌قول (تصویر ۳)">
+            <button type="button" onclick="insertCalloutBox()" class="toolbar-btn px-3 h-9 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 font-bold text-xs flex items-center gap-1.5 border border-teal-300 dark:border-teal-800 hover:bg-teal-100 transition-all shadow-sm" title="درج کادر ویژه / نقل‌قول (تصویر ۳)">
                 <span class="material-symbols-outlined text-[18px]">format_quote</span>
                 <span>+ کادر نقل‌قول و هشدار</span>
             </button>
 
             <!-- COMPONENT 2: FAQ Accordion (Image 4) -->
-            <button type="button" onclick="insertFaqAccordion()" class="toolbar-btn px-3 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center gap-1.5 border border-blue-300 dark:border-blue-800" title="درج پرسش و پاسخ تاشو (تصویر ۴)">
+            <button type="button" onclick="insertFaqAccordion()" class="toolbar-btn px-3 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center gap-1.5 border border-blue-300 dark:border-blue-800 hover:bg-blue-100 transition-all shadow-sm" title="درج پرسش و پاسخ تاشو (تصویر ۴)">
                 <span class="material-symbols-outlined text-[18px]">quiz</span>
                 <span>+ سوال متداول تاشو</span>
             </button>
@@ -294,7 +348,32 @@ $init_status = $post['status'] ?? 'published';
 
 <script>
 function formatDoc(cmd, value = null) {
-    document.execCommand(cmd, false, value);
+    if (cmd === 'hiliteColor') {
+        if (!document.execCommand('hiliteColor', false, value)) {
+            document.execCommand('backColor', false, value);
+        }
+    } else {
+        document.execCommand(cmd, false, value);
+    }
+    document.getElementById('canvas-content').focus();
+}
+
+function setFontSize(size) {
+    if (!size) return;
+    const sel = window.getSelection();
+    if (!sel.rangeCount || sel.isCollapsed) {
+        alert('لطفاً ابتدا متنی که می‌خواهید اندازه آن تغییر کند را انتخاب فرمایید.');
+        return;
+    }
+    const range = sel.getRangeAt(0);
+    const span = document.createElement('span');
+    span.style.fontSize = size;
+    span.appendChild(range.extractContents());
+    range.insertNode(span);
+    sel.removeAllRanges();
+    const newRange = document.createRange();
+    newRange.selectNodeContents(span);
+    sel.addRange(newRange);
     document.getElementById('canvas-content').focus();
 }
 
