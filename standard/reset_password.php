@@ -5,7 +5,11 @@ require_once 'includes/SmsService.php';
 
 $error = '';
 $success = '';
-$phone = $_GET['phone'] ?? ($_POST['phone'] ?? '');
+$rawPhone = $_GET['phone'] ?? ($_POST['phone'] ?? '');
+$phone = SmsService::normalizePhone($rawPhone);
+if (empty($phone)) {
+    $phone = $rawPhone;
+}
 
 if (empty($phone)) {
     header("Location: forgot_password.php");
@@ -18,12 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($rate_error) {
             $error = $rate_error;
         } else {
-            $stmt = $pdo->prepare("SELECT id FROM users WHERE phone = ?");
-            $stmt->execute([$phone]);
+            $stmt = $pdo->prepare("SELECT id FROM users WHERE phone = ? OR phone = ?");
+            $stmt->execute([$phone, $rawPhone]);
             if ($stmt->rowCount() > 0) {
                 $otp = sprintf("%06d", mt_rand(100000, 999999));
-                $stmt = $pdo->prepare("UPDATE users SET sms_code = ? WHERE phone = ?");
-                if ($stmt->execute([$otp, $phone])) {
+                $stmt = $pdo->prepare("UPDATE users SET sms_code = ? WHERE phone = ? OR phone = ?");
+                if ($stmt->execute([$otp, $phone, $rawPhone])) {
                     $sms = new SmsService($pdo);
                     $sms->sendOtp($phone, $otp);
                     $success = 'کد تأیید جدید پیامک شد.';
@@ -35,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     } else {
-        $otp = trim($_POST['otp'] ?? '');
+        $otp = SmsService::normalizeOtp($_POST['otp'] ?? '');
         $password = $_POST['password'] ?? '';
     
     if (empty($otp) || empty($password)) {
@@ -45,8 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($rate_error) {
             $error = $rate_error;
         } else {
-            $stmt = $pdo->prepare("SELECT id, sms_code FROM users WHERE phone = ?");
-            $stmt->execute([$phone]);
+            $stmt = $pdo->prepare("SELECT id, sms_code FROM users WHERE phone = ? OR phone = ?");
+            $stmt->execute([$phone, $rawPhone]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if (!$user) {

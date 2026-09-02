@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($mode === 'resend_signup_otp') {
         if (isset($_SESSION['signup_data'])) {
-            $phone = $_SESSION['signup_data']['phone'];
+            $phone = SmsService::normalizePhone($_SESSION['signup_data']['phone']);
             $rate_error = check_rate_limit($pdo, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', $phone);
             if ($rate_error) {
                 $error = $rate_error;
@@ -43,18 +43,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $otp = sprintf("%06d", mt_rand(100000, 999999));
                 $_SESSION['signup_data']['otp'] = $otp;
                 $sms = new SmsService($pdo);
-                $sms->sendOtp($phone, $otp);
+                $sent = $sms->sendOtp($phone, $otp);
                 $success = 'کد تایید جدید با موفقیت برای شماره ' . htmlspecialchars($phone) . ' پیامک شد.';
             }
         } else {
             $error = 'نشست شما منقضی شده است. لطفاً دوباره ثبت نام کنید.';
         }
     } elseif ($mode === 'verify_signup') {
-        $otp = trim($_POST['otp'] ?? '');
+        $otp = SmsService::normalizeOtp($_POST['otp'] ?? '');
         if (isset($_SESSION['signup_data'])) {
             if ($otp === $_SESSION['signup_data']['otp']) {
-                $phone = $_SESSION['signup_data']['phone'];
-                $name = $_SESSION['signup_data']['name'];
+                $phone = SmsService::normalizePhone($_SESSION['signup_data']['phone']);
+                $name = trim($_SESSION['signup_data']['name'] ?? '');
                 $password = $_SESSION['signup_data']['password'];
                 
                 $hash = password_hash($password, PASSWORD_DEFAULT);
@@ -80,10 +80,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'نشست شما منقضی شده است. لطفاً دوباره ثبت نام کنید.';
         }
     } else {
-        $phone = trim($_POST['phone'] ?? '');
+        $rawPhone = trim($_POST['phone'] ?? '');
         $password = $_POST['password'] ?? '';
+        $normalizedPhone = SmsService::normalizePhone($rawPhone);
+        $phone = $normalizedPhone ?: $rawPhone;
         
-        if (empty($phone) || empty($password)) {
+        if (empty($rawPhone) || empty($password)) {
             $error = 'لطفاً تمامی فیلدها را پر کنید.';
         } else {
             $rate_error = check_rate_limit($pdo, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', $phone);
@@ -93,25 +95,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($mode === 'signup') {
                     $name = trim($_POST['name'] ?? '');
                     
-                    $stmt = $pdo->prepare("SELECT id FROM users WHERE phone = ?");
-                    $stmt->execute([$phone]);
-                    if ($stmt->rowCount() > 0) {
-                        $error = 'این شماره موبایل/ایمیل قبلاً ثبت شده است.';
+                    // Validate phone number format (must be standard 11-digit 09...)
+                    if (!preg_match('/^09\d{9}$/', $phone)) {
+                        $error = 'لطفاً یک شماره موبایل معتبر ۱۱ رقمی (مانند ۰۹۱۲۳۴۵۶۷۸۹) وارد نمایید.';
                     } else {
-                        $otp = sprintf("%06d", mt_rand(100000, 999999));
-                        $sms = new SmsService();
-                        $sms->sendOtp($phone, $otp);
-                        
-                        $_SESSION['signup_data'] = [
-                            'phone' => $phone,
-                            'name' => $name,
-                            'password' => $password,
-                            'otp' => $otp
-                        ];
+                        $stmt = $pdo->prepare("SELECT id FROM users WHERE phone = ? OR phone = ?");
+                        $stmt->execute([$phone, $rawPhone]);
+                        if ($stmt->rowCount() > 0) {
+                            $error = 'این شماره موبایل قبلاً ثبت شده است.';
+                        } else {
+                            $otp = sprintf("%06d", mt_rand(100000, 999999));
+                            $sms = new SmsService($pdo);
+                            $sms->sendOtp($phone, $otp);
+                            
+                            $_SESSION['signup_data'] = [
+                                'phone' => $phone,
+                                'name' => $name,
+                                'password' => $password,
+                                'otp' => $otp
+                            ];
+                        }
                     }
                 } elseif ($mode === 'login') {
-                    $stmt = $pdo->prepare("SELECT id, role, password FROM users WHERE phone = ?");
-                    $stmt->execute([$phone]);
+                    $stmt = $pdo->prepare("SELECT id, role, password FROM users WHERE phone = ? OR phone = ? OR email = ?");
+                    $stmt->execute([$phone, $rawPhone, $rawPhone]);
                     $user = $stmt->fetch(PDO::FETCH_ASSOC);
                     
                     if ($user && !empty($user['password']) && password_verify($password, $user['password'])) {

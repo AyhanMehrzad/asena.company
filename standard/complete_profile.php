@@ -35,28 +35,29 @@ $phone_input = $_POST['phone'] ?? '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['send_otp'])) {
         // Step 1: Send OTP
-        $phone_input = trim($_POST['phone'] ?? '');
-        if (empty($phone_input) || strlen($phone_input) < 10) {
-            $error = 'شماره موبایل نامعتبر است.';
+        $rawPhone = trim($_POST['phone'] ?? '');
+        $phone_input = SmsService::normalizePhone($rawPhone);
+        if (empty($phone_input) || !preg_match('/^09\d{9}$/', $phone_input)) {
+            $error = 'لطفاً یک شماره موبایل معتبر ۱۱ رقمی (مانند ۰۹۱۲۳۴۵۶۷۸۹) وارد نمایید.';
         } else {
             // Check if phone already used by someone else
-            $check = $pdo->prepare("SELECT id FROM users WHERE phone = ? AND id != ?");
-            $check->execute([$phone_input, $user_id]);
+            $check = $pdo->prepare("SELECT id FROM users WHERE (phone = ? OR phone = ?) AND id != ?");
+            $check->execute([$phone_input, $rawPhone, $user_id]);
             if ($check->rowCount() > 0) {
                 $error = 'این شماره موبایل قبلاً ثبت شده است.';
             } else {
-                $otp = sprintf("%06d", mt_rand(1, 999999));
+                $otp = sprintf("%06d", mt_rand(100000, 999999));
                 $_SESSION['oauth_otp_code'] = $otp;
                 $_SESSION['oauth_phone_pending'] = $phone_input;
                 
-                $sms = new SmsService();
+                $sms = new SmsService($pdo);
                 $sms->sendOtp($phone_input, $otp);
                 
                 $step = 2;
             }
         }
     } elseif (isset($_POST['resend_otp'])) {
-        $pending_phone = $_SESSION['oauth_phone_pending'] ?? '';
+        $pending_phone = SmsService::normalizePhone($_SESSION['oauth_phone_pending'] ?? '');
         if (!empty($pending_phone)) {
             $rate_error = check_rate_limit($pdo, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1', $pending_phone);
             if ($rate_error) {
@@ -64,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $otp = sprintf("%06d", mt_rand(100000, 999999));
                 $_SESSION['oauth_otp_code'] = $otp;
-                $sms = new SmsService();
+                $sms = new SmsService($pdo);
                 $sms->sendOtp($pending_phone, $otp);
                 $success = 'کد تایید جدید با موفقیت برای شماره ' . htmlspecialchars($pending_phone) . ' ارسال شد.';
             }
@@ -72,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $step = 2;
     } elseif (isset($_POST['verify_otp'])) {
         // Step 2: Verify OTP
-        $otp_input = trim($_POST['otp'] ?? '');
+        $otp_input = SmsService::normalizeOtp($_POST['otp'] ?? '');
         $expected_otp = $_SESSION['oauth_otp_code'] ?? '';
         $pending_phone = $_SESSION['oauth_phone_pending'] ?? '';
         
