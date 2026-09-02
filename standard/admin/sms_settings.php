@@ -128,8 +128,8 @@ $doctorSmsOnBooking      = get_setting($pdo, 'doctor_sms_on_booking', '1');
 
 $apiKeyVal   = get_setting($pdo, 'melipayamak_api_key', getenv('MELIPAYAMAK_API_KEY') ?: 'd3cbc1e6-79e8-4a25-910e-35e86370cad0');
 $usernameVal = get_setting($pdo, 'melipayamak_username', getenv('MELIPAYAMAK_USERNAME') ?: '09146676978');
-$passwordVal = get_setting($pdo, 'melipayamak_password', getenv('MELIPAYAMAK_PASSWORD') ?: 'NZ456QM9L');
-$fromVal     = get_setting($pdo, 'melipayamak_from', getenv('MELIPAYAMAK_FROM') ?: '2170007653');
+$passwordVal = get_setting($pdo, 'melipayamak_password', getenv('MELIPAYAMAK_PASSWORD') ?: 'd3cbc1e6-79e8-4a25-910e-35e86370cad0');
+$fromVal     = get_setting($pdo, 'melipayamak_from', getenv('MELIPAYAMAK_FROM') ?: '50004001914667');
 
 $phoneList = array_filter(array_map('trim', explode(',', $adminNotificationPhones)));
 
@@ -141,7 +141,7 @@ $patterns = [
         'name' => 'کد تایید OTP (ورود / ثبت‌نام / بازیابی)',
         'vars' => '{0} = کد تایید',
         'body_id' => SmsService::getBodyId('otp', $pdo),
-        'sample' => "کد تایید ورود به آسنا:\n{0}\nasena.company",
+        'sample' => "کاربرگرامی کد تایید شما : {0} می باشد. با تشکر. ASENA",
         'target' => 'کاربر / مشتری'
     ],
     [
