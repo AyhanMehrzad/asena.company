@@ -67,6 +67,17 @@
           },
           "sameAs": [
             "https://asena.company"
+          ],
+          "knowsAbout": [
+            "دامپزشکی تخصصی",
+            "کلینیک حیوانات خانگی",
+            "داروخانه آنلاین دامپزشکی",
+            "پت شاپ آنلاین",
+            "تغذیه سگ و گربه",
+            "واکسیناسیون و جراحی حیوانات",
+            "Veterinary Medicine",
+            "Animal Pharmacy",
+            "Pet Health and Nutrition"
           ]
         },
         {
