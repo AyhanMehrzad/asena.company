@@ -27,28 +27,99 @@ if (isset($_SESSION['cart'])) {
     }
 }
 $current_page = basename($_SERVER['PHP_SELF']);
+$current_page = basename($_SERVER['PHP_SELF']);
+
+// Smart SEO title & description fallbacks for Pharmacy edition
+$seo_defaults = [
+    'index.php' => [
+        'title' => 'داروخانه آنلاین دامپزشکی آسنا | خرید مستقیم دارو، واکسن و مکمل‌های پت و دام',
+        'desc'  => 'مرجع تخصصی داروخانه آنلاین دامپزشکی آسنا؛ تامین مستقیم انواع داروها، واکسن با زنجیره سرد، مکمل‌های تخصصی سگ، گربه، اسب و دام با تاییدیه نسخه دامپزشک.'
+    ],
+    'shop.php' => [
+        'title' => 'داروخانه تخصصی دامپزشکی آسنا | داروها، مکمل‌ها و محصولات درمانی دامی',
+        'desc'  => 'خرید انواع داروهای ضد انگل، آنتی‌بیوتیک‌ها، قطره‌های چشمی و گوشی، پمادها و مکمل‌های تقویت مفاصل و ایمنی حیوانات با تاییدیه رسمی دامپزشکی.'
+    ],
+    'booking.php' => [
+        'title' => 'مشاوره دارویی و نوبت‌دهی آنلاین دکتر دامپزشک | داروخانه آسنا',
+        'desc'  => 'رزرو آنلاین نوبت مشاوره دارویی، بررسی تداخلات درمانی و ویزیت تخصصی دامپزشکی حیوانات خانگی و دام در سامانه آسنا.'
+    ],
+    'subscriptions.php' => [
+        'title' => 'سفارش دوره‌ای داروهای مزمن و مکمل‌های دامی (Autoship) | آسنا',
+        'desc'  => 'تامین بدون وقفه داروهای دوره‌ای و مکمل‌های درمانی حیوانات با تخفیف دائمی و ارسال سر موعد درب منزل یا دامداری.'
+    ],
+    'login.php' => [
+        'title' => 'ورود و ثبت‌نام در داروخانه دامپزشکی آسنا | پیگیری سفارشات دارویی',
+        'desc'  => 'ورود به پنل داروخانه دامپزشکی آسنا جهت ارسال تصویر نسخه، پیگیری سفارشات دارویی و مدیریت نسخه‌های ثبت شده پت.'
+    ]
+];
+
+$default_seo = $seo_defaults[$current_page] ?? [
+    'title' => 'داروخانه آنلاین و تخصصی دامپزشکی آسنا',
+    'desc'  => 'مرجع معتبر خرید آنلاین داروهای دامپزشکی و ملزومات پت با تاییدیه دامپزشکی'
+];
+
+$effective_title = isset($page_title) ? $page_title : $default_seo['title'];
+$effective_desc = isset($page_description) ? $page_description : $default_seo['desc'];
+
+$proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
+$host = $_SERVER['HTTP_HOST'] ?? 'asena.company';
+$effective_canonical = isset($canonical_url) ? $canonical_url : "$proto://$host" . strtok($_SERVER['REQUEST_URI'], '?');
+$effective_og_image = isset($og_image) ? (strpos($og_image, 'http') === 0 ? $og_image : "$proto://$host/" . ltrim($og_image, '/')) : "$proto://$host/assets/images/og-asena.png";
 ?>
 <!DOCTYPE html>
 <html dir="rtl" lang="fa" data-edition="pharmacy">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" name="viewport">
-    <title><?php echo isset($page_title) ? htmlspecialchars($page_title) : 'داروخانه آنلاین و پت شاپ تخصصی آسنا'; ?></title>
-    <meta name="description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'داروخانه آنلاین و تخصصی حیوانات خانگی و دامپزشکی آسنا - تامین مستقیم داروها، واکسن‌ها، مکمل‌ها و ملزومات انواع حیوانات خانگی و دام با تاییدیه دامپزشکی'; ?>">
-    <link rel="canonical" href="<?php echo htmlspecialchars((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"); ?>">
+    <title><?php echo htmlspecialchars($effective_title); ?></title>
+    <meta name="description" content="<?php echo htmlspecialchars($effective_desc); ?>">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="<?php echo htmlspecialchars($effective_canonical); ?>">
+    <link rel="alternate" hreflang="fa-IR" href="<?php echo htmlspecialchars($effective_canonical); ?>">
+    <meta name="geo.region" content="IR">
+    <meta name="geo.placename" content="Iran">
     
     <!-- Open Graph / Facebook / Telegram -->
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="داروخانه و پت‌شاپ آنلاین آسنا">
+    <meta property="og:site_name" content="داروخانه آنلاین دامپزشکی آسنا">
     <meta property="og:locale" content="fa_IR">
-    <meta property="og:title" content="<?php echo isset($page_title) ? htmlspecialchars($page_title) : 'داروخانه آنلاین و پت شاپ تخصصی آسنا'; ?>">
-    <meta property="og:description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'مرجع معتبر خرید آنلاین داروهای دامپزشکی، واکسن و ملزومات پت با زنجیره سرد و پشتیبانی ۲۴/۷ دکتر داروساز'; ?>">
-    <meta property="og:image" content="assets/images/logo.png">
+    <meta property="og:title" content="<?php echo htmlspecialchars($effective_title); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($effective_desc); ?>">
+    <meta property="og:url" content="<?php echo htmlspecialchars($effective_canonical); ?>">
+    <meta property="og:image" content="<?php echo htmlspecialchars($effective_og_image); ?>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<?php echo isset($page_title) ? htmlspecialchars($page_title) : 'داروخانه آنلاین و پت شاپ تخصصی آسنا'; ?>">
-    <meta name="twitter:description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'مرجع معتبر خرید آنلاین داروهای دامپزشکی و ملزومات پت با تاییدیه دامپزشکی'; ?>">
+    <meta name="twitter:title" content="<?php echo htmlspecialchars($effective_title); ?>">
+    <meta name="twitter:description" content="<?php echo htmlspecialchars($effective_desc); ?>">
+    <meta name="twitter:image" content="<?php echo htmlspecialchars($effective_og_image); ?>">
+
+    <?php if (isset($page_schema) && !empty($page_schema)): ?>
+    <!-- Page Specific Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    <?php echo $page_schema; ?>
+    </script>
+    <?php else: ?>
+    <!-- Pharmacy Schema & Breadcrumbs -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Pharmacy",
+      "name": "داروخانه آنلاین دامپزشکی آسنا",
+      "description": "تامین مستقیم داروهای تخصصی دامپزشکی، واکسن، سرم و مکمل‌های دارویی با تاییدیه نسخه.",
+      "url": "<?php echo $proto . '://' . $host; ?>/pharmacy-standard/",
+      "telephone": "+98-914-667-6978",
+      "priceRange": "$$",
+      "parentOrganization": {
+        "@type": "Organization",
+        "name": "ASENA",
+        "url": "<?php echo $proto . '://' . $host; ?>/"
+      }
+    }
+    </script>
+    <?php endif; ?>
 
     <!-- Fonts & Icons -->
     <link href="assets/css/material-symbols.css" rel="stylesheet">
@@ -115,16 +186,18 @@ if (function_exists('get_curated_recommendations')) {
                     <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'index.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="index.php">خانه</a>
                     <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'pharmacy.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?> flex items-center gap-1.5" href="pharmacy.php">
                         <span>داروخانه تخصصی</span>
-                        <span class="bg-secondary-container text-white text-[10px] font-bold px-2 py-0.5 rounded-full">تخصصی</span>
+                        <span class="bg-secondary-container text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">تخصصی</span>
                     </a>
                     <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'shop.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="shop.php">فروشگاه</a>
+                    <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'booking.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="booking.php">کلینیک</a>
+                    <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'subscriptions.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="subscriptions.php">اشتراک خودکار</a>
                 </div>
                 
                 <!-- Desktop Search -->
                 <div class="hidden lg:flex items-center bg-white/10 rounded-full px-4 py-2 text-white gap-2 w-full max-w-md">
-                    <form action="pharmacy.php" method="GET" class="flex items-center w-full">
+                    <form action="shop.php" method="GET" class="flex items-center w-full">
                         <button type="submit" class="material-symbols-outlined text-lg bg-transparent border-none outline-none text-white cursor-pointer flex items-center justify-center p-0">search</button>
-                        <input name="q" value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>" class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder-white/60 text-white mr-2" placeholder="جستجو در داروها و مکمل‌ها..." type="text">
+                        <input name="q" value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>" class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder-white/60 text-white mr-2" placeholder="جستجو در محصولات و خدمات..." type="text">
                     </form>
                 </div>
             </div>
@@ -134,7 +207,9 @@ if (function_exists('get_curated_recommendations')) {
                 <div class="hidden lg:flex items-center gap-3">
                     <?php if(isset($_SESSION['user_id'])): ?>
                         <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-                            <a href="admin/index.php" class="bg-secondary-container text-white px-6 py-2 rounded-lg text-sm font-bold shadow-md hover:shadow-lg transition-all">پنل مدیریت داروخانه</a>
+                            <a href="admin/index.php" class="bg-secondary-container text-white px-6 py-2 rounded-lg text-sm font-bold shadow-md hover:shadow-lg transition-all">پنل مدیریت</a>
+                        <?php elseif(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'doctor'): ?>
+                            <a href="doctor/index.php" class="bg-white text-primary px-6 py-2 rounded-lg text-sm font-bold shadow-md hover:shadow-lg transition-all">پنل پزشک</a>
                         <?php endif; ?>
                     <?php else: ?>
                         <a href="login.php" class="bg-secondary-container text-white px-6 py-2 rounded-lg text-sm font-bold shadow-md hover:shadow-lg transition-all">ورود / ثبت‌نام</a>
@@ -161,7 +236,7 @@ if (function_exists('get_curated_recommendations')) {
     <div id="mobile-menu" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300">
         <div id="mobile-menu-panel" class="absolute top-0 right-0 h-full w-4/5 max-w-sm bg-surface-container-lowest shadow-2xl translate-x-full transition-transform duration-300 flex flex-col">
             <div class="p-6 border-b border-outline-variant/20 flex justify-between items-center bg-primary text-white">
-                <h2 class="text-xl font-bold">منوی داروخانه</h2>
+                <h2 class="text-xl font-bold">منوی کاربری</h2>
                 <button type="button" onclick="toggleMobileMenu()" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
@@ -169,9 +244,9 @@ if (function_exists('get_curated_recommendations')) {
             
             <div class="p-6 overflow-y-auto custom-scrollbar flex-1 flex flex-col gap-6">
                 <!-- Mobile Search -->
-                <form action="pharmacy.php" method="GET" class="flex items-center w-full bg-surface-container rounded-xl px-4 py-3">
+                <form action="shop.php" method="GET" class="flex items-center w-full bg-surface-container rounded-xl px-4 py-3">
                     <button type="submit" class="material-symbols-outlined text-lg text-primary bg-transparent border-none outline-none cursor-pointer flex items-center justify-center p-0">search</button>
-                    <input name="q" value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>" class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder-on-surface-variant text-on-surface mr-3 font-medium" placeholder="جستجوی دارو..." type="text">
+                    <input name="q" value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>" class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder-on-surface-variant text-on-surface mr-3 font-medium" placeholder="جستجو..." type="text">
                 </form>
 
                 <!-- Mobile Links -->
@@ -184,6 +259,12 @@ if (function_exists('get_curated_recommendations')) {
                     </a>
                     <a class="flex items-center gap-4 text-on-surface font-bold p-3 rounded-xl hover:bg-primary-container/10 hover:text-primary transition-colors" href="shop.php">
                         <span class="material-symbols-outlined text-outline">storefront</span> فروشگاه
+                    </a>
+                    <a class="flex items-center gap-4 text-on-surface font-bold p-3 rounded-xl hover:bg-primary-container/10 hover:text-primary transition-colors" href="booking.php">
+                        <span class="material-symbols-outlined text-outline">medical_services</span> کلینیک
+                    </a>
+                    <a class="flex items-center gap-4 text-on-surface font-bold p-3 rounded-xl hover:bg-primary-container/10 hover:text-primary transition-colors" href="subscriptions.php">
+                        <span class="material-symbols-outlined text-outline">autorenew</span> اشتراک خودکار
                     </a>
                 </nav>
 

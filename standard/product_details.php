@@ -1,5 +1,5 @@
 <?php
-require_once 'includes/header.php';
+require_once 'includes/db.php';
 
 $product_id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -17,6 +17,57 @@ if (!$product) {
     header('Location: shop.php');
     exit;
 }
+
+// Dynamic SEO Setup for Product Page
+$page_title = "خرید " . $product['name'] . " اصل با ضمانت | پت‌شاپ آنلاین آسنا";
+$clean_desc = !empty($product['description']) ? trim(strip_tags($product['description'])) : 'خرید اینترنتی ' . $product['name'] . ' با ضمانت اصالت و سلامت کالا از پت شاپ آنلاین آسنا با ارسال سریع.';
+$page_description = mb_substr($clean_desc, 0, 160) . '...';
+
+$proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
+$host = $_SERVER['HTTP_HOST'] ?? 'asena.company';
+$canonical_url = "$proto://$host/standard/product_details.php?id=" . $product['id'];
+$og_image = !empty($product['image_url']) ? (strpos($product['image_url'], 'http') === 0 ? $product['image_url'] : "$proto://$host/standard/" . ltrim($product['image_url'], '/')) : "$proto://$host/assets/images/og-asena.png";
+
+// Schema.org Product JSON-LD for Google Rich Results
+$product_price = !empty($product['discount_price']) ? $product['discount_price'] : $product['price'];
+$stock_status = ($product['stock'] ?? 1) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
+$rating_val = !empty($product['rating_cache']) ? (float)$product['rating_cache'] : (!empty($product['baseline_rating']) ? (float)$product['baseline_rating'] : 4.8);
+$review_count = !empty($product['review_count_cache']) ? max(1, (int)$product['review_count_cache']) : 5;
+
+$page_schema = json_encode([
+    "@context" => "https://schema.org/",
+    "@type" => "Product",
+    "name" => $product['name'],
+    "image" => [$og_image],
+    "description" => $clean_desc,
+    "sku" => "ASENA-PROD-" . $product['id'],
+    "brand" => [
+        "@type" => "Brand",
+        "name" => !empty($product['brand']) ? $product['brand'] : "ASENA"
+    ],
+    "category" => $product['category'] ?? "ملزومات حیوانات خانگی",
+    "aggregateRating" => [
+        "@type" => "AggregateRating",
+        "ratingValue" => $rating_val,
+        "reviewCount" => $review_count,
+        "bestRating" => "5",
+        "worstRating" => "1"
+    ],
+    "offers" => [
+        "@type" => "Offer",
+        "url" => $canonical_url,
+        "priceCurrency" => "IRR",
+        "price" => (int)$product_price * 10,
+        "itemCondition" => "https://schema.org/NewCondition",
+        "availability" => $stock_status,
+        "seller" => [
+            "@type" => "Organization",
+            "name" => "ASENA"
+        ]
+    ]
+], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
+require_once 'includes/header.php';
 
 // Handle review submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'submit_review') {

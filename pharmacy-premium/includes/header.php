@@ -27,28 +27,99 @@ if (isset($_SESSION['cart'])) {
     }
 }
 $current_page = basename($_SERVER['PHP_SELF']);
+$current_page = basename($_SERVER['PHP_SELF']);
+
+// Smart SEO title & description fallbacks for Pharmacy edition
+$seo_defaults = [
+    'index.php' => [
+        'title' => 'داروخانه آنلاین دامپزشکی آسنا | خرید مستقیم دارو، واکسن و مکمل‌های پت و دام',
+        'desc'  => 'مرجع تخصصی داروخانه آنلاین دامپزشکی آسنا؛ تامین مستقیم انواع داروها، واکسن با زنجیره سرد، مکمل‌های تخصصی سگ، گربه، اسب و دام با تاییدیه نسخه دامپزشک.'
+    ],
+    'shop.php' => [
+        'title' => 'داروخانه تخصصی دامپزشکی آسنا | داروها، مکمل‌ها و محصولات درمانی دامی',
+        'desc'  => 'خرید انواع داروهای ضد انگل، آنتی‌بیوتیک‌ها، قطره‌های چشمی و گوشی، پمادها و مکمل‌های تقویت مفاصل و ایمنی حیوانات با تاییدیه رسمی دامپزشکی.'
+    ],
+    'booking.php' => [
+        'title' => 'مشاوره دارویی و نوبت‌دهی آنلاین دکتر دامپزشک | داروخانه آسنا',
+        'desc'  => 'رزرو آنلاین نوبت مشاوره دارویی، بررسی تداخلات درمانی و ویزیت تخصصی دامپزشکی حیوانات خانگی و دام در سامانه آسنا.'
+    ],
+    'subscriptions.php' => [
+        'title' => 'سفارش دوره‌ای داروهای مزمن و مکمل‌های دامی (Autoship) | آسنا',
+        'desc'  => 'تامین بدون وقفه داروهای دوره‌ای و مکمل‌های درمانی حیوانات با تخفیف دائمی و ارسال سر موعد درب منزل یا دامداری.'
+    ],
+    'login.php' => [
+        'title' => 'ورود و ثبت‌نام در داروخانه دامپزشکی آسنا | پیگیری سفارشات دارویی',
+        'desc'  => 'ورود به پنل داروخانه دامپزشکی آسنا جهت ارسال تصویر نسخه، پیگیری سفارشات دارویی و مدیریت نسخه‌های ثبت شده پت.'
+    ]
+];
+
+$default_seo = $seo_defaults[$current_page] ?? [
+    'title' => 'داروخانه آنلاین و تخصصی دامپزشکی آسنا',
+    'desc'  => 'مرجع معتبر خرید آنلاین داروهای دامپزشکی و ملزومات پت با تاییدیه دامپزشکی'
+];
+
+$effective_title = isset($page_title) ? $page_title : $default_seo['title'];
+$effective_desc = isset($page_description) ? $page_description : $default_seo['desc'];
+
+$proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
+$host = $_SERVER['HTTP_HOST'] ?? 'asena.company';
+$effective_canonical = isset($canonical_url) ? $canonical_url : "$proto://$host" . strtok($_SERVER['REQUEST_URI'], '?');
+$effective_og_image = isset($og_image) ? (strpos($og_image, 'http') === 0 ? $og_image : "$proto://$host/" . ltrim($og_image, '/')) : "$proto://$host/assets/images/og-asena.png";
 ?>
 <!DOCTYPE html>
 <html dir="rtl" lang="fa" data-edition="pharmacy">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" name="viewport">
-    <title><?php echo isset($page_title) ? htmlspecialchars($page_title) : 'داروخانه آنلاین و پت شاپ تخصصی آسنا'; ?></title>
-    <meta name="description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'داروخانه آنلاین و تخصصی حیوانات خانگی و دامپزشکی آسنا - تامین مستقیم داروها، واکسن‌ها، مکمل‌ها و ملزومات انواع حیوانات خانگی و دام با تاییدیه دامپزشکی'; ?>">
-    <link rel="canonical" href="<?php echo htmlspecialchars((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"); ?>">
+    <title><?php echo htmlspecialchars($effective_title); ?></title>
+    <meta name="description" content="<?php echo htmlspecialchars($effective_desc); ?>">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="<?php echo htmlspecialchars($effective_canonical); ?>">
+    <link rel="alternate" hreflang="fa-IR" href="<?php echo htmlspecialchars($effective_canonical); ?>">
+    <meta name="geo.region" content="IR">
+    <meta name="geo.placename" content="Iran">
     
     <!-- Open Graph / Facebook / Telegram -->
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="داروخانه و پت‌شاپ آنلاین آسنا">
+    <meta property="og:site_name" content="داروخانه آنلاین دامپزشکی آسنا">
     <meta property="og:locale" content="fa_IR">
-    <meta property="og:title" content="<?php echo isset($page_title) ? htmlspecialchars($page_title) : 'داروخانه آنلاین و پت شاپ تخصصی آسنا'; ?>">
-    <meta property="og:description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'مرجع معتبر خرید آنلاین داروهای دامپزشکی، واکسن و ملزومات پت با زنجیره سرد و پشتیبانی ۲۴/۷ دکتر داروساز'; ?>">
-    <meta property="og:image" content="assets/images/logo.png">
+    <meta property="og:title" content="<?php echo htmlspecialchars($effective_title); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($effective_desc); ?>">
+    <meta property="og:url" content="<?php echo htmlspecialchars($effective_canonical); ?>">
+    <meta property="og:image" content="<?php echo htmlspecialchars($effective_og_image); ?>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<?php echo isset($page_title) ? htmlspecialchars($page_title) : 'داروخانه آنلاین و پت شاپ تخصصی آسنا'; ?>">
-    <meta name="twitter:description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'مرجع معتبر خرید آنلاین داروهای دامپزشکی و ملزومات پت با تاییدیه دامپزشکی'; ?>">
+    <meta name="twitter:title" content="<?php echo htmlspecialchars($effective_title); ?>">
+    <meta name="twitter:description" content="<?php echo htmlspecialchars($effective_desc); ?>">
+    <meta name="twitter:image" content="<?php echo htmlspecialchars($effective_og_image); ?>">
+
+    <?php if (isset($page_schema) && !empty($page_schema)): ?>
+    <!-- Page Specific Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    <?php echo $page_schema; ?>
+    </script>
+    <?php else: ?>
+    <!-- Pharmacy Schema & Breadcrumbs -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Pharmacy",
+      "name": "داروخانه آنلاین دامپزشکی آسنا",
+      "description": "تامین مستقیم داروهای تخصصی دامپزشکی، واکسن، سرم و مکمل‌های دارویی با تاییدیه نسخه.",
+      "url": "<?php echo $proto . '://' . $host; ?>/pharmacy-standard/",
+      "telephone": "+98-914-667-6978",
+      "priceRange": "$$",
+      "parentOrganization": {
+        "@type": "Organization",
+        "name": "ASENA",
+        "url": "<?php echo $proto . '://' . $host; ?>/"
+      }
+    }
+    </script>
+    <?php endif; ?>
 
     <!-- Fonts & Icons -->
     <link href="assets/css/material-symbols.css" rel="stylesheet">

@@ -27,28 +27,106 @@ if (isset($_SESSION['cart'])) {
     }
 }
 $current_page = basename($_SERVER['PHP_SELF']);
+
+// Smart SEO title & description fallbacks based on active page
+$seo_defaults = [
+    'index.php' => [
+        'title' => 'پلتفرم کلینیک دامپزشکی و پت‌شاپ آنلاین آسنا | نوبت‌دهی و خرید ملزومات پت',
+        'desc'  => 'کلینیک دامپزشکی و پت‌شاپ تخصصی آسنا؛ نوبت‌دهی آنلاین ویزیت پزشک، خرید غذای خشک و مکمل‌های سگ و گربه، و تحویل خودکار دوره‌ای با بهترین قیمت.'
+    ],
+    'shop.php' => [
+        'title' => 'پت‌شاپ آنلاین آسنا | خرید غذای خشک، کنسرو، مکمل و ملزومات سگ و گربه',
+        'desc'  => 'خرید اینترنتی انواع غذای سگ و گربه، لوازم بهداشتی، خاک گربه، تشویقی و مکمل‌های درمانی پت با ضمانت اصالت کالا و ارسال سریع در آسنا.'
+    ],
+    'booking.php' => [
+        'title' => 'نوبت‌دهی آنلاین کلینیک دامپزشکی آسنا | رزرو ویزیت متخصص سگ، گربه و پرندگان',
+        'desc'  => 'رزرو آنلاین نوبت دکتر دامپزشک؛ ویزیت عمومی و تخصصی، واکسیناسیون، جراحی، دندانپزشکی و چکاپ دوره‌ای پت با مجرب‌ترین کادر دامپزشکی.'
+    ],
+    'subscriptions.php' => [
+        'title' => 'سفارش دوره‌ای و تحویل خودکار ملزومات پت (Autoship) | تخفیف ویژه آسنا',
+        'desc'  => 'دیگر نگران تمام شدن غذای پت خود نباشید! با سیستم ارسال دوره‌ای و خودکار آسنا، سفارشات ماهانه شما با تخفیف دائمی و بدون نیاز به سفارش مجدد ارسال می‌شود.'
+    ],
+    'charity.php' => [
+        'title' => 'پویش‌های حمایت و درمان حیوانات بی‌سرپرست | نقاهتگاه و درمانگاه آسنا',
+        'desc'  => 'مشارکت در درمان، واکسیناسیون، عقیم‌سازی و تامین غذای حیوانات آسیب‌دیده و بی‌سرپرست با گزارش‌دهی شفاف و لحظه‌ای در سامانه خیریه آسنا.'
+    ],
+    'login.php' => [
+        'title' => 'ورود و ثبت‌نام در سامانه آسنا | دسترسی به پرونده پزشکی و سفارشات پت',
+        'desc'  => 'ورود به پنل کاربری آسنا جهت مدیریت نوبت‌های ویزیت دامپزشکی، پیگیری سفارشات پت‌شاپ و دسترسی به پرونده سلامت و واکسیناسیون حیوان خانگی.'
+    ]
+];
+
+$default_seo = $seo_defaults[$current_page] ?? [
+    'title' => 'کلینیک دامپزشکی و پت‌شاپ آنلاین آسنا',
+    'desc'  => 'مرجع تخصصی خدمات دامپزشکی، نوبت‌دهی آنلاین و خرید ملزومات پت با تحویل دوره‌ای'
+];
+
+$effective_title = isset($page_title) ? $page_title : $default_seo['title'];
+$effective_desc = isset($page_description) ? $page_description : $default_seo['desc'];
+
+$proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
+$host = $_SERVER['HTTP_HOST'] ?? 'asena.company';
+$effective_canonical = isset($canonical_url) ? $canonical_url : "$proto://$host" . strtok($_SERVER['REQUEST_URI'], '?');
+$effective_og_image = isset($og_image) ? (strpos($og_image, 'http') === 0 ? $og_image : "$proto://$host/" . ltrim($og_image, '/')) : "$proto://$host/assets/images/og-asena.png";
 ?>
 <!DOCTYPE html>
 <html dir="rtl" lang="fa" data-edition="standard">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" name="viewport">
-    <title><?php echo isset($page_title) ? htmlspecialchars($page_title) : 'کلینیک و پت‌شاپ آنلاین آسنا (نسخه حرفه‌ای)'; ?></title>
-    <meta name="description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'کلینیک دامپزشکی و پت شاپ تخصصی آسنا - نوبت‌دهی آنلاین و خرید ملزومات پت با تحویل خودکار دوره‌ای'; ?>">
-    <link rel="canonical" href="<?php echo htmlspecialchars((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"); ?>">
+    <title><?php echo htmlspecialchars($effective_title); ?></title>
+    <meta name="description" content="<?php echo htmlspecialchars($effective_desc); ?>">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="<?php echo htmlspecialchars($effective_canonical); ?>">
+    <link rel="alternate" hreflang="fa-IR" href="<?php echo htmlspecialchars($effective_canonical); ?>">
+    <meta name="geo.region" content="IR">
+    <meta name="geo.placename" content="Iran">
     
     <!-- Open Graph / Facebook / Telegram -->
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="کلینیک و پت‌شاپ آنلاین آسنا">
+    <meta property="og:site_name" content="ASENA | کلینیک و پت‌شاپ تخصصی">
     <meta property="og:locale" content="fa_IR">
-    <meta property="og:title" content="<?php echo isset($page_title) ? htmlspecialchars($page_title) : 'کلینیک و پت‌شاپ آنلاین آسنا (نسخه حرفه‌ای)'; ?>">
-    <meta property="og:description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'مرجع نوبت‌دهی آنلاین کلینیک دامپزشکی و خرید ملزومات پت با تحویل خودکار دوره‌ای'; ?>">
-    <meta property="og:image" content="assets/images/logo.png">
+    <meta property="og:title" content="<?php echo htmlspecialchars($effective_title); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($effective_desc); ?>">
+    <meta property="og:url" content="<?php echo htmlspecialchars($effective_canonical); ?>">
+    <meta property="og:image" content="<?php echo htmlspecialchars($effective_og_image); ?>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<?php echo isset($page_title) ? htmlspecialchars($page_title) : 'کلینیک و پت‌شاپ تخصصی آسنا'; ?>">
-    <meta name="twitter:description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'مرجع معتبر خرید آنلاین داروهای دامپزشکی و ملزومات پت با تاییدیه دامپزشکی'; ?>">
+    <meta name="twitter:title" content="<?php echo htmlspecialchars($effective_title); ?>">
+    <meta name="twitter:description" content="<?php echo htmlspecialchars($effective_desc); ?>">
+    <meta name="twitter:image" content="<?php echo htmlspecialchars($effective_og_image); ?>">
+
+    <?php if (isset($page_schema) && !empty($page_schema)): ?>
+    <!-- Page Specific Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    <?php echo $page_schema; ?>
+    </script>
+    <?php else: ?>
+    <!-- Default Organization & Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "خانه",
+          "item": "<?php echo $proto . '://' . $host; ?>/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "<?php echo htmlspecialchars($effective_title); ?>",
+          "item": "<?php echo htmlspecialchars($effective_canonical); ?>"
+        }
+      ]
+    }
+    </script>
+    <?php endif; ?>
 
     <!-- Fonts & Icons -->
     <link href="assets/css/material-symbols.css" rel="stylesheet">
