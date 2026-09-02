@@ -324,32 +324,40 @@ class SmsService {
     }
 
     /**
-     * 2. Pattern Variables Payload (SendByBaseNumber / BaseServiceNumber)
-     * - Variables are sent as an indexed array of values strictly in the order of {0}, {1}, {2}...
-     * - bodyId is passed as a valid integer
-     * - Outbound diagnostic logging with password masked and response logged
+     * Get effective username for Melipayamak web services (strips leading 0 for mobile numbers)
      */
-    private function sendPatternRequest($phone, $bodyId, array $textVariables, $actionTag = 'PATTERN') {
+    public function getEffectiveUsername(): string {
+        $u = trim((string)$this->username);
+        if (preg_match('/^0(9\d{9})$/', $u, $m)) {
+            return $m[1]; // e.g. 9146676978
+        }
+        return $u;
+    }
+
+    /**
+     * Send pattern request with indexed variables
+     */
+    public function sendPatternRequest($phone, $bodyId, array $textVariables, $actionTag = 'PATTERN') {
         $phone = self::normalizePhone($phone);
-        if (empty($phone) || strlen($phone) !== 11) {
-            $this->lastError = "شماره گیرنده نامعتبر است: $phone";
+        if (empty($phone)) {
+            $this->lastError = 'شماره موبایل نامعتبر است.';
             return false;
         }
 
         $intBodyId = (int)$bodyId;
-        if ($intBodyId <= 0 || $intBodyId === 12345) {
-            $this->lastError = "شناسه الگو ($bodyId) نامعتبر است.";
+        if ($intBodyId <= 0) {
+            $this->lastError = 'شناسه قالب (BodyId) نامعتبر است.';
             return false;
         }
 
-        // Strict indexed array of strings in order of {0}, {1}, {2}...
         $indexedArgs = array_values(array_map('strval', $textVariables));
+        $effectiveUser = $this->getEffectiveUsername();
 
-        // REST BaseServiceNumber payload
+        // 1. Primary Engine: Melipayamak Classic REST API (BaseServiceNumber)
         $url = "https://rest.payamak-panel.com/api/SendSMS/BaseServiceNumber";
         $headers = ['Content-Type: application/json; charset=utf-8'];
         $payload = [
-            'username' => $this->username,
+            'username' => $effectiveUser,
             'password' => $this->password,
             'text'     => $indexedArgs,
             'to'       => $phone,
@@ -370,7 +378,6 @@ class SmsService {
 
         $response   = curl_exec($ch);
         $httpCode   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlErrno  = curl_errno($ch);
         $curlError  = curl_error($ch);
         curl_close($ch);
         $durationMs = round((microtime(true) - $startTime) * 1000);
@@ -398,7 +405,7 @@ class SmsService {
                 ]);
 
                 $soapData = [
-                    'username' => $this->username,
+                    'username' => $effectiveUser,
                     'password' => $this->password,
                     'text'     => count($indexedArgs) === 1 ? $indexedArgs[0] : $indexedArgs,
                     'to'       => $phone,
@@ -458,7 +465,7 @@ class SmsService {
         $url = "https://rest.payamak-panel.com/api/SendSMS/SendSMS";
         $headers = ['Content-Type: application/json; charset=utf-8'];
         $payload = [
-            'username' => $this->username,
+            'username' => $this->getEffectiveUsername(),
             'password' => $this->password,
             'from'     => $this->from,
             'to'       => $phone,
