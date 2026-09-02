@@ -359,7 +359,7 @@ class SmsService {
         $payload = [
             'username' => $effectiveUser,
             'password' => $this->password,
-            'text'     => $indexedArgs,
+            'text'     => implode(';', $indexedArgs),
             'to'       => $phone,
             'bodyId'   => $intBodyId
         ];
