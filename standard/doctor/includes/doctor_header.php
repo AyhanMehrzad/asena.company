@@ -182,6 +182,10 @@ if (!$doctorProfile) {
     </nav>
 
         <div class="px-1 mb-2 space-y-1.5">
+            <a href="blogs.php" class="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all">
+                <span class="material-symbols-outlined text-[20px]">edit_note</span>
+                <span>نگارش و مدیریت مقالات</span>
+            </a>
             <a href="../knowledge_base.php" target="_blank" class="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all">
                 <span class="material-symbols-outlined text-[20px]">auto_stories</span>
                 <span>وبلاگ و پایگاه دانش</span>

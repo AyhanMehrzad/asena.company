@@ -15,8 +15,8 @@ $articles = [
         'category' => 'medical',
         'category_name' => 'پزشکی و سلامت',
         'read_time' => '۸ دقیقه مطالعه',
-        'author' => 'دکتر فرهاد کریمی',
-        'author_role' => 'متخصص داخلی دامپزشکی (نظام دامپزشکی: ۲۴۸۹۱)',
+        'author' => 'آسنا',
+        'author_role' => 'تیم تخصصی و تحریریه آسنا',
         'updated_at' => '۲۰۲۶-۰۹-۰۱',
         'icon' => 'vaccines',
         'accent_color' => 'from-blue-600 to-indigo-700',
@@ -111,8 +111,8 @@ HTML
         'category' => 'medical',
         'category_name' => 'پزشکی و سلامت',
         'read_time' => '۷ دقیقه مطالعه',
-        'author' => 'دکتر سارا مهدوی',
-        'author_role' => 'متخصص سم‌شناسی و مراقبت‌های ویژه دامپزشکی',
+        'author' => 'آسنا',
+        'author_role' => 'تیم تخصصی و تحریریه آسنا',
         'updated_at' => '۲۰۲۶-۰۹-۰۱',
         'icon' => 'warning',
         'accent_color' => 'from-rose-600 to-red-700',
@@ -184,8 +184,8 @@ HTML
         'category' => 'pharmacy',
         'category_name' => 'داروخانه دامپزشکی',
         'read_time' => '۶ دقیقه مطالعه',
-        'author' => 'دکتر آرمان ناصری',
-        'author_role' => 'دکتر داروساز و ناظر فنی داروخانه دامپزشکی آسنا',
+        'author' => 'آسنا',
+        'author_role' => 'تیم تخصصی و تحریریه آسنا',
         'updated_at' => '۲۰۲۶-۰۹-۰۱',
         'icon' => 'medication',
         'accent_color' => 'from-teal-600 to-emerald-700',
@@ -230,8 +230,8 @@ HTML
         'category' => 'shop',
         'category_name' => 'پت‌شاپ و تغذیه',
         'read_time' => '۷ دقیقه مطالعه',
-        'author' => 'دکتر کیان پورعلی',
-        'author_role' => 'متخصص تغذیه حیوانات خانگی',
+        'author' => 'آسنا',
+        'author_role' => 'تیم تخصصی و تحریریه آسنا',
         'updated_at' => '۲۰۲۶-۰۹-۰۱',
         'icon' => 'pets',
         'accent_color' => 'from-amber-600 to-orange-700',
@@ -271,8 +271,8 @@ HTML
         'category' => 'platform',
         'category_name' => 'راهنمای سامانه آسنا',
         'read_time' => '۵ دقیقه مطالعه',
-        'author' => 'تیم محصول آسنا',
-        'author_role' => 'پشتیبانی و توسعه سامانه ASENA',
+        'author' => 'آسنا',
+        'author_role' => 'تیم تخصصی و تحریریه آسنا',
         'updated_at' => '۲۰۲۶-۰۹-۰۱',
         'icon' => 'autorenew',
         'accent_color' => 'from-emerald-600 to-teal-700',
@@ -308,8 +308,8 @@ HTML
         'category' => 'platform',
         'category_name' => 'راهنمای سامانه آسنا',
         'read_time' => '۴ دقیقه مطالعه',
-        'author' => 'مدیریت کلینیک آسنا',
-        'author_role' => 'واحد پذیرش و درمانگاه آسنا',
+        'author' => 'آسنا',
+        'author_role' => 'تیم تخصصی و تحریریه آسنا',
         'updated_at' => '۲۰۲۶-۰۹-۰۱',
         'icon' => 'calendar_month',
         'accent_color' => 'from-blue-600 to-cyan-700',
@@ -338,8 +338,8 @@ HTML
         'category' => 'pharmacy',
         'category_name' => 'داروخانه دامپزشکی',
         'read_time' => '۵ دقیقه مطالعه',
-        'author' => 'دکتر آرمان ناصری',
-        'author_role' => 'دکتر داروساز داروخانه تخصصی آسنا',
+        'author' => 'آسنا',
+        'author_role' => 'تیم تخصصی و تحریریه آسنا',
         'updated_at' => '۲۰۲6-۰۹-۰۱',
         'icon' => 'receipt_long',
         'accent_color' => 'from-teal-600 to-emerald-700',
@@ -366,8 +366,8 @@ HTML
         'category' => 'platform',
         'category_name' => 'خیریه و مسئولیت اجتماعی',
         'read_time' => '۴ دقیقه مطالعه',
-        'author' => 'بخش خیریه و امداد آسنا',
-        'author_role' => 'کمیته امداد و حمایت از حیوانات',
+        'author' => 'آسنا',
+        'author_role' => 'تیم تخصصی و تحریریه آسنا',
         'updated_at' => '۲۰۲۶-۰۹-۰۱',
         'icon' => 'volunteer_activism',
         'accent_color' => 'from-purple-600 to-pink-700',
@@ -394,8 +394,8 @@ HTML
         'category' => 'platform',
         'category_name' => 'راهنمای سامانه آسنا',
         'read_time' => '۶ دقیقه مطالعه',
-        'author' => 'تیم فنی و توسعه آسنا',
-        'author_role' => 'واحد امنیت و مدیریت زیرساخت ASENA',
+        'author' => 'آسنا',
+        'author_role' => 'تیم تخصصی و تحریریه آسنا',
         'updated_at' => '۲۰۲۶-۰۹-۰۲',
         'icon' => 'admin_panel_settings',
         'accent_color' => 'from-slate-800 to-blue-900',
@@ -454,8 +454,8 @@ HTML
         'category' => 'platform',
         'category_name' => 'راهنمای سامانه آسنا',
         'read_time' => '۵ دقیقه مطالعه',
-        'author' => 'مدیریت کلینیک دامپزشکی آسنا',
-        'author_role' => 'شورای عالی پزشکی آسنا',
+        'author' => 'آسنا',
+        'author_role' => 'تیم تخصصی و تحریریه آسنا',
         'updated_at' => '۲۰۲۶-۰۹-۰۲',
         'icon' => 'stethoscope',
         'accent_color' => 'from-cyan-700 to-blue-800',
@@ -477,6 +477,31 @@ HTML
         ]
     ]
 ];
+
+require_once __DIR__ . '/includes/blog_service.php';
+
+// Merge dynamic database-published articles
+$db_blogs = get_all_db_blogs($pdo, 'published');
+if (!empty($db_blogs)) {
+    foreach ($db_blogs as $db_post) {
+        $b_slug = $db_post['slug'];
+        $faqs = !empty($db_post['faqs_json']) ? json_decode($db_post['faqs_json'], true) : [];
+        $articles[$b_slug] = [
+            'title' => $db_post['title'],
+            'short_desc' => $db_post['short_desc'],
+            'category' => $db_post['category'],
+            'category_name' => $db_post['category_name'],
+            'read_time' => $db_post['read_time'],
+            'author' => !empty($db_post['author_name']) ? $db_post['author_name'] : 'آسنا',
+            'author_role' => !empty($db_post['author_role']) ? $db_post['author_role'] : 'تیم تخصصی و تحریریه آسنا',
+            'updated_at' => substr($db_post['updated_at'] ?? $db_post['created_at'], 0, 10),
+            'icon' => !empty($db_post['icon']) ? $db_post['icon'] : 'article',
+            'accent_color' => !empty($db_post['accent_color']) ? $db_post['accent_color'] : 'from-blue-600 to-indigo-700',
+            'content' => $db_post['content'],
+            'faqs' => is_array($faqs) ? $faqs : []
+        ];
+    }
+}
 
 // Router logic: Check if a specific article is requested
 $current_slug = isset($_GET['article']) ? trim($_GET['article']) : '';

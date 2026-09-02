@@ -170,6 +170,8 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
             $activeKey = 'analytics';
         } elseif ($currentFile === 'sms_settings.php') {
             $activeKey = 'sms_settings';
+        } elseif ($currentFile === 'blogs.php') {
+            $activeKey = 'blogs';
         } elseif ($currentFile === 'guide.php') {
             $activeKey = 'guide';
         }
@@ -197,7 +199,8 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
                 'sms_settings' => ['icon' => 'sms', 'title' => 'تنظیمات پیامک و اعلان', 'url' => 'sms_settings.php'],
             ],
             'محتوا و راهنما' => [
-                'blog' => ['icon' => 'auto_stories', 'title' => 'وبلاگ و پایگاه دانش', 'url' => '../knowledge_base.php', 'external' => true],
+                'blogs' => ['icon' => 'edit_note', 'title' => 'مدیریت وبلاگ و مقالات', 'url' => 'blogs.php'],
+                'blog' => ['icon' => 'auto_stories', 'title' => 'مشاهده پایگاه دانش', 'url' => '../knowledge_base.php', 'external' => true],
                 'guide' => ['icon' => 'menu_book', 'title' => 'راهنمای پنل ادمین', 'url' => 'guide.php'],
             ]
         ];
