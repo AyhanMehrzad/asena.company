@@ -138,6 +138,10 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
             </button>
         </div>
 
+        <a href="../blog_editor.php" class="w-full bg-gradient-to-r from-blue-600 to-primary hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all text-xs my-2">
+            <span class="material-symbols-outlined text-base">add_circle</span>
+            <span>+ ایجاد و نگارش مقاله جدید</span>
+        </a>
     </div>
 
     <nav class="flex-1 px-3 mt-2 space-y-4">
@@ -261,15 +265,23 @@ $adminName = $adminCheck['name'] ?? 'مدیر سیستم';
             </div>
         </div>
         
-        <div class="flex items-center gap-3">
-            <a href="../knowledge_base.php" target="_blank" class="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-primary dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-primary hover:text-white transition-all text-xs font-bold shadow-sm">
+        <div class="flex items-center gap-2 sm:gap-3">
+            <a href="../blog_editor.php" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-primary to-blue-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-sm transition-all text-xs font-bold">
+                <span class="material-symbols-outlined text-base">add_circle</span>
+                <span>+ ایجاد مقاله جدید</span>
+            </a>
+            <a href="blogs.php" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-primary dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-primary hover:text-white transition-all text-xs font-bold">
+                <span class="material-symbols-outlined text-base">edit_note</span>
+                <span>مدیریت مقالات</span>
+            </a>
+            <a href="../knowledge_base.php" target="_blank" class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition-all text-xs font-bold">
                 <span class="material-symbols-outlined text-base">auto_stories</span>
-                <span>وبلاگ و پایگاه دانش</span>
+                <span>پایگاه دانش</span>
                 <span class="material-symbols-outlined text-xs">north_east</span>
             </a>
-            <a href="guide.php" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition-all text-xs font-bold">
+            <a href="guide.php" class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition-all text-xs font-bold">
                 <span class="material-symbols-outlined text-base">help_outline</span>
-                <span>راهنمای پنل</span>
+                <span>راهنما</span>
             </a>
             <div class="h-8 w-[1px] bg-outline-variant mx-1"></div>
             <div class="flex items-center gap-3 pl-2">
