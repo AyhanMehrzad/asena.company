@@ -106,8 +106,8 @@ $init_status = $post['status'] ?? 'published';
         body { font-family: 'Vazirmatn', sans-serif; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         #canvas-content:focus { outline: none; }
-        #canvas-content h2 { font-size: 1.5rem; font-weight: 800; margin-top: 1.75rem; margin-bottom: 0.75rem; color: #0f172a; border-right: 4px solid #002d72; padding-right: 0.75rem; }
-        #canvas-content h3 { font-size: 1.25rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #1e293b; }
+        #canvas-content h2 { font-size: 1.4rem; font-weight: 800; margin-top: 1.75rem; margin-bottom: 0.75rem; color: #0f172a; border-right: 4px solid #002d72; padding-right: 0.75rem; }
+        #canvas-content h3 { font-size: 1.2rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #1e293b; }
         #canvas-content p { margin-bottom: 1rem; line-height: 2.1; color: #334155; }
         #canvas-content ul { list-style-type: disc; padding-right: 1.75rem; margin-bottom: 1rem; color: #334155; }
         #canvas-content ol { list-style-type: decimal; padding-right: 1.75rem; margin-bottom: 1rem; color: #334155; }
@@ -118,7 +118,28 @@ $init_status = $post['status'] ?? 'published';
         .toolbar-btn { transition: all 0.15s ease; }
         .toolbar-btn:hover { background: rgba(2, 132, 199, 0.1); color: #0284c7; }
         .toolbar-btn:active { transform: scale(0.95); }
-        .mobile-preview-frame { max-width: 420px !important; margin-left: auto; margin-right: auto; border: 12px solid #1e293b; border-radius: 40px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .mobile-preview-frame {
+            max-width: 420px !important;
+            margin-left: auto;
+            margin-right: auto;
+            border: 10px solid #0f172a;
+            border-radius: 36px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
+            overflow-x: hidden;
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+            background: #ffffff;
+        }
+        .dark .mobile-preview-frame { background: #020617; }
+        .mobile-preview-frame .p-6, .mobile-preview-frame .p-10, .mobile-preview-frame .p-12 {
+            padding: 1rem !important;
+        }
+        .mobile-preview-frame #canvas-title {
+            font-size: 1.35rem !important;
+            line-height: 1.4 !important;
+        }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen relative pb-32">
@@ -229,63 +250,63 @@ $init_status = $post['status'] ?? 'published';
             <div class="flex items-center justify-between mb-2">
                 <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-primary text-base">widgets</span>
-                    جعبه المان‌های هوشمند (با یک کلیک در متن درج کنید):
+                    جعبه المان‌های هوشمند:
                 </span>
-                <span class="text-[11px] text-slate-400">کلیک برای درج خودکار</span>
+                <span class="text-[11px] text-slate-400 hidden sm:inline">کلیک برای درج خودکار</span>
             </div>
-            <div class="flex flex-wrap items-center gap-2">
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:flex-wrap">
                 <!-- 1. Quote Box (Image 3) -->
-                <button type="button" onclick="insertCalloutBox()" class="px-3 py-1.5 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-800 hover:bg-teal-100 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs">
+                <button type="button" onclick="insertCalloutBox()" class="shrink-0 px-3 py-1.5 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-800 hover:bg-teal-100 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs">
                     <span class="material-symbols-outlined text-base text-teal-600">format_quote</span>
-                    <span>کادر نقل‌قول و هشدار</span>
+                    <span>کادر نقل‌قول</span>
                 </button>
 
                 <!-- 2. FAQ Accordion (Image 4) -->
-                <button type="button" onclick="insertFaqAccordion()" class="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-800 hover:bg-blue-100 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs">
+                <button type="button" onclick="insertFaqAccordion()" class="shrink-0 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-800 hover:bg-blue-100 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs">
                     <span class="material-symbols-outlined text-base text-blue-600">quiz</span>
-                    <span>آکاردئون سوال متداول</span>
+                    <span>سوال متداول</span>
                 </button>
 
                 <!-- 3. Red Warning Alert Box -->
-                <button type="button" onclick="insertWarningBox()" class="px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-800 hover:bg-rose-100 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs">
+                <button type="button" onclick="insertWarningBox()" class="shrink-0 px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-800 hover:bg-rose-100 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs">
                     <span class="material-symbols-outlined text-base text-rose-600">warning</span>
-                    <span>باکس خطر و اورژانس</span>
+                    <span>باکس هشدار</span>
                 </button>
 
                 <!-- 4. Doctor Pro Tip Box -->
-                <button type="button" onclick="insertDoctorTipBox()" class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs">
+                <button type="button" onclick="insertDoctorTipBox()" class="shrink-0 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs">
                     <span class="material-symbols-outlined text-base text-emerald-600">lightbulb</span>
-                    <span>توصیه طلایی پزشک</span>
+                    <span>توصیه پزشک</span>
                 </button>
 
                 <!-- 5. Clinical Comparison Table -->
-                <button type="button" onclick="insertClinicalTable()" class="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800 hover:bg-indigo-100 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs">
+                <button type="button" onclick="insertClinicalTable()" class="shrink-0 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800 hover:bg-indigo-100 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs">
                     <span class="material-symbols-outlined text-base text-indigo-600">table_chart</span>
-                    <span>جدول واکسن / مقایسه</span>
+                    <span>جدول مقایسه</span>
                 </button>
 
                 <!-- 6. Clinic Appointment CTA Banner -->
-                <button type="button" onclick="insertAppointmentBanner()" class="px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 hover:bg-amber-100 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs">
+                <button type="button" onclick="insertAppointmentBanner()" class="shrink-0 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 hover:bg-amber-100 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs">
                     <span class="material-symbols-outlined text-base text-amber-600">calendar_add_on</span>
-                    <span>بنر نوبت‌دهی کلینیک</span>
+                    <span>بنر نوبت‌دهی</span>
                 </button>
 
                 <!-- 7. Image with Modern Frame & Caption -->
-                <button type="button" onclick="insertImagePrompt()" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs">
+                <button type="button" onclick="insertImagePrompt()" class="shrink-0 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs">
                     <span class="material-symbols-outlined text-base text-slate-500">add_photo_alternate</span>
-                    <span>عکس با زیرنویس</span>
+                    <span>عکس و کپشن</span>
                 </button>
             </div>
         </div>
 
         <!-- Live Article Header Glass Card -->
-        <div class="relative rounded-3xl p-6 md:p-10 mb-6 border border-white/60 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl shadow-xl overflow-hidden space-y-4">
+        <div class="relative rounded-3xl p-4 sm:p-6 md:p-10 mb-6 border border-white/60 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl shadow-xl overflow-hidden space-y-4">
             
             <!-- Category & Read Time Selectors -->
-            <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div class="flex items-center gap-2">
-                    <span class="text-xs text-slate-500 font-bold">دسته‌بندی موضوعی:</span>
-                    <select id="select-category" class="text-xs font-bold rounded-xl border border-primary/20 bg-primary/10 text-primary px-3 py-1.5 outline-none">
+                    <span class="text-xs text-slate-500 font-bold shrink-0">دسته‌بندی:</span>
+                    <select id="select-category" class="text-xs font-bold rounded-xl border border-primary/30 bg-primary/10 text-primary dark:text-blue-300 dark:bg-blue-950/40 px-3 py-1.5 outline-none">
                         <option value="medical" <?= $init_category === 'medical' ? 'selected' : '' ?>>💉 پزشکی و سلامت</option>
                         <option value="pharmacy" <?= $init_category === 'pharmacy' ? 'selected' : '' ?>>💊 دارو و نسخه</option>
                         <option value="shop" <?= $init_category === 'shop' ? 'selected' : '' ?>>🐾 پت‌شاپ و تغذیه</option>
@@ -293,14 +314,14 @@ $init_status = $post['status'] ?? 'published';
                     </select>
                 </div>
 
-                <div class="flex items-center gap-3">
-                    <div class="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-xl">
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700">
                         <span class="material-symbols-outlined text-primary text-base">schedule</span>
                         <span id="label-read-time"><?= htmlspecialchars($init_read_time) ?></span>
                         <input type="hidden" id="canvas-read-time" value="<?= htmlspecialchars($init_read_time) ?>">
                     </div>
 
-                    <div class="text-xs text-slate-500">
+                    <div class="text-xs text-slate-500 bg-slate-100 dark:bg-slate-800 px-2.5 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700">
                         <span id="counter-words" class="font-black text-primary">۰</span> کلمه
                     </div>
                 </div>
@@ -312,45 +333,54 @@ $init_status = $post['status'] ?? 'published';
                     <label class="text-[11px] font-bold text-slate-400">عنوان اصلی مقاله (H1 سئو):</label>
                     <span id="title-char-count" class="text-[11px] text-slate-400">۰ کاراکتر</span>
                 </div>
-                <div id="canvas-title" contenteditable="true" class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white leading-snug outline-none border-b-2 border-transparent focus:border-primary/40 pb-2 transition-all"><?= !empty($init_title) ? htmlspecialchars($init_title) : 'عنوان جذاب و سئومحور مقاله خود را اینجا تایپ فرمایید...' ?></div>
+                <div id="canvas-title" contenteditable="true" class="text-xl sm:text-2xl md:text-4xl font-extrabold text-slate-900 dark:text-white leading-snug outline-none border-b-2 border-transparent focus:border-primary/40 pb-2 transition-all break-words"><?= !empty($init_title) ? htmlspecialchars($init_title) : 'عنوان جذاب و سئومحور مقاله خود را اینجا تایپ فرمایید...' ?></div>
             </div>
 
-            <!-- URL Slug Preview -->
-            <div class="flex items-center gap-2 text-xs text-slate-500 bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800">
-                <span class="font-bold">پیوند یکتا (Slug):</span>
-                <span class="text-slate-400">https://asena.company/knowledge_base.php?article=</span>
-                <input type="text" id="canvas-slug" value="<?= htmlspecialchars($init_slug) ?>" placeholder="slug-auto-generated" class="bg-transparent border-b border-dashed border-slate-400 outline-none text-primary font-bold flex-1">
+            <!-- URL Slug Preview (Responsive Stack) -->
+            <div class="text-xs text-slate-500 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl border border-slate-200/60 dark:border-slate-800 space-y-1.5">
+                <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm text-primary">link</span>
+                        پیوند یکتا (Slug سئو):
+                    </span>
+                    <span class="text-[10px] text-slate-400">تولید خودکار از عنوان</span>
+                </div>
+                <div class="flex items-center gap-1.5 bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <span class="text-slate-400 text-[11px] shrink-0 font-mono hidden md:inline">https://asena.company/.../?article=</span>
+                    <span class="text-slate-400 text-[11px] shrink-0 font-mono md:hidden">slug:</span>
+                    <input type="text" id="canvas-slug" value="<?= htmlspecialchars($init_slug) ?>" placeholder="عنوان-مقاله" class="bg-transparent outline-none text-primary dark:text-blue-400 font-bold w-full text-xs min-w-0 font-mono">
+                </div>
             </div>
 
             <!-- Excerpt / Meta Description -->
             <div>
                 <div class="flex items-center justify-between mb-1">
-                    <label class="text-[11px] font-bold text-slate-400">خلاصه کوتاه مقاله (توضیحات متا در گوگل و پیش‌نمایش شبکه‌های اجتماعی):</label>
+                    <label class="text-[11px] font-bold text-slate-400">خلاصه کوتاه مقاله (توضیحات متا در گوگل):</label>
                     <span id="desc-char-count" class="text-[11px] text-slate-400">۰ کاراکتر</span>
                 </div>
-                <div id="canvas-short-desc" contenteditable="true" class="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed outline-none border-b-2 border-transparent focus:border-primary/40 pb-2 transition-all"><?= !empty($init_short_desc) ? htmlspecialchars($init_short_desc) : 'خلاصه مقاله جهت نمایش در کارت‌های پایگاه دانش و توضیحات گوگل...' ?></div>
+                <div id="canvas-short-desc" contenteditable="true" class="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed outline-none border-b-2 border-transparent focus:border-primary/40 pb-2 transition-all break-words"><?= !empty($init_short_desc) ? htmlspecialchars($init_short_desc) : 'خلاصه مقاله جهت نمایش در کارت‌های پایگاه دانش و توضیحات گوگل...' ?></div>
             </div>
 
             <!-- Author Box -->
-            <div class="flex items-center gap-4 pt-4 border-t border-slate-200/60 dark:border-slate-800">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-primary to-blue-600 flex items-center justify-center text-white shadow-md">
-                    <span class="material-symbols-outlined text-xl">verified_user</span>
+            <div class="flex items-center gap-3 pt-4 border-t border-slate-200/60 dark:border-slate-800">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary to-blue-600 flex items-center justify-center text-white shadow-md shrink-0">
+                    <span class="material-symbols-outlined text-lg">verified_user</span>
                 </div>
-                <div class="flex-1">
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="canvas-author-name" value="<?= htmlspecialchars($init_author_name) ?>" class="text-sm font-bold bg-transparent border-b border-dashed border-slate-300 dark:border-slate-700 outline-none w-48 text-slate-900 dark:text-white focus:border-primary" placeholder="نام نویسنده">
-                        <span class="material-symbols-outlined text-blue-500 text-sm" title="تایید شده توسط آسنا">check_circle</span>
+                <div class="flex-1 min-w-0 space-y-1">
+                    <div class="flex items-center gap-1.5">
+                        <input type="text" id="canvas-author-name" value="<?= htmlspecialchars($init_author_name) ?>" class="text-xs sm:text-sm font-bold bg-transparent border-b border-dashed border-slate-300 dark:border-slate-700 outline-none w-full max-w-[180px] text-slate-900 dark:text-white focus:border-primary" placeholder="نام نویسنده">
+                        <span class="material-symbols-outlined text-blue-500 text-sm shrink-0" title="تایید شده توسط آسنا">check_circle</span>
                     </div>
-                    <input type="text" id="canvas-author-role" value="<?= htmlspecialchars($init_author_role) ?>" class="text-xs bg-transparent border-b border-dashed border-slate-200 dark:border-slate-800 outline-none w-64 text-slate-500 dark:text-slate-400 mt-1 focus:border-primary" placeholder="سمت یا تخصص">
+                    <input type="text" id="canvas-author-role" value="<?= htmlspecialchars($init_author_role) ?>" class="text-[11px] sm:text-xs bg-transparent border-b border-dashed border-slate-200 dark:border-slate-800 outline-none w-full max-w-[240px] text-slate-500 dark:text-slate-400 focus:border-primary" placeholder="سمت یا تخصص">
                 </div>
             </div>
         </div>
 
         <!-- Sticky Floating WYSIWYG Formatting Toolbar -->
-        <div class="sticky top-20 z-40 my-4 p-2.5 rounded-2xl border border-white/60 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-xl flex flex-wrap items-center gap-1.5 text-slate-700 dark:text-slate-200">
+        <div class="sticky top-20 z-40 my-4 p-2.5 rounded-2xl border border-white/60 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-xl flex items-center gap-1.5 overflow-x-auto no-scrollbar text-slate-700 dark:text-slate-200">
             
             <!-- Font Size Selector -->
-            <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 rounded-xl px-2.5 py-1 border border-slate-200 dark:border-slate-700">
+            <div class="shrink-0 flex items-center gap-1 bg-slate-100 dark:bg-slate-800 rounded-xl px-2.5 py-1 border border-slate-200 dark:border-slate-700">
                 <span class="material-symbols-outlined text-[17px] text-slate-500">format_size</span>
                 <select id="fontSizeSelect" onchange="setFontSize(this.value); this.value='';" class="text-xs font-bold bg-transparent outline-none cursor-pointer text-slate-700 dark:text-slate-200">
                     <option value="">اندازه قلم</option>
@@ -365,91 +395,91 @@ $init_status = $post['status'] ?? 'published';
             </div>
 
             <!-- Font Color Picker -->
-            <label class="toolbar-btn flex items-center gap-1 px-2.5 h-9 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" title="تغییر رنگ قلم">
+            <label class="shrink-0 toolbar-btn flex items-center gap-1 px-2.5 h-9 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" title="تغییر رنگ قلم">
                 <span class="material-symbols-outlined text-[19px] text-primary">format_color_text</span>
                 <span class="text-xs font-bold hidden sm:inline">رنگ متن</span>
                 <input type="color" onchange="formatDoc('foreColor', this.value)" value="#0f172a" class="w-5 h-5 rounded-md cursor-pointer border-0 p-0 bg-transparent shadow-sm">
             </label>
 
             <!-- Highlight Picker -->
-            <label class="toolbar-btn flex items-center gap-1 px-2.5 h-9 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" title="هایلایت و رنگ پس‌زمینه">
+            <label class="shrink-0 toolbar-btn flex items-center gap-1 px-2.5 h-9 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" title="هایلایت و رنگ پس‌زمینه">
                 <span class="material-symbols-outlined text-[19px] text-amber-500">format_ink_highlighter</span>
                 <span class="text-xs font-bold hidden sm:inline">هایلایت</span>
                 <input type="color" onchange="formatDoc('hiliteColor', this.value)" value="#fef08a" class="w-5 h-5 rounded-md cursor-pointer border-0 p-0 bg-transparent shadow-sm">
             </label>
 
-            <div class="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+            <div class="shrink-0 w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
             <!-- Formatting Actions -->
-            <button type="button" onclick="formatDoc('bold')" class="toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center font-bold hover:bg-slate-100 dark:hover:bg-slate-800" title="بولد (ضخیم)">
+            <button type="button" onclick="formatDoc('bold')" class="shrink-0 toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center font-bold hover:bg-slate-100 dark:hover:bg-slate-800" title="بولد (ضخیم)">
                 <span class="material-symbols-outlined text-[19px]">format_bold</span>
             </button>
-            <button type="button" onclick="formatDoc('italic')" class="toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="ایتالیک (مایل)">
+            <button type="button" onclick="formatDoc('italic')" class="shrink-0 toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="ایتالیک (مایل)">
                 <span class="material-symbols-outlined text-[19px]">format_italic</span>
             </button>
-            <button type="button" onclick="formatDoc('underline')" class="toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="زیرخط (Underline)">
+            <button type="button" onclick="formatDoc('underline')" class="shrink-0 toolbar-btn w-9 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="زیرخط (Underline)">
                 <span class="material-symbols-outlined text-[19px]">format_underlined</span>
             </button>
 
-            <div class="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+            <div class="shrink-0 w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
             <!-- Headings -->
-            <button type="button" onclick="formatDoc('formatBlock', '<h2>')" class="toolbar-btn px-2.5 h-9 rounded-xl flex items-center justify-center font-black text-xs hover:bg-slate-100 dark:hover:bg-slate-800" title="تیتر اصلی (H2)">
+            <button type="button" onclick="formatDoc('formatBlock', '<h2>')" class="shrink-0 toolbar-btn px-2.5 h-9 rounded-xl flex items-center justify-center font-black text-xs hover:bg-slate-100 dark:hover:bg-slate-800" title="تیتر اصلی (H2)">
                 H2
             </button>
-            <button type="button" onclick="formatDoc('formatBlock', '<h3>')" class="toolbar-btn px-2.5 h-9 rounded-xl flex items-center justify-center font-black text-xs hover:bg-slate-100 dark:hover:bg-slate-800" title="زیرتیتر (H3)">
+            <button type="button" onclick="formatDoc('formatBlock', '<h3>')" class="shrink-0 toolbar-btn px-2.5 h-9 rounded-xl flex items-center justify-center font-black text-xs hover:bg-slate-100 dark:hover:bg-slate-800" title="زیرتیتر (H3)">
                 H3
             </button>
 
-            <div class="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+            <div class="shrink-0 w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
             <!-- Alignment -->
-            <button type="button" onclick="formatDoc('justifyRight')" class="toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="راست‌چین">
+            <button type="button" onclick="formatDoc('justifyRight')" class="shrink-0 toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="راست‌چین">
                 <span class="material-symbols-outlined text-[18px]">format_align_right</span>
             </button>
-            <button type="button" onclick="formatDoc('justifyCenter')" class="toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="وسط‌چین">
+            <button type="button" onclick="formatDoc('justifyCenter')" class="shrink-0 toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="وسط‌چین">
                 <span class="material-symbols-outlined text-[18px]">format_align_center</span>
             </button>
-            <button type="button" onclick="formatDoc('justifyLeft')" class="toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="چپ‌چین">
+            <button type="button" onclick="formatDoc('justifyLeft')" class="shrink-0 toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="چپ‌چین">
                 <span class="material-symbols-outlined text-[18px]">format_align_left</span>
             </button>
 
-            <div class="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+            <div class="shrink-0 w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
             <!-- Lists & Hyperlinks -->
-            <button type="button" onclick="formatDoc('insertUnorderedList')" class="toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="لیست نشانه‌دار">
+            <button type="button" onclick="formatDoc('insertUnorderedList')" class="shrink-0 toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="لیست نشانه‌دار">
                 <span class="material-symbols-outlined text-[19px]">format_list_bulleted</span>
             </button>
-            <button type="button" onclick="formatDoc('insertOrderedList')" class="toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="لیست شماره‌دار">
+            <button type="button" onclick="formatDoc('insertOrderedList')" class="shrink-0 toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="لیست شماره‌دار">
                 <span class="material-symbols-outlined text-[19px]">format_list_numbered</span>
             </button>
-            <button type="button" onclick="insertLinkPrompt()" class="toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="افزودن پیوند / لینک">
+            <button type="button" onclick="insertLinkPrompt()" class="shrink-0 toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800" title="افزودن پیوند / لینک">
                 <span class="material-symbols-outlined text-[19px]">link</span>
             </button>
-            <button type="button" onclick="formatDoc('removeFormat')" class="toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30" title="پاک‌کردن قالب‌بندی">
+            <button type="button" onclick="formatDoc('removeFormat')" class="shrink-0 toolbar-btn w-8 h-9 rounded-xl flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30" title="پاک‌کردن قالب‌بندی">
                 <span class="material-symbols-outlined text-[18px]">format_clear</span>
             </button>
         </div>
 
         <!-- Live Content Editor Body (Glass Canvas) -->
-        <div class="rounded-3xl p-6 md:p-12 border border-white/60 dark:border-slate-800/80 bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl shadow-lg leading-loose text-slate-800 dark:text-slate-200 min-h-[480px]">
-            <div id="canvas-content" contenteditable="true" class="prose prose-blue dark:prose-invert max-w-none outline-none">
+        <div class="rounded-3xl p-4 sm:p-6 md:p-12 border border-white/60 dark:border-slate-800/80 bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl shadow-lg leading-loose text-slate-800 dark:text-slate-200 min-h-[480px] break-words">
+            <div id="canvas-content" contenteditable="true" class="prose prose-blue dark:prose-invert max-w-none outline-none break-words">
                 <?= $init_content ?>
             </div>
         </div>
 
         <!-- Live SEO & Content Health Assistant Bar -->
         <div class="mt-6 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md shadow-sm">
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                 <h3 class="text-xs font-black text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-emerald-500 text-base">verified</span>
                     دستیار سلامت محتوا و سئو هوشمند (SEO Health Check)
                 </h3>
-                <span id="seo-score-badge" class="px-2.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300">
+                <span id="seo-score-badge" class="px-2.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300 self-start sm:self-auto">
                     امتیاز سئو: ۱۰۰٪
                 </span>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
                 <div id="check-title" class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
                     <span class="material-symbols-outlined text-sm">check_circle</span>
                     <span>طول عنوان استاندارد است</span>
