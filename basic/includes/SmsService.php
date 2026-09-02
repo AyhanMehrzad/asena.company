@@ -407,24 +407,19 @@ class SmsService {
                 $soapData = [
                     'username' => $effectiveUser,
                     'password' => $this->password,
-                    'text'     => count($indexedArgs) === 1 ? $indexedArgs[0] : $indexedArgs,
                     'to'       => $phone,
-                    'bodyId'   => $intBodyId
+                    'bodyId'   => $intBodyId,
+                    'text'     => implode(';', $indexedArgs)
                 ];
 
-                if (count($indexedArgs) === 1) {
-                    $soapRes = $soapClient->SendByBaseNumber2($soapData);
-                    $rawSoapVal = $soapRes->SendByBaseNumber2Result ?? '';
-                } else {
-                    $soapRes = $soapClient->SendByBaseNumber($soapData);
-                    $rawSoapVal = $soapRes->SendByBaseNumberResult ?? '';
-                }
+                $soapRes = $soapClient->SendByBaseNumber2($soapData);
+                $rawSoapVal = $soapRes->SendByBaseNumber2Result ?? '';
                 $soapDuration = round((microtime(true) - $soapStart) * 1000);
 
                 $this->logDiagnostic(
                     $actionTag . '_SOAP',
                     'http://api.payamak-panel.com/post/send.asmx?wsdl',
-                    ['SOAPAction: SendByBaseNumber'],
+                    ['SOAPAction: SendByBaseNumber2'],
                     $soapData,
                     200,
                     json_encode(['SoapResult' => $rawSoapVal]),
@@ -600,5 +595,28 @@ class SmsService {
      */
     public function getLastError() {
         return $this->lastError;
+    }
+
+    /**
+     * Query account credit from Melipayamak
+     */
+    public function getCredit() {
+        if (class_exists('SoapClient')) {
+            try {
+                $client = new \SoapClient("http://api.payamak-panel.com/post/send.asmx?wsdl", [
+                    'encoding' => 'UTF-8',
+                    'exceptions' => true,
+                    'connection_timeout' => 5
+                ]);
+                $res = $client->GetCredit([
+                    'username' => $this->getEffectiveUsername(),
+                    'password' => $this->password
+                ]);
+                return isset($res->GetCreditResult) ? (float)$res->GetCreditResult : null;
+            } catch (\Exception $e) {
+                return null;
+            }
+        }
+        return null;
     }
 }
