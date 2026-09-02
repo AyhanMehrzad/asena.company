@@ -13,6 +13,7 @@
     <meta name="description" content="آسنا پلتفرم جامع خدمات حیوانات خانگی؛ نوبت‌دهی آنلاین کلینیک دامپزشکی، پت‌شاپ تخصصی سگ و گربه، و تامین داروهای مجاز دامپزشکی با ارسال خودکار دوره‌ای (Autoship).">
     <meta name="keywords" content="کلینیک دامپزشکی, پت شاپ آنلاین, داروخانه دامپزشکی, نوبت دهی آنلاین دامپزشکی, غذای خشک سگ, غذای گربه, داروی دامپزشکی, خرید مکمل سگ, ارسال خودکار پت شاپ, اسنا, asena">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="google-site-verification" content="google82c161050c864f06">
     <link rel="canonical" href="https://asena.company/">
     <link rel="alternate" hreflang="fa-IR" href="https://asena.company/">
     <meta name="geo.region" content="IR">

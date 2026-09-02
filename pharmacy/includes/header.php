@@ -27,35 +27,38 @@ if (isset($_SESSION['cart'])) {
     }
 }
 $current_page = basename($_SERVER['PHP_SELF']);
-$current_page = basename($_SERVER['PHP_SELF']);
 
-// Smart SEO title & description fallbacks for Pharmacy edition
+// Smart SEO title & description fallbacks based on active page
 $seo_defaults = [
     'index.php' => [
-        'title' => 'داروخانه آنلاین دامپزشکی آسنا | خرید مستقیم دارو، واکسن و مکمل‌های پت و دام',
-        'desc'  => 'مرجع تخصصی داروخانه آنلاین دامپزشکی آسنا؛ تامین مستقیم انواع داروها، واکسن با زنجیره سرد، مکمل‌های تخصصی سگ، گربه، اسب و دام با تاییدیه نسخه دامپزشک.'
+        'title' => 'پلتفرم کلینیک دامپزشکی و پت‌شاپ آنلاین آسنا | نوبت‌دهی و خرید ملزومات پت',
+        'desc'  => 'کلینیک دامپزشکی و پت‌شاپ تخصصی آسنا؛ نوبت‌دهی آنلاین ویزیت پزشک، خرید غذای خشک و مکمل‌های سگ و گربه، و تحویل خودکار دوره‌ای با بهترین قیمت.'
     ],
     'shop.php' => [
-        'title' => 'داروخانه تخصصی دامپزشکی آسنا | داروها، مکمل‌ها و محصولات درمانی دامی',
-        'desc'  => 'خرید انواع داروهای ضد انگل، آنتی‌بیوتیک‌ها، قطره‌های چشمی و گوشی، پمادها و مکمل‌های تقویت مفاصل و ایمنی حیوانات با تاییدیه رسمی دامپزشکی.'
+        'title' => 'پت‌شاپ آنلاین آسنا | خرید غذای خشک، کنسرو، مکمل و ملزومات سگ و گربه',
+        'desc'  => 'خرید اینترنتی انواع غذای سگ و گربه، لوازم بهداشتی، خاک گربه، تشویقی و مکمل‌های درمانی پت با ضمانت اصالت کالا و ارسال سریع در آسنا.'
     ],
     'booking.php' => [
-        'title' => 'مشاوره دارویی و نوبت‌دهی آنلاین دکتر دامپزشک | داروخانه آسنا',
-        'desc'  => 'رزرو آنلاین نوبت مشاوره دارویی، بررسی تداخلات درمانی و ویزیت تخصصی دامپزشکی حیوانات خانگی و دام در سامانه آسنا.'
+        'title' => 'نوبت‌دهی آنلاین کلینیک دامپزشکی آسنا | رزرو ویزیت متخصص سگ، گربه و پرندگان',
+        'desc'  => 'رزرو آنلاین نوبت دکتر دامپزشک؛ ویزیت عمومی و تخصصی، واکسیناسیون، جراحی، دندانپزشکی و چکاپ دوره‌ای پت با مجرب‌ترین کادر دامپزشکی.'
     ],
     'subscriptions.php' => [
-        'title' => 'سفارش دوره‌ای داروهای مزمن و مکمل‌های دامی (Autoship) | آسنا',
-        'desc'  => 'تامین بدون وقفه داروهای دوره‌ای و مکمل‌های درمانی حیوانات با تخفیف دائمی و ارسال سر موعد درب منزل یا دامداری.'
+        'title' => 'سفارش دوره‌ای و تحویل خودکار ملزومات پت (Autoship) | تخفیف ویژه آسنا',
+        'desc'  => 'دیگر نگران تمام شدن غذای پت خود نباشید! با سیستم ارسال دوره‌ای و خودکار آسنا، سفارشات ماهانه شما با تخفیف دائمی و بدون نیاز به سفارش مجدد ارسال می‌شود.'
+    ],
+    'charity.php' => [
+        'title' => 'پویش‌های حمایت و درمان حیوانات بی‌سرپرست | نقاهتگاه و درمانگاه آسنا',
+        'desc'  => 'مشارکت در درمان، واکسیناسیون، عقیم‌سازی و تامین غذای حیوانات آسیب‌دیده و بی‌سرپرست با گزارش‌دهی شفاف و لحظه‌ای در سامانه خیریه آسنا.'
     ],
     'login.php' => [
-        'title' => 'ورود و ثبت‌نام در داروخانه دامپزشکی آسنا | پیگیری سفارشات دارویی',
-        'desc'  => 'ورود به پنل داروخانه دامپزشکی آسنا جهت ارسال تصویر نسخه، پیگیری سفارشات دارویی و مدیریت نسخه‌های ثبت شده پت.'
+        'title' => 'ورود و ثبت‌نام در سامانه آسنا | دسترسی به پرونده پزشکی و سفارشات پت',
+        'desc'  => 'ورود به پنل کاربری آسنا جهت مدیریت نوبت‌های ویزیت دامپزشکی، پیگیری سفارشات پت‌شاپ و دسترسی به پرونده سلامت و واکسیناسیون حیوان خانگی.'
     ]
 ];
 
 $default_seo = $seo_defaults[$current_page] ?? [
-    'title' => 'داروخانه آنلاین و تخصصی دامپزشکی آسنا',
-    'desc'  => 'مرجع معتبر خرید آنلاین داروهای دامپزشکی و ملزومات پت با تاییدیه دامپزشکی'
+    'title' => 'کلینیک دامپزشکی و پت‌شاپ آنلاین آسنا',
+    'desc'  => 'مرجع تخصصی خدمات دامپزشکی، نوبت‌دهی آنلاین و خرید ملزومات پت با تحویل دوره‌ای'
 ];
 
 $effective_title = isset($page_title) ? $page_title : $default_seo['title'];
@@ -67,13 +70,14 @@ $effective_canonical = isset($canonical_url) ? $canonical_url : "$proto://$host"
 $effective_og_image = isset($og_image) ? (strpos($og_image, 'http') === 0 ? $og_image : "$proto://$host/" . ltrim($og_image, '/')) : "$proto://$host/assets/images/og-asena.png";
 ?>
 <!DOCTYPE html>
-<html dir="rtl" lang="fa" data-edition="pharmacy">
+<html dir="rtl" lang="fa" data-edition="standard">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" name="viewport">
     <title><?php echo htmlspecialchars($effective_title); ?></title>
     <meta name="description" content="<?php echo htmlspecialchars($effective_desc); ?>">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="google-site-verification" content="google82c161050c864f06">
     <link rel="canonical" href="<?php echo htmlspecialchars($effective_canonical); ?>">
     <link rel="alternate" hreflang="fa-IR" href="<?php echo htmlspecialchars($effective_canonical); ?>">
     <meta name="geo.region" content="IR">
@@ -81,7 +85,7 @@ $effective_og_image = isset($og_image) ? (strpos($og_image, 'http') === 0 ? $og_
     
     <!-- Open Graph / Facebook / Telegram -->
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="داروخانه آنلاین دامپزشکی آسنا">
+    <meta property="og:site_name" content="ASENA | کلینیک و پت‌شاپ تخصصی">
     <meta property="og:locale" content="fa_IR">
     <meta property="og:title" content="<?php echo htmlspecialchars($effective_title); ?>">
     <meta property="og:description" content="<?php echo htmlspecialchars($effective_desc); ?>">
@@ -102,21 +106,25 @@ $effective_og_image = isset($og_image) ? (strpos($og_image, 'http') === 0 ? $og_
     <?php echo $page_schema; ?>
     </script>
     <?php else: ?>
-    <!-- Pharmacy Schema & Breadcrumbs -->
+    <!-- Default Organization & Breadcrumb Schema -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Pharmacy",
-      "name": "داروخانه آنلاین دامپزشکی آسنا",
-      "description": "تامین مستقیم داروهای تخصصی دامپزشکی، واکسن، سرم و مکمل‌های دارویی با تاییدیه نسخه.",
-      "url": "<?php echo $proto . '://' . $host; ?>/pharmacy-standard/",
-      "telephone": "+98-914-667-6978",
-      "priceRange": "$$",
-      "parentOrganization": {
-        "@type": "Organization",
-        "name": "ASENA",
-        "url": "<?php echo $proto . '://' . $host; ?>/"
-      }
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "خانه",
+          "item": "<?php echo $proto . '://' . $host; ?>/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "<?php echo htmlspecialchars($effective_title); ?>",
+          "item": "<?php echo htmlspecialchars($effective_canonical); ?>"
+        }
+      ]
     }
     </script>
     <?php endif; ?>
@@ -145,7 +153,7 @@ if (function_exists('get_curated_recommendations')) {
 ?>
 <?php if (!empty($top_notif)): ?>
 <!-- Top Floating Notification Bar -->
-<div id="topNotificationBar" class="bg-gradient-to-r from-secondary-container via-primary-container to-secondary-container text-white py-2 px-4 text-xs font-bold shadow-sm relative z-50">
+<div id="topNotificationBar" class="bg-gradient-to-r from-secondary-container via-[#ea580c] to-secondary-container text-white py-2 px-4 text-xs font-bold shadow-sm relative z-50">
     <div class="max-w-[1600px] mx-auto flex items-center justify-between gap-3">
         <div class="flex items-center gap-2 overflow-hidden">
             <span class="material-symbols-outlined text-base animate-bounce">campaign</span>
@@ -184,10 +192,6 @@ if (function_exists('get_curated_recommendations')) {
                 <!-- Desktop Links -->
                 <div class="hidden lg:flex gap-8 flex-row shrink-0">
                     <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'index.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="index.php">خانه</a>
-                    <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'pharmacy.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?> flex items-center gap-1.5" href="pharmacy.php">
-                        <span>داروخانه تخصصی</span>
-                        <span class="bg-secondary-container text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">تخصصی</span>
-                    </a>
                     <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'shop.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="shop.php">فروشگاه</a>
                     <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'booking.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="booking.php">کلینیک</a>
                     <a class="text-white text-sm font-medium hover:text-secondary-container transition-all duration-200 <?php echo $current_page == 'subscriptions.php' ? 'border-b-2 border-white pb-1 opacity-100' : 'opacity-90'; ?>" href="subscriptions.php">اشتراک خودکار</a>
@@ -253,9 +257,6 @@ if (function_exists('get_curated_recommendations')) {
                 <nav class="flex flex-col gap-2">
                     <a class="flex items-center gap-4 text-on-surface font-bold p-3 rounded-xl hover:bg-primary-container/10 hover:text-primary transition-colors" href="index.php">
                         <span class="material-symbols-outlined text-outline">home</span> خانه
-                    </a>
-                    <a class="flex items-center gap-4 text-primary font-bold p-3 rounded-xl bg-secondary-container/10 border border-secondary-container/30 transition-colors" href="pharmacy.php">
-                        <span class="material-symbols-outlined text-secondary-container">local_pharmacy</span> داروخانه تخصصی
                     </a>
                     <a class="flex items-center gap-4 text-on-surface font-bold p-3 rounded-xl hover:bg-primary-container/10 hover:text-primary transition-colors" href="shop.php">
                         <span class="material-symbols-outlined text-outline">storefront</span> فروشگاه

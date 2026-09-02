@@ -77,6 +77,7 @@ $effective_og_image = isset($og_image) ? (strpos($og_image, 'http') === 0 ? $og_
     <title><?php echo htmlspecialchars($effective_title); ?></title>
     <meta name="description" content="<?php echo htmlspecialchars($effective_desc); ?>">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="google-site-verification" content="google82c161050c864f06">
     <link rel="canonical" href="<?php echo htmlspecialchars($effective_canonical); ?>">
     <link rel="alternate" hreflang="fa-IR" href="<?php echo htmlspecialchars($effective_canonical); ?>">
     <meta name="geo.region" content="IR">
