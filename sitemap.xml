@@ -134,6 +134,54 @@
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=pet-hair-loss-causes-and-treatments</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=pet-spaying-neutering-complete-guide</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=pet-deworming-schedule-and-medications</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=canine-parvovirus-symptoms-and-treatment</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=pet-diabetes-symptoms-and-insulin-guide</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=feline-urinary-tract-disease-flutd</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=pet-dental-care-and-scaling-guide</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
+        <url>
+        <loc>https://asena.company/standard/knowledge_base.php?article=pet-fleas-ticks-and-mites-treatment</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
     
     <!-- 4. High-Intent Pet Categories -->
         <url>
