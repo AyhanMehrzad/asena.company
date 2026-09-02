@@ -2,3 +2,5 @@
 petshop.db
 uploads/
 migrate_subscriptions.php
+logs/*.log
+!logs/.gitkeep
