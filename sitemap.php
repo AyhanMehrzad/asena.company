@@ -6,9 +6,7 @@
 
 // Resolve base site URL and connect to DB cleanly without sessions
 require_once __DIR__ . '/config.php';
-$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
-$host = $_SERVER['HTTP_HOST'] ?? 'asena.company';
-$site_url = !empty(SITE_URL) ? rtrim(SITE_URL, '/') : "$protocol://$host";
+$site_url = 'https://asena.company';
 
 $products = [];
 try {
