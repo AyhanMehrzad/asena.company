@@ -8,37 +8,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     
     <!-- Primary SEO Meta Tags -->
-    <title>ASENA | پلتفرم یکپارچه کلینیک دامپزشکی، پت‌شاپ و داروخانه تخصصی آنلاین</title>
-    <meta name="title" content="ASENA | پلتفرم یکپارچه کلینیک دامپزشکی، پت‌شاپ و داروخانه تخصصی آنلاین">
-    <meta name="description" content="آسنا پلتفرم جامع خدمات حیوانات خانگی؛ نوبت‌دهی آنلاین کلینیک دامپزشکی، پت‌شاپ تخصصی سگ و گربه، و تامین داروهای مجاز دامپزشکی با ارسال خودکار دوره‌ای (Autoship).">
-    <meta name="keywords" content="کلینیک دامپزشکی, پت شاپ آنلاین, داروخانه دامپزشکی, نوبت دهی آنلاین دامپزشکی, غذای خشک سگ, غذای گربه, داروی دامپزشکی, خرید مکمل سگ, ارسال خودکار پت شاپ, اسنا, asena">
+    <title>ASENA (آسنا) | سامانه یکپارچه کلینیک دامپزشکی، پت‌شاپ و داروخانه تخصصی آنلاین | Asena Company</title>
+    <meta name="title" content="ASENA (آسنا) | سامانه یکپارچه کلینیک دامپزشکی، پت‌شاپ و داروخانه تخصصی آنلاین | Asena Company">
+    <meta name="description" content="آسنا (ASENA Company)؛ پلتفرم یکپارچه خدمات هوشمند حیوانات خانگی. نوبت‌دهی آنلاین کلینیک دامپزشکی، پت‌شاپ تخصصی سگ و گربه، و تامین داروهای مجاز دامپزشکی با ارسال خودکار دوره‌ای (Autoship).">
+    <meta name="keywords" content="ASENA, asena company, آسنا, شرکت آسنا, کلینیک دامپزشکی, نوبت دهی آنلاین دامپزشکی, پت شاپ آنلاین, داروخانه دامپزشکی, ارسال خودکار پت شاپ, autoship pet food, رزرو وقت دامپزشک, غذای خشک سگ, غذای گربه, داروی دامپزشکی">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="google-site-verification" content="google82c161050c864f06">
     <link rel="canonical" href="https://asena.company/">
     <link rel="alternate" hreflang="fa-IR" href="https://asena.company/">
+    <link rel="alternate" hreflang="en" href="https://asena.company/">
     <meta name="geo.region" content="IR">
     <meta name="geo.placename" content="Iran">
     <meta name="author" content="ASENA Company">
 
+    <!-- Safari / Apple & PWA Mobile App Support -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/images/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/images/favicon-512x512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#002d72">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="ASENA">
+    <meta name="application-name" content="ASENA Company">
+
+    <!-- Preload Critical Above-The-Fold Assets for Core Web Vitals (LCP) -->
+    <link rel="preload" href="assets/fonts/Dxxo8j6PP2D_kU2muijlGMWWMmk.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/images/og-asena.png" as="image" type="image/png">
+
     <!-- Open Graph / Facebook / Telegram Meta Tags -->
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="ASENA | آسنا">
+    <meta property="og:site_name" content="ASENA Company | سامانه جامع آسنا">
     <meta property="og:locale" content="fa_IR">
     <meta property="og:url" content="https://asena.company/">
-    <meta property="og:title" content="ASENA | پلتفرم یکپارچه کلینیک دامپزشکی، پت‌شاپ و داروخانه تخصصی آنلاین">
-    <meta property="og:description" content="آسنا پلتفرم جامع خدمات حیوانات خانگی؛ نوبت‌دهی آنلاین کلینیک دامپزشکی، پت‌شاپ تخصصی سگ و گربه، و تامین داروهای مجاز دامپزشکی با ارسال خودکار دوره‌ای.">
+    <meta property="og:title" content="ASENA (آسنا) | سامانه یکپارچه کلینیک دامپزشکی، پت‌شاپ و داروخانه تخصصی آنلاین">
+    <meta property="og:description" content="آسنا (ASENA Company)؛ نوبت‌دهی آنلاین کلینیک دامپزشکی، پت‌شاپ تخصصی سگ و گربه، و تامین داروهای مجاز دامپزشکی با ارسال خودکار دوره‌ای.">
     <meta property="og:image" content="https://asena.company/assets/images/og-asena.png">
     <meta property="og:image:secure_url" content="https://asena.company/assets/images/og-asena.png">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="پلتفرم یکپارچه کلینیک دامپزشکی و پت‌شاپ آسنا">
+    <meta property="og:image:alt" content="پلتفرم یکپارچه کلینیک دامپزشکی و پت‌شاپ آسنا - ASENA Company">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://asena.company/">
-    <meta name="twitter:title" content="ASENA | پلتفرم یکپارچه کلینیک دامپزشکی، پت‌شاپ و داروخانه تخصصی آنلاین">
-    <meta name="twitter:description" content="مرجع نوبت‌دهی آنلاین کلینیک دامپزشکی، خرید ملزومات پت و داروخانه آنلاین با تحویل خودکار دوره‌ای.">
+    <meta name="twitter:title" content="ASENA (آسنا) | سامانه یکپارچه کلینیک دامپزشکی، پت‌شاپ و داروخانه تخصصی آنلاین">
+    <meta name="twitter:description" content="مرجع نوبت‌دهی آنلاین کلینیک دامپزشکی، خرید ملزومات پت و داروخانه آنلاین با تحویل خودکار دوره‌ای (Autoship).">
     <meta name="twitter:image" content="https://asena.company/assets/images/og-asena.png">
 
     <!-- Google Structured Data (JSON-LD) for Search Ranking -->
@@ -49,14 +68,22 @@
         {
           "@type": "Organization",
           "@id": "https://asena.company/#organization",
-          "name": "ASENA",
-          "alternateName": "آسنا",
+          "name": "ASENA Company",
+          "legalName": "ASENA Veterinary Care & Pet Commerce Platform",
+          "alternateName": ["آسنا", "ASENA", "Asena Co"],
           "url": "https://asena.company/",
+          "disambiguatingDescription": "ASENA Company is a specialized veterinary clinic management, pet health commerce, and animal pharmacy technology platform, distinct from industrial machinery or financial advisory entities.",
           "logo": {
             "@type": "ImageObject",
+            "@id": "https://asena.company/#logo",
             "url": "https://asena.company/assets/images/logo.png",
+            "contentUrl": "https://asena.company/assets/images/logo.png",
+            "caption": "ASENA Company Logo",
             "width": 512,
-            "height": 512
+            "height": 269
+          },
+          "image": {
+            "@id": "https://asena.company/#logo"
           },
           "contactPoint": {
             "@type": "ContactPoint",
@@ -66,7 +93,10 @@
             "availableLanguage": ["Persian", "en"]
           },
           "sameAs": [
-            "https://asena.company"
+            "https://asena.company",
+            "https://ayhanmehrzad.pro/",
+            "https://github.com/asena-company",
+            "https://www.linkedin.com/company/asena-company"
           ],
           "knowsAbout": [
             "دامپزشکی تخصصی",
@@ -75,9 +105,11 @@
             "پت شاپ آنلاین",
             "تغذیه سگ و گربه",
             "واکسیناسیون و جراحی حیوانات",
+            "تحویل دوره‌ای خودکار غذای پت (Autoship)",
             "Veterinary Medicine",
             "Animal Pharmacy",
-            "Pet Health and Nutrition"
+            "Pet Health and Nutrition",
+            "Online Vet Consultation"
           ]
         },
         {
@@ -85,10 +117,11 @@
           "@id": "https://asena.company/#website",
           "url": "https://asena.company/",
           "name": "ASENA",
+          "alternateName": "آسنا",
           "publisher": {
             "@id": "https://asena.company/#organization"
           },
-          "inLanguage": "fa-IR",
+          "inLanguage": ["fa-IR", "en"],
           "potentialAction": {
             "@type": "SearchAction",
             "target": "https://asena.company/standard/shop.php?q={search_term_string}",
@@ -96,21 +129,101 @@
           }
         },
         {
+          "@type": "WebApplication",
+          "@id": "https://asena.company/#webapp",
+          "url": "https://asena.company/",
+          "name": "ASENA Pet Care & Veterinary Platform",
+          "alternateName": "سامانه یکپارچه دامپزشکی و پت‌شاپ آسنا",
+          "applicationCategory": "BusinessApplication",
+          "applicationSubCategory": "Veterinary Management & Pet Care Portal",
+          "operatingSystem": "All (Web Browser, Responsive Mobile Web, iOS Safari, Android)",
+          "browserRequirements": "Requires JavaScript and modern web browser (Chrome, Firefox, Safari, Edge)",
+          "description": "Comprehensive web application for online veterinary consultations, recurring pet supply orders (Autoship), and digital clinic workflows.",
+          "maintainer": {
+            "@id": "https://asena.company/#organization"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock",
+            "description": "Free client portal access, appointment booking, and product ordering"
+          },
+          "featureList": [
+            "Online Veterinary Appointment Booking",
+            "Doctor Schedule Management",
+            "Recurring Pet Food and Care Subscriptions (Autoship)",
+            "Digital Medical Records and Health Tracking",
+            "Automated Visit Reminders and Follow-ups",
+            "Online Animal Pharmacy with Prescription Verification"
+          ],
+          "potentialAction": {
+            "@type": "ReserveAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://asena.company/standard/booking.php",
+              "actionPlatform": [
+                "http://schema.org/DesktopWebPlatform",
+                "http://schema.org/MobileWebPlatform",
+                "http://schema.org/IOSPlatform",
+                "http://schema.org/AndroidPlatform"
+              ]
+            },
+            "result": {
+              "@type": "Reservation",
+              "name": "Veterinary Appointment"
+            }
+          }
+        },
+        {
           "@type": "VeterinaryCare",
           "@id": "https://asena.company/#veterinary",
-          "name": "کلینیک دامپزشکی تخصصی آسنا",
+          "name": "کلینیک دامپزشکی تخصصی آسنا | ASENA Veterinary Services",
           "description": "ویزیت تخصصی حیوانات خانگی، واکسیناسیون، دندانپزشکی، صدور شناسنامه و مشاوره سلامت پت.",
           "url": "https://asena.company/standard/booking.php",
           "telephone": "+98-914-667-6978",
           "priceRange": "$$",
+          "isAcceptingNewPatients": true,
           "parentOrganization": {
             "@id": "https://asena.company/#organization"
+          },
+          "availableChannel": {
+            "@type": "ServiceChannel",
+            "serviceUrl": "https://asena.company/standard/booking.php",
+            "serviceType": "Online Appointment Booking & Delivery Management"
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Pet Care and Clinical Services",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "ویزیت و چکاپ تخصصی دامپزشکی (Veterinary Health Consultation)"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "واکسیناسیون و صدور شناسنامه پت"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "تحویل خودکار دوره‌ای ملزومات و غذای پت (Autoship Subscription)"
+                }
+              }
+            ]
           }
         },
         {
           "@type": "Pharmacy",
           "@id": "https://asena.company/#pharmacy",
-          "name": "داروخانه آنلاین دامپزشکی آسنا",
+          "name": "داروخانه آنلاین دامپزشکی آسنا | ASENA Veterinary Pharmacy",
           "description": "تامین داروهای مجاز دامپزشکی، مکمل‌های درمانی و ضد انگل با تاییدیه نسخه دامپزشک.",
           "url": "https://asena.company/pharmacy-standard/shop.php",
           "telephone": "+98-914-667-6978",
@@ -128,7 +241,7 @@
               "name": "نوبت‌دهی آنلاین کلینیک دامپزشکی آسنا چگونه کار می‌کند؟",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "شما می‌توانید به صورت آنلاین، پزشک متخصص مورد نظر خود را انتخاب کرده، ساعت‌های آزاد را مشاهده کنید و تنها در چند ثانیه نوبت ویزیت یا خدمات دامپزشکی پت خود را ثبت و پیامک تایید دریافت نمایید."
+                "text": "شما می‌توانید به صورت آنلاین در سامانه آسنا، پزشک متخصص مورد نظر خود را انتخاب کرده، ساعت‌های آزاد را مشاهده کنید و تنها در چند ثانیه نوبت ویزیت یا خدمات دامپزشکی پت خود را ثبت و پیامک تایید دریافت نمایید."
               }
             },
             {
@@ -153,6 +266,14 @@
               "acceptedAnswer": {
                 "@type": "Answer",
                 "text": "پلتفرم آسنا دارای بخش خیریه شفاف برای درمان حیوانات آسیب‌دیده، واکسیناسیون رایگان حیوانات بی‌سرپرست و تامین غذای پناهگاه‌ها است که گزارش مالی هر پرونده به صورت شفاف در سامانه منتشر می‌شود."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "چگونه می‌توانم در سامانه آسنا (ASENA Company) ثبت‌نام کنم؟",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "از طریق بخش ورود و ثبت‌نام با شماره همراه خود می‌توانید حساب کاربری ایجاد کرده و مشخصات حیوان خانگی خود را برای مدیریت پرونده سلامت و سفارشات ثبت کنید."
               }
             }
           ]
@@ -1074,9 +1195,9 @@
             <span class="material-icons-round" style="font-size: 16px;">verified</span>
             <span>نسل جدید سامانه‌های تخصصی کلینیک و داروخانه دامپزشکی</span>
         </div>
-        <h1>پلتفرم جامع و یکپارچه<br><span>کلینیک، پت‌شاپ و داروخانه تخصصی</span></h1>
+        <h1>پلتفرم جامع دامپزشکی و پت‌شاپ آسنا | ASENA Company<br><span>کلینیک هوشمند، فروشگاه آنلاین و داروخانه تخصصی</span></h1>
         <p class="section-subtitle">
-            قالب‌های مدرن، متقاعدکننده و باکیفیت برای جذب حداکثری مشتریان و مدیریت آسان امور درمانی، انبارداری و تحویل خودکار دوره‌ای.
+            سامانه یکپارچه نوبت‌دهی آنلاین ویزیت پزشک، سفارش ملزومات پت با تحویل خودکار دوره‌ای (Autoship)، پرونده الکترونیک سلامت و داروخانه رسمی دامپزشکی.
         </p>
 
         <div class="hero-action-buttons">

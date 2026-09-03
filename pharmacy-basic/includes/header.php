@@ -80,8 +80,26 @@ $effective_og_image = isset($og_image) ? (strpos($og_image, 'http') === 0 ? $og_
     <meta name="google-site-verification" content="google82c161050c864f06">
     <link rel="canonical" href="<?php echo htmlspecialchars($effective_canonical); ?>">
     <link rel="alternate" hreflang="fa-IR" href="<?php echo htmlspecialchars($effective_canonical); ?>">
+    <link rel="alternate" hreflang="en" href="<?php echo htmlspecialchars($effective_canonical); ?>">
     <meta name="geo.region" content="IR">
     <meta name="geo.placename" content="Iran">
+
+    <!-- Safari / Apple & PWA Mobile App Support -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/images/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/images/favicon-512x512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#002d72">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="ASENA">
+    <meta name="application-name" content="ASENA Company">
+
+    <!-- Preload Critical Font for Core Web Vitals (LCP) -->
+    <link rel="preload" href="/assets/fonts/Dxxo8j6PP2D_kU2muijlGMWWMmk.woff2" as="font" type="font/woff2" crossorigin>
     
     <!-- Open Graph / Facebook / Telegram -->
     <meta property="og:type" content="website">
