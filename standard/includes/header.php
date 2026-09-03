@@ -86,6 +86,7 @@ $effective_og_image = isset($og_image) ? (strpos($og_image, 'http') === 0 ? $og_
 
     <!-- Safari / Apple & PWA Mobile App Support -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/images/favicon-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/assets/images/favicon-512x512.png">
