@@ -54,3 +54,9 @@ Options -Indexes
     Header set X-Frame-Options "SAMEORIGIN"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
+
+# 8. Block access to sensitive configuration, database and log files
+<FilesMatch "\.(env|env\.example|sql|log|md|git|gitignore)$">
+    Require all denied
+</FilesMatch>
+

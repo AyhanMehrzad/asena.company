@@ -272,3 +272,32 @@ function set_setting(PDO $pdo, string $key, $value): bool {
         }
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Persian Localization & Number/Currency Helpers
+// ─────────────────────────────────────────────────────────────────────────────
+if (file_exists(__DIR__ . '/jdf.php')) {
+    require_once __DIR__ . '/jdf.php';
+}
+
+/**
+ * Convert English ASCII digits to standard Persian digits
+ */
+function to_persian_num($input): string {
+    $en = ['0','1','2','3','4','5','6','7','8','9'];
+    $fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+    return str_replace($en, $fa, (string)$input);
+}
+
+/**
+ * Standardized Iranian Toman currency formatter with optional Persian numerals
+ */
+function format_price($amount, bool $showUnit = true, bool $persianDigits = true): string {
+    $num = is_numeric($amount) ? (float)$amount : 0;
+    $formatted = number_format($num);
+    if ($persianDigits) {
+        $formatted = to_persian_num($formatted);
+    }
+    return $showUnit ? ($formatted . ' تومان') : $formatted;
+}
+
