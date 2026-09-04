@@ -80,7 +80,7 @@
             "contentUrl": "https://asena.company/assets/images/logo.png",
             "caption": "ASENA Company Logo",
             "width": 512,
-            "height": 269
+            "height": 512
           },
           "image": {
             "@id": "https://asena.company/#logo"
@@ -1178,7 +1178,7 @@
 
     <nav>
         <a href="#" class="nav-logo">
-            <span class="material-icons-round">pets</span>
+            <img src="assets/images/logo.png" alt="لوگوی آسنا" style="width: 32px; height: 32px; object-fit: contain;">
             ASENA
         </a>
         <div class="nav-links">

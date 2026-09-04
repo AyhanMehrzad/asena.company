@@ -250,7 +250,12 @@ if (function_exists('get_curated_recommendations')) {
                     </a>
                 </div>
                 
-                <h1 class="text-xl lg:text-2xl font-bold text-white tracking-tight">ASENA</h1>
+                <a href="index.php" class="flex items-center gap-2.5 group" title="صفحه اصلی آسنا">
+                    <div class="w-9 h-9 lg:w-10 lg:h-10 rounded-xl bg-white/10 p-1.5 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-200">
+                        <img src="assets/images/logo.png" alt="لوگوی آسنا" class="w-full h-full object-contain filter drop-shadow">
+                    </div>
+                    <h1 class="text-xl lg:text-2xl font-bold text-white tracking-tight group-hover:text-secondary-container transition-colors">ASENA</h1>
+                </a>
             </div>
         </div>
     </header>
@@ -259,7 +264,12 @@ if (function_exists('get_curated_recommendations')) {
     <div id="mobile-menu" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300">
         <div id="mobile-menu-panel" class="absolute top-0 right-0 h-full w-4/5 max-w-sm bg-surface-container-lowest shadow-2xl translate-x-full transition-transform duration-300 flex flex-col">
             <div class="p-6 border-b border-outline-variant/20 flex justify-between items-center bg-primary text-white">
-                <h2 class="text-xl font-bold">منوی کاربری</h2>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-white/10 p-1 flex items-center justify-center">
+                        <img src="assets/images/logo.png" alt="لوگوی آسنا" class="w-full h-full object-contain">
+                    </div>
+                    <h2 class="text-xl font-bold">منوی کاربری</h2>
+                </div>
                 <button type="button" onclick="toggleMobileMenu()" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
