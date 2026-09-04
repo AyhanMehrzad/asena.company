@@ -249,7 +249,10 @@ if (function_exists('get_curated_recommendations')) {
                     </a>
                 </div>
                 
-                <h1 class="text-xl lg:text-2xl font-bold text-white tracking-tight">ASENA</h1>
+                <a href="index.php" class="flex items-center gap-2.5 group" dir="ltr" title="صفحه اصلی آسنا">
+                    <img src="assets/images/logo.png" alt="لوگوی آسنا" class="w-8 h-8 lg:w-9 lg:h-9 object-contain drop-shadow group-hover:scale-105 transition-transform duration-200">
+                    <h1 class="text-xl lg:text-2xl font-bold text-white tracking-tight group-hover:text-secondary-container transition-colors">ASENA</h1>
+                </a>
             </div>
         </div>
     </header>
@@ -258,7 +261,10 @@ if (function_exists('get_curated_recommendations')) {
     <div id="mobile-menu" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300">
         <div id="mobile-menu-panel" class="absolute top-0 right-0 h-full w-4/5 max-w-sm bg-surface-container-lowest shadow-2xl translate-x-full transition-transform duration-300 flex flex-col">
             <div class="p-6 border-b border-outline-variant/20 flex justify-between items-center bg-primary text-white">
-                <h2 class="text-xl font-bold">منوی کاربری</h2>
+                <a href="index.php" class="flex items-center gap-2.5 text-white group">
+                    <img src="assets/images/logo.png" alt="لوگوی آسنا" class="w-7 h-7 object-contain group-hover:scale-105 transition-transform">
+                    <h2 class="text-xl font-bold">منوی کاربری</h2>
+                </a>
                 <button type="button" onclick="toggleMobileMenu()" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>

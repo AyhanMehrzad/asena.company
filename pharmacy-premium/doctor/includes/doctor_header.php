@@ -139,15 +139,13 @@ if (!$doctorProfile) {
 <aside id="doctor-sidebar" class="fixed inset-y-0 right-0 w-64 bg-tertiary dark:bg-tertiary-container flex flex-col z-[70] lg:z-40 rtl shadow-lg transition-transform duration-300 translate-x-full lg:translate-x-0 overflow-y-auto">
     <div class="p-6 flex flex-col gap-2">
         <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center">
-                    <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">medical_services</span>
-                </div>
+            <a href="../index.php" class="flex items-center gap-3 group" title="مشاهده سایت">
+                <img src="../assets/images/logo.png" alt="لوگوی آسنا" class="w-9 h-9 object-contain drop-shadow group-hover:scale-105 transition-transform">
                 <div>
-                    <h1 class="text-xl text-tertiary-fixed font-bold leading-tight">آسنا</h1>
+                    <h1 class="text-xl text-tertiary-fixed font-bold leading-tight group-hover:text-secondary-container transition-colors">آسنا</h1>
                     <p class="text-sm text-on-tertiary-container/70">پنل پزشکان</p>
                 </div>
-            </div>
+            </a>
             <button onclick="toggleDoctorSidebar()" class="lg:hidden text-on-tertiary-container hover:text-white transition-colors">
                 <span class="material-symbols-outlined">close</span>
             </button>

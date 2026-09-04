@@ -124,12 +124,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- Authentication Form Section -->
 <section class="w-full lg:w-5/12 bg-white flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12 relative overflow-y-auto">
     <!-- Mobile Top Bar -->
-    <div class="absolute top-8 right-8 lg:right-24 flex items-center gap-2">
-        <a href="index.php" class="text-primary-container font-bold text-xl hover:opacity-80 transition-opacity">ASENA</a>
-        <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
-            <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">pets</span>
-        </div>
-    </div>
+    <a href="index.php" class="absolute top-8 right-8 lg:right-24 flex items-center gap-2.5 group" dir="ltr" title="بازگشت به صفحه اصلی">
+    <img src="assets/images/logo.png" alt="لوگوی آسنا" class="w-8 h-8 object-contain group-hover:scale-105 transition-transform">
+    <span class="text-primary-container font-bold text-xl group-hover:opacity-80 transition-opacity">ASENA</span>
+</a>
     
     <div class="max-w-md w-full mx-auto">
         <div class="mb-12 mt-12 lg:mt-0">

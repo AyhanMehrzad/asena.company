@@ -1177,8 +1177,8 @@
     </div>
 
     <nav>
-        <a href="#" class="nav-logo">
-            <span class="material-icons-round">pets</span>
+        <a href="#" class="nav-logo" style="display: flex; align-items: center; gap: 8px;">
+            <img src="assets/images/logo.png" alt="لوگوی آسنا" style="width: 28px; height: 28px; object-fit: contain;">
             ASENA
         </a>
         <div class="nav-links">

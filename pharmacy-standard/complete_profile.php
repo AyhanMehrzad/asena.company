@@ -128,6 +128,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Authentication Form Section -->
     <section class="w-full lg:w-5/12 bg-white flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12 relative overflow-y-auto">
+        <a href="index.php" class="absolute top-8 right-8 lg:right-24 flex items-center gap-2.5 group" dir="ltr" title="بازگشت به صفحه اصلی">
+            <img src="assets/images/logo.png" alt="لوگوی آسنا" class="w-8 h-8 object-contain group-hover:scale-105 transition-all">
+            <span class="text-primary-container font-bold text-xl group-hover:opacity-80 transition-opacity">ASENA</span>
+        </a>
         <div class="max-w-md w-full mx-auto">
             <h2 class="text-3xl font-bold text-on-surface mb-2">
                 <?php echo $step === 3 ? 'اطلاعات آدرس' : 'تأیید شماره موبایل'; ?>
