@@ -8,8 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     
     <!-- Primary SEO Meta Tags (Optimized for Google & Panda Ranking without truncation) -->
-    <title>آسنا (ASENA) | کلینیک دامپزشکی، پت‌شاپ و داروخانه آنلاین</title>
-    <meta name="title" content="آسنا (ASENA) | کلینیک دامپزشکی، پت‌شاپ و داروخانه آنلاین">
+    <title>آسنا | ASENA</title>
+    <meta name="title" content="آسنا | ASENA">
     <meta name="description" content="آسنا (ASENA)؛ سامانه جامع دامپزشکی، نوبت‌دهی آنلاین کلینیک، پت‌شاپ تخصصی سگ و گربه و داروخانه مجاز با امکان ارسال خودکار دوره‌ای غذای حیوانات (Autoship).">
     <meta name="keywords" content="ASENA, asena company, آسنا, شرکت آسنا, کلینیک دامپزشکی, نوبت دهی آنلاین دامپزشکی, پت شاپ آنلاین, داروخانه دامپزشکی, ارسال خودکار پت شاپ, autoship pet food, رزرو وقت دامپزشک, غذای خشک سگ, غذای گربه, داروی دامپزشکی">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
