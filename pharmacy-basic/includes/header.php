@@ -158,7 +158,8 @@ $effective_og_image = isset($og_image) ? (strpos($og_image, 'http') === 0 ? $og_
     <script src="assets/js/tailwind-config.js?v=<?php echo time(); ?>"></script>
     <link rel="stylesheet" href="assets/css/style.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="assets/css/paw-loader.css">
-    <script src="assets/js/paw-loader.js" defer></script>
+    <script src="assets/js/paw-loader.js"></script>
+    <script src="assets/js/lazy-loader.js" defer></script>
 </head>
 <body class="bg-background text-on-background overflow-x-hidden">
 <?php
