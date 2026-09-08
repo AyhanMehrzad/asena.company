@@ -22,19 +22,17 @@
     <meta name="geo.placename" content="Iran">
     <meta name="author" content="ASENA Company">
 
-    <!-- Google Search Favicon Guidelines Compliant Suite (48px Multiple & Full Browser Support) -->
-    <link rel="shortcut icon" href="/favicon.ico">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
-    <link rel="icon" type="image/png" sizes="48x48" href="/assets/images/favicon-48x48.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/images/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="144x144" href="/assets/images/favicon-144x144.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/assets/images/favicon-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/assets/images/favicon-512x512.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <!-- Master Brand Favicon Suite (Prioritized for Browser Tabs & Google Guidelines) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png?v=logo1">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png?v=logo1">
+    <link rel="icon" type="image/png" sizes="48x48" href="assets/images/favicon-48x48.png?v=logo1">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/images/favicon-192x192.png?v=logo1">
+    <link rel="icon" type="image/png" href="assets/images/logo.png?v=logo1">
+    <link rel="shortcut icon" href="favicon.ico?v=logo1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico?v=logo1">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg?v=logo1">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/logo.png?v=logo1">
+    <link rel="manifest" href="site.webmanifest">
     <meta name="theme-color" content="#002d72">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
