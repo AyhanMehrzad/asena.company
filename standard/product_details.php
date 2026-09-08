@@ -19,7 +19,7 @@ if (!$product) {
 }
 
 // Dynamic SEO Setup for Product Page
-$page_title = "خرید " . $product['name'] . " اصل با ضمانت | پت‌شاپ آنلاین آسنا";
+$page_title = 'محصول';
 $clean_desc = !empty($product['description']) ? trim(strip_tags($product['description'])) : 'خرید اینترنتی ' . $product['name'] . ' با ضمانت اصالت و سلامت کالا از پت شاپ آنلاین آسنا با ارسال سریع.';
 $page_description = mb_substr($clean_desc, 0, 160) . '...';
 
