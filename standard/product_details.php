@@ -26,8 +26,8 @@ $og_type = 'product';
 
 $proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'] ?? 'asena.company';
-$canonical_url = "$proto://$host/standard/product_details.php?id=" . $product['id'];
-$og_image = !empty($product['image_url']) ? (strpos($product['image_url'], 'http') === 0 ? $product['image_url'] : "$proto://$host/standard/" . ltrim($product['image_url'], '/')) : "$proto://$host/assets/images/og-asena.png";
+$canonical_url = "$proto://$host" . strtok($_SERVER['REQUEST_URI'] ?? '/product_details.php', '?') . "?id=" . $product['id'];
+$og_image = !empty($product['image_url']) ? (strpos($product['image_url'], 'http') === 0 ? $product['image_url'] : "$proto://$host/" . ltrim($product['image_url'], '/')) : "$proto://$host/assets/images/og-asena.png";
 $product_price = !empty($product['discount_price']) ? $product['discount_price'] : $product['price'];
 $product_price_irr = (int)$product_price * 10;
 
@@ -63,10 +63,29 @@ $page_schema = json_encode([
         "price" => (int)$product_price * 10,
         "itemCondition" => "https://schema.org/NewCondition",
         "availability" => $stock_status,
-        "seller" => [
+                "seller" => [
             "@type" => "Organization",
             "name" => "ASENA"
+        ],
+        "hasMerchantReturnPolicy" => [
+            "@type" => "MerchantReturnPolicy",
+            "applicableCountry" => "IR",
+            "returnPolicyCategory" => "https://schema.org/MerchantReturnFiniteReturnWindow",
+            "merchantReturnDays" => 7
+        ],
+        "shippingDetails" => [
+            "@type" => "OfferShippingDetails",
+            "shippingRate" => [
+                "@type" => "MonetaryAmount",
+                "value" => "0",
+                "currency" => "IRR"
+            ],
+            "shippingDestination" => [
+                "@type" => "DefinedRegion",
+                "addressCountry" => "IR"
+            ]
         ]
+
     ]
 ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 

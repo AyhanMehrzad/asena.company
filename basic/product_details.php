@@ -19,14 +19,15 @@ if (!$product) {
 }
 
 // Dynamic SEO Setup for Product Page
-$page_title = 'محصول';
+$page_title = "خرید " . $product['name'] . " اصل با ضمانت | پت‌شاپ آنلاین آسنا";
+$og_type = 'product';
 $clean_desc = !empty($product['description']) ? trim(strip_tags($product['description'])) : 'خرید اینترنتی ' . $product['name'] . ' با ضمانت اصالت و سلامت کالا از پت شاپ آنلاین آسنا با ارسال سریع.';
 $page_description = mb_substr($clean_desc, 0, 160) . '...';
 
 $proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'] ?? 'asena.company';
-$canonical_url = "$proto://$host/standard/product_details.php?id=" . $product['id'];
-$og_image = !empty($product['image_url']) ? (strpos($product['image_url'], 'http') === 0 ? $product['image_url'] : "$proto://$host/standard/" . ltrim($product['image_url'], '/')) : "$proto://$host/assets/images/og-asena.png";
+$canonical_url = "$proto://$host" . strtok($_SERVER['REQUEST_URI'] ?? '/product_details.php', '?') . "?id=" . $product['id'];
+$og_image = !empty($product['image_url']) ? (strpos($product['image_url'], 'http') === 0 ? $product['image_url'] : "$proto://$host/" . ltrim($product['image_url'], '/')) : "$proto://$host/assets/images/og-asena.png";
 
 // Schema.org Product JSON-LD for Google Rich Results
 $product_price = !empty($product['discount_price']) ? $product['discount_price'] : $product['price'];
@@ -60,13 +61,33 @@ $page_schema = json_encode([
         "price" => (int)$product_price * 10,
         "itemCondition" => "https://schema.org/NewCondition",
         "availability" => $stock_status,
-        "seller" => [
+                "seller" => [
             "@type" => "Organization",
             "name" => "ASENA"
+        ],
+        "hasMerchantReturnPolicy" => [
+            "@type" => "MerchantReturnPolicy",
+            "applicableCountry" => "IR",
+            "returnPolicyCategory" => "https://schema.org/MerchantReturnFiniteReturnWindow",
+            "merchantReturnDays" => 7
+        ],
+        "shippingDetails" => [
+            "@type" => "OfferShippingDetails",
+            "shippingRate" => [
+                "@type" => "MonetaryAmount",
+                "value" => "0",
+                "currency" => "IRR"
+            ],
+            "shippingDestination" => [
+                "@type" => "DefinedRegion",
+                "addressCountry" => "IR"
+            ]
         ]
+
     ]
 ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
+$product_price_irr = (int)$product_price * 10;
 require_once 'includes/header.php';
 
 // Handle review submission
