@@ -19,14 +19,17 @@ if (!$product) {
 }
 
 // Dynamic SEO Setup for Product Page
-$page_title = 'محصول';
+$page_title = htmlspecialchars($product['name']) . ' | خرید اینترنتی با تحویل فوری - آسنا';
 $clean_desc = !empty($product['description']) ? trim(strip_tags($product['description'])) : 'خرید اینترنتی ' . $product['name'] . ' با ضمانت اصالت و سلامت کالا از پت شاپ آنلاین آسنا با ارسال سریع.';
 $page_description = mb_substr($clean_desc, 0, 160) . '...';
+$og_type = 'product';
 
 $proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'] ?? 'asena.company';
 $canonical_url = "$proto://$host/standard/product_details.php?id=" . $product['id'];
 $og_image = !empty($product['image_url']) ? (strpos($product['image_url'], 'http') === 0 ? $product['image_url'] : "$proto://$host/standard/" . ltrim($product['image_url'], '/')) : "$proto://$host/assets/images/og-asena.png";
+$product_price = !empty($product['discount_price']) ? $product['discount_price'] : $product['price'];
+$product_price_irr = (int)$product_price * 10;
 
 // Schema.org Product JSON-LD for Google Rich Results
 $product_price = !empty($product['discount_price']) ? $product['discount_price'] : $product['price'];

@@ -1,5 +1,5 @@
 <?php
-require_once 'includes/header.php';
+require_once 'includes/db.php';
 
 $product_id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -130,6 +130,16 @@ $is_autoship = !empty($product['is_autoship']);
 $autoship_discount = $product['autoship_discount'] ?? 10;
 $base_price = $product['discount_price'] ?? $product['price'];
 $autoship_price = round($base_price * (100 - $autoship_discount) / 100);
+
+// Dynamic On-Page SEO, OpenGraph & GEO for Pharmacy Product Details
+$page_title = htmlspecialchars($product['name']) . ' | خرید آنلاین با تایید نسخه و ارسال سرد - آسنا';
+$clean_desc = mb_substr(strip_tags($product['description'] ?? $product['name']), 0, 150, 'UTF-8');
+$page_description = "خرید آنلاین داروی تخصصی {$product['name']} با تایید نسخه دکتر داروساز، ضمانت اصالت کالا و ارسال زنجیره سرد در داروخانه دامپزشکی آسنا.";
+$og_image = !empty($product['image_url']) ? $product['image_url'] : 'assets/images/pharma-default.svg';
+$og_type = 'product';
+$product_price_irr = ($product['discount_price'] ?: $product['price']) * 10;
+
+require_once 'includes/header.php';
 ?>
 
 <main class="max-w-container-max mx-auto overflow-hidden py-8 lg:py-12 px-margin-desktop min-h-[70vh]">
@@ -465,23 +475,32 @@ function addToCart(btn, productId) {
 </script>
 
 <!-- Schema.org JSON-LD Structured Data for Google Rich Snippets (Product, Offer, Rating) -->
+<?php
+$proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
+$host = $_SERVER['HTTP_HOST'] ?? 'asena.company';
+$abs_image = strpos($product['image_url'] ?? '', 'http') === 0 
+    ? $product['image_url'] 
+    : "$proto://$host/pharmacy-standard/" . ltrim($product['image_url'] ?: 'assets/images/pharma-default.svg', '/');
+?>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Product",
   "name": <?php echo json_encode($product['name']); ?>,
   "image": [
-    <?php echo json_encode($product['image_url'] ?: 'assets/images/pharma-default.svg'); ?>
+    <?php echo json_encode($abs_image); ?>
   ],
   "description": <?php echo json_encode(strip_tags($product['description'] ?? $product['name'])); ?>,
+  "sku": "ASENA-PHARMA-<?php echo $product['id']; ?>",
+  "mpn": "ASENA-PHARMA-<?php echo $product['id']; ?>",
   "brand": {
     "@type": "Brand",
-    "name": <?php echo json_encode($product['brand'] ?? 'داروخانه آسنا'); ?>
+    "name": <?php echo json_encode($product['brand'] ?? 'داروخانه تخصصی آسنا'); ?>
   },
-  "category": <?php echo json_encode($product['category'] ?? 'دامپزشکی'); ?>,
+  "category": <?php echo json_encode($product['category'] ?? 'داروهای دامپزشکی'); ?>,
   "offers": {
     "@type": "Offer",
-    "url": <?php echo json_encode((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"); ?>,
+    "url": <?php echo json_encode("$proto://$host/pharmacy-standard/product_details.php?id=" . $product['id']); ?>,
     "priceCurrency": "IRR",
     "price": "<?php echo ($product['discount_price'] ?: $product['price']) * 10; ?>",
     "priceValidUntil": "<?php echo date('Y-12-31'); ?>",
@@ -489,7 +508,25 @@ function addToCart(btn, productId) {
     "availability": "<?php echo ($product['stock'] > 0) ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'; ?>",
     "seller": {
       "@type": "Pharmacy",
-      "name": "داروخانه آنلاین و تخصصی آسنا"
+      "name": "داروخانه تخصصی دامپزشکی آسنا"
+    },
+    "hasMerchantReturnPolicy": {
+      "@type": "MerchantReturnPolicy",
+      "applicableCountry": "IR",
+      "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+      "merchantReturnDays": 7
+    },
+    "shippingDetails": {
+      "@type": "OfferShippingDetails",
+      "shippingRate": {
+        "@type": "MonetaryAmount",
+        "value": "0",
+        "currency": "IRR"
+      },
+      "shippingDestination": {
+        "@type": "DefinedRegion",
+        "addressCountry": "IR"
+      }
     }
   }<?php if(!empty($product['rating_cache']) && $product['rating_cache'] > 0): ?>,
   "aggregateRating": {
