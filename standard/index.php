@@ -1088,6 +1088,8 @@ function resetInterval() {
             pagination: {
                 el: '.swiper-pagination',
                 clickable: true,
+            }
+        });
     }
 </script>
 

@@ -289,9 +289,6 @@
     <!-- Self-Hosted Local Fonts & Icons (100% VPN-Free) -->
     <link href="assets/css/vazirmatn.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/material-symbols.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/paw-loader.css" rel="stylesheet" type="text/css" />
-    <script src="assets/js/paw-loader.js"></script>
-    <script src="assets/js/lazy-loader.js" defer></script>
     
     <!-- Core Presentation Portal Stylesheet (Cached & Gzipped for Core Web Vitals) -->
     <link href="assets/css/portal.css" rel="stylesheet" type="text/css" />
