@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/db.php';
 
 // Monthly Loyalty Points Check & Role Refresh
@@ -272,7 +272,12 @@ $effective_geo_icbm = $geo_icbm ?? '35.7350, 51.4110';
     <!-- Custom & Tailwind CSS -->
     <script src="assets/js/tailwindcss-cdn.js"></script>
     <script src="assets/js/tailwind-config.js?v=<?php echo time(); ?>"></script>
-    <link rel="stylesheet" href="assets/css/style.css?v=<?php echo time(); ?>">
+        <link rel="stylesheet" href="assets/css/style.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="assets/css/paw-loader.css?v=<?php echo time(); ?>">
+    
+    <!-- Universal Lazy Loading & Progress Animation Engine -->
+    <script src="assets/js/paw-loader.js?v=<?php echo time(); ?>"></script>
+    <script src="assets/js/lazy-loader.js?v=<?php echo time(); ?>" defer></script>
 </head>
 <body class="bg-background text-on-background overflow-x-hidden">
 <?php
@@ -458,3 +463,4 @@ if (function_exists('get_curated_recommendations')) {
             }
         }
     </script>
+
