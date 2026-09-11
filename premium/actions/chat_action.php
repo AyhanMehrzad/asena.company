@@ -1,5 +1,7 @@
 <?php
-require '../includes/db.php';
+require __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/AiContentService.php';
+AiContentService::loadEnv();
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
@@ -10,6 +12,11 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $action = $_POST['action'] ?? '';
 
+// AvalAI Multi-Model Configuration (Iranian ultra-low cost AI provider)
+$avalai_api_key = getenv('AVALAI_API_KEY') ?: 'aa-OYnaadEq49DVrgUetouRgFRhmNjSuS7ZknCL5FdEQqHAehsl';
+$avalai_model = getenv('AVALAI_MODEL_CHAT') ?: 'gemini-3.5-flash-lite';
+$avalai_url = 'https://api.avalai.ir/v1/chat/completions';
+
 // GEMINI API Configuration
 $gemini_api_key = getenv('GEMINI_API_KEY') ?: 'YOUR_GEMINI_API_KEY_HERE';
 $gemini_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $gemini_api_key;
@@ -18,6 +25,24 @@ $leo_system_prompt = "نام تو لئو (Leo the Lion) است. تو یک دست
 فقط و فقط درباره حیوانات خانگی، مشکلات جسمی آنها، و محصولات پت‌شاپ صحبت می‌کنی. 
 اگر کاربر سوالی نامربوط به حیوانات پرسید، فقط بگو: 'من لئو هستم و فقط می‌توانم درباره حیوانات خانگی به شما کمک کنم.' 
 توضیحاتت باید کوتاه، دقیق و با لحنی صمیمی اما حرفه‌ای باشد. اگر تصویری ارسال شد، مشکلات جسمی یا بیماری حیوان را تشخیص بده.";
+
+function get_smart_veterinary_fallback($userMessage) {
+    $msg = mb_strtolower((string)$userMessage);
+    if (str_contains($msg, 'واکسن') || str_contains($msg, 'واکسیناسیون')) {
+        return "برنامه واکسیناسیون حیوانات خانگی از حدود ۲ ماهگی با واکسن‌های چندگانه و سپس هاری آغاز می‌شود. برای بررسی دقیق تاریخ واکسیناسیون و پرونده سلامت، می‌توانید از بخش «رزرو نوبت کلینیک» یک زمان معاینه با پزشک هماهنگ کنید.";
+    } elseif (str_contains($msg, 'غذا') || str_contains($msg, 'تغذیه') || str_contains($msg, 'خشک') || str_contains($msg, 'کنسرو')) {
+        return "تغذیه اصولی مستقیماً با شادابی و طول عمر پت شما در ارتباط است. انواع غذاهای خشک تخصصی و مکمل‌های غذایی در بخش پت‌شاپ آسنا موجود است و می‌توانید سفارش خود را ثبت فرمایید.";
+    } elseif (str_contains($msg, 'نوبت') || str_contains($msg, 'ویزیت') || str_contains($msg, 'رزرو') || str_contains($msg, 'دکتر')) {
+        return "جهت رزرو نوبت ویزیت یا مشاوره تخصصی، به صفحه «رزرو نوبت» در منوی اصلی مراجعه نمایید و پزشک، روز و ساعت مورد نظر خود را انتخاب کنید.";
+    } elseif (str_contains($msg, 'انگل') || str_contains($msg, 'قرص') || str_contains($msg, 'کرم') || str_contains($msg, 'ضدانگل')) {
+        return "داروهای ضدانگل برای سگ و گربه معمولاً هر ۳ ماه یک‌بار تکرار می‌شوند. جهت انتخاب دوز مناسب با توجه به وزن دقیق حیوان، پیشنهاد می‌شود با دامپزشک کلینیک مشورت فرمایید.";
+    } elseif (str_contains($msg, 'استفراغ') || str_contains($msg, 'اسهال') || str_contains($msg, 'بی‌حال') || str_contains($msg, 'بیحال') || str_contains($msg, 'خون')) {
+        return "هشدار فوری: علائمی مثل بی‌حالی شدید، استفراغ مکرر یا اسهال ممکن است نیاز به مداخله فوری پزشکی داشته باشد. لطفاً هر چه سریع‌تر به صورت حضوری به کلینیک مراجعه نمایید یا از طریق گفتگوی آنلاین با پزشک پیام بگذارید.";
+    } elseif (str_contains($msg, 'سلام') || str_contains($msg, 'درود') || str_contains($msg, 'صبح') || str_contains($msg, 'عصر')) {
+        return "سلام دوست عزیز! من لئو، دستیار هوشمند دامپزشکی آسنا هستم. خوشحال می‌شوم در زمینه سلامت، نگهداری، تغذیه و راهنمایی خدمات به شما و پت دوست‌داشتنی‌تان کمک کنم.";
+    }
+    return "سلام! من لئو دستیار تخصصی کلینیک آسنا هستم. پیام شما دریافت شد. در صورت نیاز به بررسی تخصصی یا سوالات پزشکی دقیق، می‌توانید از بخش «رزرو نوبت» یک وقت معاینه ثبت کنید یا از طریق پشتیبانی با کارشناسان ما در ارتباط باشید.";
+}
 
 if ($action === 'init') {
     $mode = $_POST['mode'] ?? 'ai'; // 'ai' or 'admin'
@@ -47,8 +72,33 @@ if ($action === 'init') {
 }
 
 if ($action === 'fetch') {
-    $ticket_id = $_POST['ticket_id'] ?? 0;
-    $last_id = $_POST['last_id'] ?? 0;
+    $ticket_id = (int)($_POST['ticket_id'] ?? 0);
+    $last_id = (int)($_POST['last_id'] ?? 0);
+    
+    // IDOR Protection: Verify ticket belongs to user or user is admin
+    $chkStmt = $pdo->prepare("SELECT user_id FROM tickets WHERE id = ?");
+    $chkStmt->execute([$ticket_id]);
+    $ticket_owner = $chkStmt->fetchColumn();
+    
+    if (!$ticket_owner) {
+        echo json_encode(['status' => 'error', 'message' => 'Ticket not found']);
+        exit;
+    }
+    
+    $isAdmin = (isset($_SESSION['role']) && in_array($_SESSION['role'], ['admin', 'superadmin']));
+    if (!$isAdmin) {
+        $uStmt = $pdo->prepare("SELECT role FROM users WHERE id = ?");
+        $uStmt->execute([$user_id]);
+        $uRole = $uStmt->fetchColumn();
+        if (in_array($uRole, ['admin', 'superadmin'])) {
+            $isAdmin = true;
+        }
+    }
+    
+    if ($ticket_owner != $user_id && !$isAdmin) {
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
     
     $stmt = $pdo->prepare("SELECT id, sender_type, message, image_url, created_at FROM ticket_messages WHERE ticket_id = ? AND id > ? ORDER BY id ASC");
     $stmt->execute([$ticket_id, $last_id]);
@@ -150,19 +200,97 @@ if ($action === 'send') {
             ]
         ];
         
-        $ch = curl_init($gemini_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        $response = curl_exec($ch);
-        curl_close($ch);
+        $ai_reply = null;
+
+        // 1. Primary Engine: AvalAI Multi-Model API (Ultra-low cost, fast Persian processing)
+        if (!empty($avalai_api_key)) {
+            $avalaiMessages = [
+                ['role' => 'system', 'content' => $leo_system_prompt]
+            ];
+            foreach ($history as $msg) {
+                if ($msg['sender_type'] === 'user') {
+                    if ($msg['message'] == $message && !empty($base64_image)) {
+                        $avalaiMessages[] = [
+                            'role' => 'user',
+                            'content' => [
+                                ['type' => 'text', 'text' => $msg['message'] ?: 'این تصویر از حیوان خانگی من است:'],
+                                ['type' => 'image_url', 'image_url' => ['url' => "data:{$mime_type};base64,{$base64_image}"]]
+                            ]
+                        ];
+                    } else {
+                        $avalaiMessages[] = ['role' => 'user', 'content' => (string)($msg['message'] ?: '')];
+                    }
+                } else if ($msg['sender_type'] === 'ai') {
+                    $avalaiMessages[] = ['role' => 'assistant', 'content' => (string)($msg['message'] ?: '')];
+                }
+            }
+
+            $ch = curl_init($avalai_url);
+            $avPayload = [
+                'model' => $avalai_model,
+                'messages' => $avalaiMessages,
+                'max_tokens' => 250,
+                'temperature' => 0.4
+            ];
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST           => true,
+                CURLOPT_POSTFIELDS     => json_encode($avPayload),
+                CURLOPT_HTTPHEADER     => [
+                    'Content-Type: application/json',
+                    'Authorization: Bearer ' . $avalai_api_key
+                ],
+                CURLOPT_TIMEOUT        => 20,
+                CURLOPT_SSL_VERIFYPEER => false,
+            ]);
+            $avResp = curl_exec($ch);
+            $avErr = curl_error($ch);
+            curl_close($ch);
+
+            if (!$avErr && $avResp) {
+                $avData = json_decode($avResp, true);
+                if (isset($avData['choices'][0]['message']['content'])) {
+                    $content = trim($avData['choices'][0]['message']['content']);
+                    if (!empty($content)) {
+                        $ai_reply = $content;
+                    }
+                }
+            }
+        }
+
+        // 2. Secondary Engine: Gemini API
+        if (empty($ai_reply) && !empty($gemini_api_key) && $gemini_api_key !== 'YOUR_GEMINI_API_KEY_HERE') {
+            $ch = curl_init($gemini_url);
+            $curlOptions = [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST           => true,
+                CURLOPT_POSTFIELDS     => json_encode($payload),
+                CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+                CURLOPT_TIMEOUT        => 12,
+                CURLOPT_SSL_VERIFYPEER => false,
+            ];
+            
+            $proxy = getenv('GEMINI_PROXY') ?: getenv('HTTPS_PROXY');
+            if (!empty($proxy)) {
+                $curlOptions[CURLOPT_PROXY] = $proxy;
+            }
+            
+            curl_setopt_array($ch, $curlOptions);
+            $response = curl_exec($ch);
+            $curlError = curl_error($ch);
+            curl_close($ch);
+            
+            if (!$curlError && $response) {
+                $responseData = json_decode($response, true);
+                if (isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
+                    $ai_reply = trim($responseData['candidates'][0]['content']['parts'][0]['text']);
+                }
+            }
+        }
         
-        $responseData = json_decode($response, true);
-        $ai_reply = "خطا در برقراری ارتباط با مغز لئو.";
-        
-        if (isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
-            $ai_reply = trim($responseData['candidates'][0]['content']['parts'][0]['text']);
+        // Smart veterinary triage fallback if AI response was not obtained
+        if (empty($ai_reply)) {
+            $ai_reply = get_smart_veterinary_fallback($message);
         }
         
         $stmt = $pdo->prepare("INSERT INTO ticket_messages (ticket_id, sender_type, message) VALUES (?, 'ai', ?)");
