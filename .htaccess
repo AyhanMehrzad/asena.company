@@ -7,7 +7,17 @@ RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
 # 2. Dynamic Sitemap rewrite
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
 
-# 3. Remove .php extension from URLs
+# 3. Torob & Emalls Product Discovery Feed
+RewriteRule ^torob\.json$ api/torob_feed.php [L]
+RewriteRule ^torob$ api/torob_feed.php [L]
+
+# 4. Clean SEF URLs for Products, Doctors, Articles, Clinics
+RewriteRule ^product/([0-9]+)(/.*)?$ product_details.php?id=$1 [QSA,L]
+RewriteRule ^doctor/([0-9]+)(/.*)?$ doctor_profile.php?id=$1 [QSA,L]
+RewriteRule ^article/([a-zA-Z0-9_-]+)$ knowledge_base.php?article=$1 [QSA,L]
+RewriteRule ^clinic/([a-zA-Z0-9_-]+)$ organization_profile.php?slug=$1 [QSA,L]
+
+# 5. Remove .php extension from URLs
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME}.php -f
@@ -53,10 +63,26 @@ Options -Indexes
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "SAMEORIGIN"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Permissions-Policy "geolocation=(self), camera=(), microphone=()"
 </IfModule>
 
-# 8. Block access to sensitive configuration, database and log files
-<FilesMatch "\.(env|env\.example|sql|log|md|git|gitignore)$">
+# 8. PWA Service Worker Header Rules
+<Files "sw.js">
+    <IfModule mod_headers.c>
+        Header set Service-Worker-Allowed "/"
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+    </IfModule>
+</Files>
+
+# 9. Block access to sensitive configuration, database, container and credential files
+<FilesMatch "(^\..*|\.(env|env\.example|sql|log|md|git|gitignore|yml|yaml|dockerignore)|accounts_credentials.*|credentials.*)$">
     Require all denied
 </FilesMatch>
 
+# 10. Custom Branded Error Documents
+ErrorDocument 403 /403.php
+ErrorDocument 404 /404.php
+ErrorDocument 500 /500.php
+ErrorDocument 502 /502.php
+ErrorDocument 503 /503.php
+ErrorDocument 504 /504.php
