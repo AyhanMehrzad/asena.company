@@ -1,7 +1,36 @@
 <?php
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'asencomp_asena_db');
-define('DB_USER', 'asencomp_admin');
-define('DB_PASS', 'X3~YN,HY9M:j%jx');
-define('SITE_URL', '');
+/**
+ * ASENA Enterprise - Master Configuration
+ * Auto-detects Localhost (XAMPP) vs Production Hosting (cPanel)
+ */
+
+$is_local = false;
+if (isset($_SERVER['HTTP_HOST'])) {
+    $host = $_SERVER['HTTP_HOST'];
+    if (strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false) {
+        $is_local = true;
+    }
+} elseif (php_sapi_name() === 'cli') {
+    if (file_exists('/opt/lampp') && !file_exists('/home/asencomp')) {
+        $is_local = true;
+    }
+}
+
+if ($is_local) {
+    // Local Development (XAMPP)
+    if (!defined('DB_HOST')) define('DB_HOST', 'localhost');
+    if (!defined('DB_NAME')) define('DB_NAME', 'asena_premium');
+    if (!defined('DB_USER')) define('DB_USER', 'root');
+    if (!defined('DB_PASS')) define('DB_PASS', '');
+} else {
+    // Production Hosting (cPanel)
+    if (!defined('DB_HOST')) define('DB_HOST', 'localhost');
+    if (!defined('DB_NAME')) define('DB_NAME', 'asencomp_asena_db');
+    if (!defined('DB_USER')) define('DB_USER', 'asencomp_admin');
+    if (!defined('DB_PASS')) define('DB_PASS', 'X3~YN,HY9M:j%jx');
+}
+
+if (!defined('SITE_URL')) {
+    define('SITE_URL', '');
+}
 ?>
