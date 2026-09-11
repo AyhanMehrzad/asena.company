@@ -15,6 +15,7 @@
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="google-site-verification" content="LBsu_9wpFihCnRoY9_g6YwFJJ_bvUDZAZ6lAMMRn-8k">
     <meta name="google-site-verification" content="google82c161050c864f06">
+    <meta name="enamad" content="5271122" />
     <link rel="canonical" href="https://asena.company/">
     <link rel="alternate" hreflang="fa-IR" href="https://asena.company/">
     <link rel="alternate" hreflang="en" href="https://asena.company/">
