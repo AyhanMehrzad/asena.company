@@ -167,10 +167,19 @@ $effective_geo_icbm = $geo_icbm ?? '35.7350, 51.4110';
     <link rel="apple-touch-icon" sizes="180x180" href="assets/images/logo.png?v=logo1">
     <link rel="manifest" href="site.webmanifest">
     <meta name="theme-color" content="#002d72">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="ASENA">
     <meta name="application-name" content="ASENA Company">
+
+    <!-- PWA Standalone Mode Detection -> Launch PWA App Starter Shell -->
+    <script>
+    if ((window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true || document.referrer.includes('android-app://')) && !sessionStorage.getItem('asena_view_desktop_portal')) {
+        const p = window.location.pathname;
+        if (p.endsWith('/') || p.endsWith('/index.php')) {
+            window.location.replace('pwa.php');
+        }
+    }
+    </script>
 
     <!-- Preload Critical Font for Core Web Vitals (LCP) -->
     <link rel="preload" href="assets/fonts/Dxxo8j6PP2D_kU2muijlGMWWMmk.woff2" as="font" type="font/woff2" crossorigin>
