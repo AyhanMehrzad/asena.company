@@ -1,12 +1,12 @@
 {
-  "name": "ASENA | آسنا",
+  "name": "آسنا • همراه مهربان پت 🐾",
   "short_name": "ASENA",
   "description": "پلتفرم تخصصی و مهربان مراقبت، درمان و ملزومات حیوانات خانگی آسنا",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#001538",
-  "theme_color": "#001538",
+  "background_color": "#ffffff",
+  "theme_color": "#002d72",
   "lang": "fa-IR",
   "dir": "rtl",
   "icons": [
@@ -17,7 +17,7 @@
       "purpose": "maskable"
     },
     {
-      "src": "/assets/images/asena-icon-v4-192.png",
+      "src": "/assets/images/cute-splash-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
@@ -29,7 +29,7 @@
       "purpose": "maskable"
     },
     {
-      "src": "/assets/images/asena-icon-v4-512.png",
+      "src": "/assets/images/cute-splash-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"

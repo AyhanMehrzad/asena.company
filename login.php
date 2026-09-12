@@ -26,8 +26,8 @@ $apple_oauth_url = "https://appleid.apple.com/auth/authorize?" . http_build_quer
     'scope' => 'name email',
     'response_mode' => 'form_post'
 ]);
-$error = '';
-$success = '';
+$error = $_GET['error'] ?? '';
+$success = $_GET['success'] ?? '';
 
 if (isset($_GET['cancel_signup'])) {
     unset($_SESSION['signup_data']);
@@ -228,6 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <link href="assets/css/geist.css" rel="stylesheet"/>
 <script src="assets/js/tailwind-config.js"></script>
 <link rel="stylesheet" href="assets/css/login.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body class="bg-surface-container-lowest overflow-hidden">
 <main class="min-h-screen w-full flex flex-row items-stretch">
@@ -502,7 +503,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!-- Social Logins -->
 <div class="grid grid-cols-2 gap-4">
-<a href="<?php echo htmlspecialchars($google_oauth_url); ?>" class="flex items-center justify-center gap-3 h-12 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-all font-bold text-sm text-on-surface cursor-pointer">
+<a href="<?php echo htmlspecialchars($google_oauth_url); ?>" id="google-login-btn" class="flex items-center justify-center gap-3 h-12 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-all font-bold text-sm text-on-surface cursor-pointer">
 <svg class="w-5 h-5" viewbox="0 0 24 24">
 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
@@ -578,6 +579,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             lblUser.classList.remove('text-on-surface-variant');
         }
     }
+
+    // Google Identity Services (GSI) Integration
+    window.addEventListener('load', function() {
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+            google.accounts.id.initialize({
+                client_id: '<?php echo GOOGLE_CLIENT_ID; ?>',
+                callback: function(response) {
+                    if (response && response.credential) {
+                        var form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = 'actions/oauth_callback.php';
+                        var input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'credential';
+                        input.value = response.credential;
+                        form.appendChild(input);
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                },
+                auto_select: false,
+                cancel_on_tap_outside: true
+            });
+
+            var gBtn = document.getElementById('google-login-btn');
+            if (gBtn) {
+                gBtn.addEventListener('click', function(e) {
+                    try {
+                        google.accounts.id.prompt(function(notification) {
+                            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                                window.location.href = '<?php echo $google_oauth_url; ?>';
+                            }
+                        });
+                    } catch(err) {
+                        window.location.href = '<?php echo $google_oauth_url; ?>';
+                    }
+                });
+            }
+        }
+    });
 </script>
 </body>
 </html>
