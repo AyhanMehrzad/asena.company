@@ -1,11 +1,11 @@
 {
-  "name": "ASENA Company - Veterinary Clinic & Pet Care Platform",
+  "name": "آسنا | ASENA",
   "short_name": "ASENA",
   "description": "پلتفرم یکپارچه کلینیک دامپزشکی، پت‌شاپ و داروخانه تخصصی آنلاین آسنا",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f8fafc",
+  "background_color": "#ffffff",
   "theme_color": "#002d72",
   "lang": "fa-IR",
   "dir": "rtl",
@@ -21,16 +21,28 @@
       "type": "image/png"
     },
     {
-      "src": "/assets/images/favicon-192x192.png",
+      "src": "/assets/images/pwa-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/assets/images/favicon-512x512.png",
+      "src": "/assets/images/pwa-icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/images/pwa-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/images/pwa-icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/apple-touch-icon.png",
