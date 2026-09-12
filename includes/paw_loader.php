@@ -1,106 +1,234 @@
 <?php
 /**
- * ASENA Signature Multi-Animal Liquid Paw Loader
- * Server-rendered instant splash with animated liquid fill
+ * ASENA Signature Cute PWA Starter & Splash Suite
+ * High-performance, self-contained, adorable splash screen for PWA app launches
  */
-
-$animalModels = [
-    [
-        'id' => 'cat',
-        'name' => 'گربه ملوس',
-        'emoji' => '🐱',
-        'viewBox' => '0 0 100 100',
-        'path' => '
-            <path d="M 50,50 C 33,50 23,61 25,75 C 27,86 37,90 50,87 C 63,90 73,86 75,75 C 77,61 67,50 50,50 Z" />
-            <ellipse cx="25" cy="40" rx="8" ry="12" transform="rotate(-22 25 40)" />
-            <ellipse cx="42" cy="27" rx="8.5" ry="13" transform="rotate(-7 42 27)" />
-            <ellipse cx="58" cy="27" rx="8.5" ry="13" transform="rotate(7 58 27)" />
-            <ellipse cx="75" cy="40" rx="8" ry="12" transform="rotate(22 75 40)" />
-        '
-    ],
-    [
-        'id' => 'dog',
-        'name' => 'سگ باوفا',
-        'emoji' => '🐶',
-        'viewBox' => '0 0 100 100',
-        'path' => '
-            <path d="M 50,52 C 35,52 20,63 24,79 C 28,91 40,93 50,87 C 60,93 72,91 76,79 C 80,63 65,52 50,52 Z" />
-            <ellipse cx="24" cy="42" rx="9" ry="14" transform="rotate(-25 24 42)" />
-            <ellipse cx="42" cy="27" rx="9.5" ry="14.5" transform="rotate(-8 42 27)" />
-            <ellipse cx="58" cy="27" rx="9.5" ry="14.5" transform="rotate(8 58 27)" />
-            <ellipse cx="76" cy="42" rx="9" ry="14" transform="rotate(25 76 42)" />
-            <path d="M 21,27 Q 23,21 25,27" stroke-width="2" stroke-linecap="round" />
-            <path d="M 40,11 Q 42,5 44,11" stroke-width="2" stroke-linecap="round" />
-            <path d="M 56,11 Q 58,5 60,11" stroke-width="2" stroke-linecap="round" />
-            <path d="M 75,27 Q 77,21 79,27" stroke-width="2" stroke-linecap="round" />
-        '
-    ],
-    [
-        'id' => 'chick',
-        'name' => 'پرندگان و طوطی‌سانان',
-        'emoji' => '🐥',
-        'viewBox' => '0 0 100 100',
-        'path' => '
-            <path d="M 47,56 C 47,42 46,26 47,15 C 48,11 52,11 53,15 C 54,26 53,42 53,56 C 60,50 70,42 79,33 C 83,29 86,34 83,37 C 74,46 64,54 56,61 C 56,68 55,77 53,86 C 51,91 49,91 47,86 C 45,77 44,68 44,61 C 36,54 26,46 17,37 C 14,34 17,29 21,33 C 30,42 40,50 47,56 Z" />
-            <circle cx="50" cy="58" r="6.5" />
-            <circle cx="50" cy="14" r="5" />
-            <circle cx="81" cy="35" r="4.5" />
-            <circle cx="19" cy="35" r="4.5" />
-            <circle cx="50" cy="88" r="4" />
-            <path d="M 50,11 L 50,5" stroke-width="2.5" stroke-linecap="round" />
-            <path d="M 82,34 L 89,28" stroke-width="2.5" stroke-linecap="round" />
-            <path d="M 18,34 L 11,28" stroke-width="2.5" stroke-linecap="round" />
-        '
-    ],
-    [
-        'id' => 'cow',
-        'name' => 'دام و حیوانات بزرگ',
-        'emoji' => '🐮',
-        'viewBox' => '0 0 100 100',
-        'path' => '
-            <path d="M 46,14 C 41,13 32,20 23,34 C 14,48 13,66 18,78 C 22,87 34,89 43,84 C 46,82 46,76 46,68 C 45,50 45,32 46,14 Z" />
-            <path d="M 54,14 C 59,13 68,20 77,34 C 86,48 87,66 82,78 C 78,87 66,89 57,84 C 54,82 54,76 54,68 C 55,50 55,32 54,14 Z" />
-            <ellipse cx="27" cy="92" rx="6" ry="4" transform="rotate(-15 27 92)" />
-            <ellipse cx="73" cy="92" rx="6" ry="4" transform="rotate(15 73 92)" />
-        '
-    ]
-];
-
-$chosenAnimal = $animalModels[array_rand($animalModels)];
-$gradId = 'serverPawGrad_' . bin2hex(random_bytes(4));
-$loaderTitle = 'سامانه مراکز و بیمارستان‌های دامپزشکی آسنا';
 ?>
-<!-- Top Turbo Progress Bar -->
-<div id="asena-top-bar"></div>
+<div id="asena-pwa-splash" aria-hidden="true">
+    <style>
+        #asena-pwa-splash {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999999;
+            background: radial-gradient(circle at 50% 35%, #ffffff 0%, #f0f7ff 55%, #e1effe 100%);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-<!-- Signature Liquid Paw Loader Splash -->
-<div id="asena-paw-loader" role="dialog" aria-label="در حال بارگذاری آسنا">
-    <div class="paw-loader-card">
-        <div class="paw-svg-container" style="box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.25);">
-            <svg viewBox="<?= $chosenAnimal['viewBox'] ?>" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="<?= $gradId ?>" x1="0%" y1="100%" x2="0%" y2="0%">
-                        <stop offset="0%" stop-color="#0284c7" />
-                        <stop offset="100%" stop-color="#38bdf8" />
-                    </linearGradient>
-                </defs>
-                <g class="paw-bg-path">
-                    <?= $chosenAnimal['path'] ?>
-                </g>
-                <g class="paw-fill-path" fill="url(#<?= $gradId ?>)" stroke="#0284c7" stroke-width="0.8">
-                    <?= $chosenAnimal['path'] ?>
-                </g>
-            </svg>
+        #asena-pwa-splash.splash-active {
+            display: flex;
+        }
+
+        #asena-pwa-splash.splash-dismissed {
+            opacity: 0 !important;
+            transform: scale(1.04) !important;
+            pointer-events: none !important;
+        }
+
+        .cute-splash-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 32px 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cute-paw-badge-wrap {
+            position: relative;
+            width: 148px;
+            height: 148px;
+            margin-bottom: 24px;
+            animation: cutePawFloat 2.8s ease-in-out infinite;
+        }
+
+        .cute-paw-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 36px;
+            box-shadow: 0 20px 40px -10px rgba(0, 45, 114, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+            filter: drop-shadow(0 8px 16px rgba(56, 189, 248, 0.25));
+            animation: cutePawBounce 1.4s ease-in-out infinite alternate;
+        }
+
+        /* Floating cute sparkles and hearts */
+        .cute-floating-particle {
+            position: absolute;
+            pointer-events: none;
+            animation: floatParticle 3s ease-in-out infinite;
+            opacity: 0.85;
+            font-size: 20px;
+        }
+
+        .p-1 { top: -10px; right: -12px; animation-delay: 0s; }
+        .p-2 { bottom: 15px; left: -18px; animation-delay: 1.2s; font-size: 22px; }
+        .p-3 { top: 20px; left: -14px; animation-delay: 0.6s; font-size: 16px; }
+        .p-4 { bottom: -6px; right: -8px; animation-delay: 1.8s; font-size: 18px; }
+
+        .cute-splash-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: #002d72;
+            margin: 0 0 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .cute-splash-title span.paw-emoji {
+            display: inline-block;
+            animation: cuteWobble 2s ease-in-out infinite;
+            transform-origin: 70% 70%;
+        }
+
+        .cute-splash-sub {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0369a1;
+            margin: 0 0 28px 0;
+            opacity: 0.92;
+        }
+
+        /* Cute Candy Pill Progress Bar */
+        .cute-progress-container {
+            width: 170px;
+            height: 10px;
+            background: rgba(2, 132, 199, 0.12);
+            border-radius: 999px;
+            padding: 2px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .cute-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #38bdf8, #0284c7, #f472b6);
+            border-radius: 999px;
+            transition: width 1.1s cubic-bezier(0.1, 0.85, 0.25, 1);
+        }
+
+        .cute-bottom-badge {
+            position: absolute;
+            bottom: 28px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #64748b;
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        @keyframes cutePawFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes cutePawBounce {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.035); }
+        }
+
+        @keyframes cuteWobble {
+            0%, 100% { transform: rotate(0deg); }
+            20% { transform: rotate(-12deg); }
+            40% { transform: rotate(12deg); }
+            60% { transform: rotate(-6deg); }
+            80% { transform: rotate(6deg); }
+        }
+
+        @keyframes floatParticle {
+            0%, 100% { transform: translateY(0) scale(0.9); opacity: 0.6; }
+            50% { transform: translateY(-10px) scale(1.15); opacity: 1; }
+        }
+    </style>
+
+    <div class="cute-splash-card">
+        <div class="cute-paw-badge-wrap">
+            <span class="cute-floating-particle p-1">✨</span>
+            <span class="cute-floating-particle p-2">💖</span>
+            <span class="cute-floating-particle p-3">🐾</span>
+            <span class="cute-floating-particle p-4">🌸</span>
+            <img src="assets/images/pwa-icon-512.png?v=cute2" alt="ASENA Cute Paw" class="cute-paw-img" width="148" height="148">
         </div>
-        <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
-            <div class="paw-loader-title">
-                <span style="font-size: 19px;"><?= $chosenAnimal['emoji'] ?></span>
-                <span><?= $loaderTitle ?></span>
-            </div>
-            <div class="paw-loader-sub">ردپای <?= $chosenAnimal['name'] ?> • بارگذاری هوشمند سامانه...</div>
-            <div class="paw-progress-pill">
-                <div class="paw-progress-bar" style="background: linear-gradient(to left, #0284c7, #38bdf8);"></div>
-            </div>
+
+        <h1 class="cute-splash-title">
+            <span>آسنا</span>
+            <span class="paw-emoji">🐾</span>
+        </h1>
+        <p class="cute-splash-sub">همراه مهربان و دوست‌داشتنی پت شما</p>
+
+        <div class="cute-progress-container">
+            <div class="cute-progress-bar" id="cuteProgressBar"></div>
         </div>
     </div>
+
+    <div class="cute-bottom-badge">
+        <span>ASENA Pet Care Platform</span>
+        <span>•</span>
+        <span>نسخه هوشمند</span>
+    </div>
 </div>
+
+<script>
+(function() {
+    // Detect PWA launch, standalone mode, or debug flag ?pwa=1
+    const isPwaLaunch = window.matchMedia('(display-mode: standalone)').matches || 
+                        window.navigator.standalone === true || 
+                        window.location.search.includes('pwa=1') ||
+                        document.referrer.includes('android-app://');
+
+    const splash = document.getElementById('asena-pwa-splash');
+    if (!splash) return;
+
+    // Check if splash was already shown in this tab session
+    const seen = sessionStorage.getItem('asena_pwa_splash_seen');
+
+    if (!isPwaLaunch || seen) {
+        // Instant bypass: Zero delay, zero visual footprint for normal browsing
+        splash.style.display = 'none';
+        return;
+    }
+
+    // Activate cute splash for PWA opening
+    splash.classList.add('splash-active');
+    sessionStorage.setItem('asena_pwa_splash_seen', '1');
+
+    // Animate progress pill smoothly
+    requestAnimationFrame(() => {
+        const bar = document.getElementById('cuteProgressBar');
+        if (bar) {
+            setTimeout(() => { bar.style.width = '100%'; }, 50);
+        }
+    });
+
+    // Gracefully dismiss after 1.2s
+    function dismissCuteSplash() {
+        if (!splash || splash.classList.contains('splash-dismissed')) return;
+        splash.classList.add('splash-dismissed');
+        setTimeout(() => {
+            try { splash.remove(); } catch(e) {}
+        }, 520);
+    }
+
+    if (document.readyState === 'complete') {
+        setTimeout(dismissCuteSplash, 1250);
+    } else {
+        window.addEventListener('load', () => setTimeout(dismissCuteSplash, 1100));
+        setTimeout(dismissCuteSplash, 1800); // Fail-safe timer
+    }
+})();
+</script>
