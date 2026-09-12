@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پیش‌نمایش زنده اسپلش و صفحه لاگین آسنا</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="assets/css/geist.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif; background: #0f172a; }
+        .phone-mockup {
+            width: 380px;
+            height: 760px;
+            border-radius: 48px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 12px #1e293b, 0 0 0 14px #334155;
+            overflow: hidden;
+            position: relative;
+            background: #ffffff;
+        }
+        .phone-notch {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 24px;
+            background: #1e293b;
+            border-radius: 999px;
+            z-index: 50;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-100 flex flex-col items-center justify-center p-6">
+    <div class="max-w-4xl w-full text-center mb-8">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/20 text-blue-400 text-xs font-bold mb-3">
+            <span>✨ پیش‌نمایش اختصاصی پلتفرم آسنا</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-white mb-2">
+            اسپلش نیتیو و صفحه لاگین ASENA
+        </h1>
+        <p class="text-sm text-slate-400 max-w-lg mx-auto">
+            اسپلش نیتیو ارتقایافته با بج سه‌بعدی مخملی و صفحه لاگین با اسکرول نامحدود و ورود با گوگل.
+        </p>
+    </div>
+
+    <!-- Phone Mockup Container -->
+    <div class="flex flex-col md:flex-row items-center justify-center gap-10">
+        <!-- Native Splash Mockup -->
+        <div class="flex flex-col items-center">
+            <span class="text-xs font-bold text-slate-400 mb-3 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                اسپلش نیتیو اپلیکیشن (هنگام باز شدن PWA)
+            </span>
+            <div class="phone-mockup flex flex-col items-center justify-center bg-white relative">
+                <div class="phone-notch"></div>
+                <!-- Status Bar -->
+                <div class="absolute top-3 inset-x-6 flex items-center justify-between text-[11px] font-bold text-slate-800 z-40">
+                    <span>12:35</span>
+                    <div class="flex items-center gap-1.5 text-xs">
+                        <span>5G</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+
+                <!-- Centered 3D Cute Badge -->
+                <div class="flex flex-col items-center justify-center">
+                    <img src="assets/images/cute-splash-icon-512.png" alt="ASENA 3D Cute Paw Badge" class="w-48 h-48 object-contain drop-shadow-xl hover:scale-105 transition-transform">
+                </div>
+
+                <div class="absolute bottom-6 text-center text-xs font-bold text-slate-400">
+                    ASENA • پلتفرم سلامت و رفاه پت
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links & Actions -->
+        <div class="flex flex-col gap-4 max-w-sm w-full">
+            <div class="bg-slate-800/80 border border-slate-700/60 p-6 rounded-3xl backdrop-blur-xl">
+                <h3 class="text-lg font-bold text-white mb-2">صفحات ایجاد و اصلاح‌شده</h3>
+                <p class="text-xs text-slate-400 leading-relaxed mb-5">
+                    شما می‌توانید هر کدام از صفحات را به صورت زنده و مستقیم باز کنید و تست فرمایید:
+                </p>
+
+                <div class="space-y-3">
+                    <a href="login.php" target="_blank" class="flex items-center justify-between p-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-blue-600/20">
+                        <div class="flex items-center gap-2.5">
+                            <span>🔐</span>
+                            <span>صفحه ورود و لاگین (با دکمه گوگل)</span>
+                        </div>
+                        <span>←</span>
+                    </a>
+
+                    <a href="index.php" target="_blank" class="flex items-center justify-between p-3.5 bg-slate-700 hover:bg-slate-600 text-white rounded-2xl font-bold text-sm transition-all">
+                        <div class="flex items-center gap-2.5">
+                            <span>🏠</span>
+                            <span>صفحه اصلی وب‌سایت (Index)</span>
+                        </div>
+                        <span>←</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/50 border border-slate-700/40 p-5 rounded-2xl text-xs text-slate-400 leading-relaxed">
+                <div class="font-bold text-slate-200 mb-1">💡 وضعیت اسپلش‌ها:</div>
+                ۱. اسپلش داخلی وب‌اپلیکیشن حذف شده و سایت در مرورگر مستقیماً باز می‌شود.<br>
+                ۲. در نسخه PWA فقط همین تک اسپلش نیتیو سه‌بعدی نمایش داده می‌شود.
+            </div>
+        </div>
+    </div>
+</body>
+</html>
