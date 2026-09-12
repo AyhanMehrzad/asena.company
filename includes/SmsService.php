@@ -40,11 +40,11 @@ class SmsService {
         $dbFrom     = ($pdo instanceof PDO) ? get_setting($pdo, 'melipayamak_from', '') : '';
         $dbSandbox  = ($pdo instanceof PDO) ? get_setting($pdo, 'melipayamak_sandbox', null) : null;
 
-        $this->apiKey   = !empty($dbApiKey) ? $dbApiKey : (getenv('MELIPAYAMAK_API_KEY') ?: '');
-        $rawUsername    = !empty($dbUsername) ? $dbUsername : (getenv('MELIPAYAMAK_USERNAME') ?: '');
-        $this->username = self::normalizePhone($rawUsername) ?: '';
-        $this->password = !empty($dbPassword) ? $dbPassword : (getenv('MELIPAYAMAK_PASSWORD') ?: '');
-        $this->from     = !empty($dbFrom) ? $dbFrom : (getenv('MELIPAYAMAK_FROM') ?: '');
+        $this->apiKey   = !empty($dbApiKey) ? $dbApiKey : (getenv('MELIPAYAMAK_API_KEY') ?: 'd3cbc1e6-79e8-4a25-910e-35e86370cad0');
+        $rawUsername    = !empty($dbUsername) ? $dbUsername : (getenv('MELIPAYAMAK_USERNAME') ?: '09146676978');
+        $this->username = self::normalizePhone($rawUsername) ?: '09146676978';
+        $this->password = !empty($dbPassword) ? $dbPassword : (getenv('MELIPAYAMAK_PASSWORD') ?: 'd3cbc1e6-79e8-4a25-910e-35e86370cad0');
+        $this->from     = !empty($dbFrom) ? $dbFrom : (getenv('MELIPAYAMAK_FROM') ?: '2170007653');
 
         // Safe Sandbox Detection:
         $isExplicitSandbox = ($dbSandbox !== null) ? ($dbSandbox === '1') : (getenv('MELIPAYAMAK_SANDBOX') === 'true');
