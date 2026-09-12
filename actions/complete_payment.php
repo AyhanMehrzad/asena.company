@@ -298,6 +298,25 @@ try {
                 $orderTotalAmount = $total_amount ?? ($pending['final_amount'] ?? ($pending['amount'] ?? 0));
                 $sms->sendAdminNewOrderAlert($adminPhones, $order_id, $orderTotalAmount);
             }
+
+            // Notify Marketplace Seller(s) with items in this order (Pattern 535286 / Direct SMS)
+            if (!empty($order_id)) {
+                try {
+                    $sellerStmt = $pdo->prepare("
+                        SELECT DISTINCT u.phone, u.name 
+                        FROM order_items oi
+                        JOIN users u ON oi.seller_id = u.id
+                        WHERE oi.order_id = ? AND u.phone IS NOT NULL AND u.phone != ''
+                    ");
+                    $sellerStmt->execute([$order_id]);
+                    $sellers = $sellerStmt->fetchAll(PDO::FETCH_ASSOC);
+                    foreach ($sellers as $sRow) {
+                        $sms->sendSellerNewOrderAlert($sRow['phone'], $order_id);
+                    }
+                } catch (Throwable $sEx) {
+                    error_log("Seller new order SMS alert error: " . $sEx->getMessage());
+                }
+            }
         }
     }
 

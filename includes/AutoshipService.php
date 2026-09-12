@@ -238,4 +238,67 @@ class AutoshipService
         $stmt->execute([$targetDate]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Scan and dispatch proactive SMS reminders to subscribers whose autoship is ending or renewing in N days.
+     * Guaranteed to use Pattern 535285 with dedicated line fallback.
+     */
+    public function processEndingReminders(int $daysAhead = 3): int
+    {
+        require_once __DIR__ . '/SmsService.php';
+        $sms = new SmsService();
+        $targetDate = date('Y-m-d', strtotime("+{$daysAhead} days"));
+        $dispatched = 0;
+
+        // 1. Check user_subscriptions (Chewy-style)
+        try {
+            $stmt = $this->pdo->prepare("
+                SELECT s.id, s.plan_name, s.next_delivery_date, u.phone as user_phone, u.name as user_name
+                FROM user_subscriptions s
+                JOIN users u ON s.user_id = u.id
+                WHERE s.status = 'active' AND s.next_delivery_date = ?
+            ");
+            $stmt->execute([$targetDate]);
+            $subs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($subs as $sub) {
+                if (!empty($sub['user_phone'])) {
+                    $plan = $sub['plan_name'] ?: 'محصول سفارش ادواری';
+                    $dateStr = $sub['next_delivery_date'] ?: $targetDate;
+                    if ($sms->sendAutoshipEndingReminder($sub['user_phone'], $plan, $dateStr)) {
+                        $dispatched++;
+                    }
+                }
+            }
+        } catch (Throwable $e) {
+            error_log("processEndingReminders (user_subscriptions) warning: " . $e->getMessage());
+        }
+
+        // 2. Also check legacy/standard subscriptions table if present
+        try {
+            $stmt2 = $this->pdo->prepare("
+                SELECT s.id, p.name as product_name, s.next_delivery_date, u.phone as user_phone, u.name as user_name
+                FROM subscriptions s
+                JOIN products p ON s.product_id = p.id
+                JOIN users u ON s.user_id = u.id
+                WHERE s.status = 'active' AND s.next_delivery_date = ?
+            ");
+            $stmt2->execute([$targetDate]);
+            $subs2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($subs2 as $sub2) {
+                if (!empty($sub2['user_phone'])) {
+                    $prod = $sub2['product_name'] ?: 'محصولات دوره ای پت';
+                    $dateStr = $sub2['next_delivery_date'] ?: $targetDate;
+                    if ($sms->sendAutoshipEndingReminder($sub2['user_phone'], $prod, $dateStr)) {
+                        $dispatched++;
+                    }
+                }
+            }
+        } catch (Throwable $e) {
+            // Table might not exist or already merged
+        }
+
+        return $dispatched;
+    }
 }

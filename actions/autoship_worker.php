@@ -95,27 +95,57 @@ try {
 
         $processed_count++;
         
+        // Send SMS confirmation to subscriber
+        if (!empty($sub['phone'])) {
+            try {
+                require_once __DIR__ . '/../includes/SmsService.php';
+                $sms = new SmsService();
+                $smsText = "کاربر گرامی، سفارش دوره‌ای اتوشیپ شما (#PC-{$order_id}) برای محصول {$sub['product_name']} صادر گردید و در حال آماده‌سازی است.\nasena.company";
+                $sms->sendDirectSms($sub['phone'], $smsText, 'AUTOSHIP_RENEWAL');
+            } catch (Throwable $smsEx) {
+                error_log("Autoship renewal SMS error: " . $smsEx->getMessage());
+            }
+        }
+
         $report_lines[] = "📦 <b>Order #{$order_id}</b>\nUser: {$sub['user_name']} ({$sub['phone']})\nProduct: {$sub['product_name']}";
     }
 
     $pdo->commit();
 
+    // 4. Proactive 3-Day Expiry / Renewal Scan (Sends Pattern 535285 / Direct SMS)
+    $remindersSent = 0;
+    try {
+        require_once __DIR__ . '/../includes/App.php';
+        App::boot();
+        $autoshipService = App::autoship();
+        $remindersSent = $autoshipService->processEndingReminders(3);
+    } catch (Throwable $remEx) {
+        error_log("Autoship ending reminder error: " . $remEx->getMessage());
+    }
+
     // Mark as run for today regardless of whether there were subscriptions or not,
     // so we don't keep hitting the DB on every page load.
     file_put_contents($lock_file, $today);
 
-    // 4. Send Telegram Notification if any orders were processed
-    if ($processed_count > 0) {
+    // 5. Send Telegram Notification if any orders or reminders were processed
+    if ($processed_count > 0 || $remindersSent > 0) {
         $message = "🚨 <b>ASENA Autoship Report (Web Worker)</b> 🚨\n";
         $message .= "Date: " . date('Y-m-d') . "\n";
-        $message .= "Total Processed: {$processed_count} subscriptions\n\n";
-        $message .= implode("\n\n", $report_lines);
+        $message .= "Orders Processed: {$processed_count}\n";
+        $message .= "3-Day Reminders Sent: {$remindersSent}\n\n";
+        if (!empty($report_lines)) {
+            $message .= implode("\n\n", $report_lines);
+        }
         
         sendTelegramMessage($message);
     }
 
     header('Content-Type: application/json');
-    echo json_encode(['status' => 'success', 'processed' => $processed_count]);
+    echo json_encode([
+        'status' => 'success', 
+        'processed' => $processed_count,
+        'reminders_sent' => $remindersSent
+    ]);
 
 } catch (Exception $e) {
     if ($pdo->inTransaction()) {

@@ -434,6 +434,20 @@ class PostexShippingService
                     'order_id' => $order['id']
                 ]);
 
+                // Send delivery confirmation SMS to buyer
+                try {
+                    $uStmt = $this->db->prepare("SELECT phone FROM users WHERE id = ?");
+                    $uStmt->execute([$order['user_id']]);
+                    $uPhone = $uStmt->fetchColumn();
+                    if (!empty($uPhone)) {
+                        require_once __DIR__ . '/SmsService.php';
+                        $sms = new SmsService();
+                        $sms->sendDeliveryCompletedNotice($uPhone, $order['id']);
+                    }
+                } catch (Throwable $smsEx) {
+                    error_log("Postex delivery SMS error: " . $smsEx->getMessage());
+                }
+
                 $deliveredCount++;
                 $updatedOrders[] = [
                     'order_id' => $order['id'],

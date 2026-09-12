@@ -392,6 +392,26 @@ if ($action === 'org_send') {
     $stmt = $pdo->prepare("INSERT INTO ticket_messages (ticket_id, sender_type, message, created_at) VALUES (?, 'admin', ?, NOW())");
     if ($stmt->execute([$ticket_id, $message])) {
         $pdo->prepare("UPDATE tickets SET updated_at = NOW() WHERE id = ?")->execute([$ticket_id]);
+        
+        // Dispatch SMS alert to ticket owner (Pattern 527643 / Direct SMS)
+        try {
+            $ownerStmt = $pdo->prepare("
+                SELECT u.phone, u.name, t.subject 
+                FROM tickets t 
+                JOIN users u ON t.user_id = u.id 
+                WHERE t.id = ?
+            ");
+            $ownerStmt->execute([$ticket_id]);
+            $owner = $ownerStmt->fetch(PDO::FETCH_ASSOC);
+            if (!empty($owner['phone'])) {
+                require_once __DIR__ . '/../includes/SmsService.php';
+                $sms = new SmsService();
+                $sms->sendTicketReplyNotice($owner['phone'], $owner['name'] ?? 'کاربر گرامی', $owner['subject'] ?? 'پاسخ کلینیک در آسنا');
+            }
+        } catch (Throwable $sEx) {
+            error_log("Org ticket reply SMS error: " . $sEx->getMessage());
+        }
+
         echo json_encode(['status' => 'success']);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Failed to save message']);
@@ -423,6 +443,26 @@ if ($action === 'admin_send') {
     $stmt = $pdo->prepare("INSERT INTO ticket_messages (ticket_id, sender_type, message, created_at) VALUES (?, 'admin', ?, NOW())");
     if ($stmt->execute([$ticket_id, $message])) {
         $pdo->prepare("UPDATE tickets SET updated_at = NOW() WHERE id = ?")->execute([$ticket_id]);
+
+        // Dispatch SMS alert to ticket owner (Pattern 527643 / Direct SMS)
+        try {
+            $ownerStmt = $pdo->prepare("
+                SELECT u.phone, u.name, t.subject 
+                FROM tickets t 
+                JOIN users u ON t.user_id = u.id 
+                WHERE t.id = ?
+            ");
+            $ownerStmt->execute([$ticket_id]);
+            $owner = $ownerStmt->fetch(PDO::FETCH_ASSOC);
+            if (!empty($owner['phone'])) {
+                require_once __DIR__ . '/../includes/SmsService.php';
+                $sms = new SmsService();
+                $sms->sendTicketReplyNotice($owner['phone'], $owner['name'] ?? 'کاربر گرامی', $owner['subject'] ?? 'پشتیبانی مدیریت آسنا');
+            }
+        } catch (Throwable $sEx) {
+            error_log("Admin ticket reply SMS error: " . $sEx->getMessage());
+        }
+
         echo json_encode(['status' => 'success']);
     } else {
         echo json_encode(['status' => 'error']);

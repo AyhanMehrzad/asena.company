@@ -29,6 +29,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         // Automated welcome from admin support
         $pdo->prepare("INSERT INTO ticket_messages (ticket_id, sender_type, message, created_at) VALUES (?, 'admin', 'سلام و درود. پیام شما دریافت شد. کارشناسان و تیم پشتیبانی مدیریت آسنا در اسرع وقت پاسخگوی شما خواهند بود.', NOW())")->execute([$ticketId]);
         
+        // Notify admin via SMS (Pattern 527640 / Direct SMS)
+        try {
+            require_once __DIR__ . '/includes/SmsService.php';
+            $sms = new SmsService();
+            $uStmt = $pdo->prepare("SELECT name, phone FROM users WHERE id = ?");
+            $uStmt->execute([$user_id]);
+            $uData = $uStmt->fetch(PDO::FETCH_ASSOC);
+            $uName = $uData['name'] ?? 'کاربر';
+            $uPhone = $uData['phone'] ?? '';
+            $adminPhones = get_setting($pdo, 'admin_notification_phones', '09146676978');
+            $sms->sendAdminTicketAlert($adminPhones, $uName, $subject, $uPhone);
+        } catch (Throwable $tEx) {
+            error_log("Ticket admin SMS alert error: " . $tEx->getMessage());
+        }
+
         header("Location: chat.php?ticket_id=" . $ticketId);
         exit;
     } else {
