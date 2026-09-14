@@ -20,19 +20,14 @@ class SmsService {
     private $lastLog = [];
 
     // Pattern Body IDs from Melipayamak panel (Can be overridden via .env or constants)
-    const BODY_ID_OTP               = '518597'; // کد تایید ورود/ثبت نام/فراموشی رمز (تایید شده)
-    const BODY_ID_BOOKING           = '528861'; // تایید رزرو نوبت به کاربر (تایید شده)
-    const BODY_ID_RESCHEDULE        = '528862'; // تغییر زمان نوبت (تایید شده)
-    const BODY_ID_SHIPPING          = '528863'; // ارسال سفارش به خریدار (تایید شده)
-    const BODY_ID_SUBSCRIPTION      = '528864'; // فعال‌سازی بسته اشتراک (تایید شده)
-    const BODY_ID_CHARITY           = '528865'; // قدردانی خیریه (تایید شده)
-    const BODY_ID_ADMIN_ORDER       = '528866'; // اطلاع‌رسانی سفارش جدید به مدیر (تایید شده)
-    const BODY_ID_DOCTOR_BOOKING    = '528867'; // اطلاع‌رسانی نوبت جدید به پزشک (تایید شده)
-    const BODY_ID_POST_TRACKING     = '535284'; // کد رهگیری مرسوله پستی به خریدار (جدید در پنل)
-    const BODY_ID_AUTOSHIP_REMINDER = '535285'; // یادآور پایان/تمدید اشتراک اتوشیپ (جدید در پنل)
-    const BODY_ID_SELLER_ORDER      = '535286'; // سفارش جدید به فروشنده در مارکت‌پلیس (جدید در پنل)
-    const BODY_ID_TICKET_REPLY      = '527643'; // پاسخ به تیکت کاربر (تایید شده)
-    const BODY_ID_ADMIN_TICKET      = '527640'; // ثبت پیام جدید کاربر به مدیر (تایید شده)
+    const BODY_ID_OTP            = '518597'; // کد تایید ورود/ثبت نام/فراموشی رمز (تایید شده)
+    const BODY_ID_BOOKING        = '528861'; // تایید رزرو نوبت به کاربر
+    const BODY_ID_RESCHEDULE     = '528862'; // تغییر زمان نوبت
+    const BODY_ID_SHIPPING       = '528863'; // ارسال سفارش به خریدار
+    const BODY_ID_SUBSCRIPTION   = '528864'; // فعال‌سازی بسته اشتراک
+    const BODY_ID_CHARITY        = '528865'; // قدردانی خیریه
+    const BODY_ID_ADMIN_ORDER    = '528866'; // اطلاع‌رسانی سفارش جدید به مدیر
+    const BODY_ID_DOCTOR_BOOKING = '528867'; // اطلاع‌رسانی نوبت جدید به پزشک
 
     public function __construct() {
         self::loadEnv();
@@ -45,26 +40,29 @@ class SmsService {
         $dbFrom     = ($pdo instanceof PDO) ? get_setting($pdo, 'melipayamak_from', '') : '';
         $dbSandbox  = ($pdo instanceof PDO) ? get_setting($pdo, 'melipayamak_sandbox', null) : null;
 
-        // Ignore placeholder sandbox values from seed data so real .env values take precedence
-        if ($dbApiKey === 'MELI_SANDBOX_ASENA_PROD_KEY_2026') $dbApiKey = '';
-        if ($dbFrom === '50004001') $dbFrom = '';
-
-        $this->apiKey   = !empty($dbApiKey) ? $dbApiKey : (getenv('MELIPAYAMAK_API_KEY') ?: 'd3cbc1e6-79e8-4a25-910e-35e86370cad0');
-        $rawUsername    = !empty($dbUsername) ? $dbUsername : (getenv('MELIPAYAMAK_USERNAME') ?: '09146676978');
-        $this->username = self::normalizePhone($rawUsername) ?: '09146676978';
-        $this->password = !empty($dbPassword) ? $dbPassword : (getenv('MELIPAYAMAK_PASSWORD') ?: 'd3cbc1e6-79e8-4a25-910e-35e86370cad0');
-        $this->from     = !empty($dbFrom) ? $dbFrom : (getenv('MELIPAYAMAK_FROM') ?: '50004001914667');
+        $this->apiKey   = !empty($dbApiKey) ? trim((string)$dbApiKey) : (getenv('MELIPAYAMAK_API_KEY') ?: '');
+        $rawUsername    = !empty($dbUsername) ? trim((string)$dbUsername) : (getenv('MELIPAYAMAK_USERNAME') ?: '');
+        $this->username = $rawUsername; // Preserves both mobile numbers and alphanumeric usernames!
+        $this->password = !empty($dbPassword) ? trim((string)$dbPassword) : (getenv('MELIPAYAMAK_PASSWORD') ?: '');
+        $this->from     = !empty($dbFrom) ? trim((string)$dbFrom) : (getenv('MELIPAYAMAK_FROM') ?: '50004001');
 
         // Safe Sandbox Detection:
         $isExplicitSandbox = ($dbSandbox !== null) ? ($dbSandbox === '1') : (getenv('MELIPAYAMAK_SANDBOX') === 'true');
-        $this->isMock = (
-            $isExplicitSandbox ||
-            empty($this->username) ||
-            empty($this->password) ||
-            $this->username === 'your_username' ||
-            $this->password === 'your_password' ||
-            (php_sapi_name() === 'cli' && empty(getenv('MELIPAYAMAK_LIVE')) && empty($dbApiKey))
-        );
+        $hasRealApiKey = !empty($this->apiKey) && !str_contains($this->apiKey, 'SANDBOX') && strlen($this->apiKey) >= 16;
+        $hasRealUserPass = !empty($this->username) && !empty($this->password) && $this->username !== 'your_username' && $this->password !== 'your_password';
+
+        // Run live if explicit live credentials exist; otherwise run in safe mock sandbox
+        $this->isMock = ($isExplicitSandbox || (!$hasRealApiKey && !$hasRealUserPass));
+    }
+
+    public function isMock(): bool {
+        return $this->isMock;
+    }
+
+    public function getActiveGateway(): string {
+        if ($this->isMock) return 'mock';
+        if (!empty($this->apiKey) && !str_contains($this->apiKey, 'SANDBOX')) return 'console';
+        return 'classic';
     }
 
     /**
@@ -112,35 +110,25 @@ class SmsService {
         self::loadEnv();
 
         $envMap = [
-            'otp'               => 'MELIPAYAMAK_BODY_ID_OTP',
-            'booking'           => 'MELIPAYAMAK_BODY_ID_BOOKING',
-            'shipping'          => 'MELIPAYAMAK_BODY_ID_SHIPPING',
-            'subscription'      => 'MELIPAYAMAK_BODY_ID_SUBSCRIPTION',
-            'charity'           => 'MELIPAYAMAK_BODY_ID_CHARITY',
-            'reschedule'        => 'MELIPAYAMAK_BODY_ID_RESCHEDULE',
-            'admin_order'       => 'MELIPAYAMAK_BODY_ID_ADMIN_ORDER',
-            'doctor_booking'    => 'MELIPAYAMAK_BODY_ID_DOCTOR_BOOKING',
-            'post_tracking'     => 'MELIPAYAMAK_BODY_ID_POST_TRACKING',
-            'autoship_reminder' => 'MELIPAYAMAK_BODY_ID_AUTOSHIP_REMINDER',
-            'seller_order'      => 'MELIPAYAMAK_BODY_ID_SELLER_ORDER',
-            'ticket_reply'      => 'MELIPAYAMAK_BODY_ID_TICKET_REPLY',
-            'admin_ticket'      => 'MELIPAYAMAK_BODY_ID_ADMIN_TICKET',
+            'otp'            => 'MELIPAYAMAK_BODY_ID_OTP',
+            'booking'        => 'MELIPAYAMAK_BODY_ID_BOOKING',
+            'shipping'       => 'MELIPAYAMAK_BODY_ID_SHIPPING',
+            'subscription'   => 'MELIPAYAMAK_BODY_ID_SUBSCRIPTION',
+            'charity'        => 'MELIPAYAMAK_BODY_ID_CHARITY',
+            'reschedule'     => 'MELIPAYAMAK_BODY_ID_RESCHEDULE',
+            'admin_order'    => 'MELIPAYAMAK_BODY_ID_ADMIN_ORDER',
+            'doctor_booking' => 'MELIPAYAMAK_BODY_ID_DOCTOR_BOOKING',
         ];
 
         $constMap = [
-            'otp'               => self::BODY_ID_OTP,
-            'booking'           => self::BODY_ID_BOOKING,
-            'shipping'          => self::BODY_ID_SHIPPING,
-            'subscription'      => self::BODY_ID_SUBSCRIPTION,
-            'charity'           => self::BODY_ID_CHARITY,
-            'reschedule'        => self::BODY_ID_RESCHEDULE,
-            'admin_order'       => self::BODY_ID_ADMIN_ORDER,
-            'doctor_booking'    => self::BODY_ID_DOCTOR_BOOKING,
-            'post_tracking'     => self::BODY_ID_POST_TRACKING,
-            'autoship_reminder' => self::BODY_ID_AUTOSHIP_REMINDER,
-            'seller_order'      => self::BODY_ID_SELLER_ORDER,
-            'ticket_reply'      => self::BODY_ID_TICKET_REPLY,
-            'admin_ticket'      => self::BODY_ID_ADMIN_TICKET,
+            'otp'            => self::BODY_ID_OTP,
+            'booking'        => self::BODY_ID_BOOKING,
+            'shipping'       => self::BODY_ID_SHIPPING,
+            'subscription'   => self::BODY_ID_SUBSCRIPTION,
+            'charity'        => self::BODY_ID_CHARITY,
+            'reschedule'     => self::BODY_ID_RESCHEDULE,
+            'admin_order'    => self::BODY_ID_ADMIN_ORDER,
+            'doctor_booking' => self::BODY_ID_DOCTOR_BOOKING,
         ];
 
         if (isset($envMap[$type])) {
@@ -363,142 +351,113 @@ class SmsService {
     }
 
     /**
-     * Send Post Shipping Notice with Barcode & Tracking URL
-     * Pattern: {0} = Order ID, {1} = Tracking Code
-     */
-    public function sendPostTrackingNotice($phone, $orderId, $trackingCode, $carrierName = 'شرکت ملی پست') {
-        $phone = self::normalizePhone($phone);
-        $bodyId = self::getBodyId('post_tracking');
-        $sent = $this->sendPatternRequest($phone, $bodyId, [(string)$orderId, (string)$trackingCode], 'POST_TRACKING');
-        if (!$sent) {
-            // Fallback: Try shipping pattern 528863 first
-            $this->sendPatternRequest($phone, self::getBodyId('shipping'), [(string)$orderId], 'SHIPPING_FALLBACK_PATTERN');
-            // Then deliver full tracking code and live tracking URL via dedicated line
-            $text = "کاربر گرامی، سفارش #{$orderId} تحویل {$carrierName} شد.\nکد رهگیری: {$trackingCode}\nرهگیری: https://tracking.post.ir/?id={$trackingCode}\nasena.company";
-            return $this->sendDirectSms($phone, $text, 'POST_TRACKING_FALLBACK');
-        }
-        return true;
-    }
-
-    /**
-     * Send Autoship Subscription Ending / Renewal Reminder (Proactive Alert)
-     * Pattern: {0} = Plan or Product Name, {1} = Renewal Date
-     */
-    public function sendAutoshipEndingReminder($phone, $planOrProduct, $renewalDate) {
-        $phone = self::normalizePhone($phone);
-        $bodyId = self::getBodyId('autoship_reminder');
-        $sent = $this->sendPatternRequest($phone, $bodyId, [(string)$planOrProduct, (string)$renewalDate], 'AUTOSHIP_REMINDER');
-        if (!$sent) {
-            $text = "کاربر گرامی، اشتراک دوره‌ای اتوشیپ ({$planOrProduct}) شما در تاریخ {$renewalDate} به پایان می‌رسد. جهت تمدید یا مدیریت تحویل خودکار به پنل آسنا مراجعه فرمایید.\nasena.company";
-            return $this->sendDirectSms($phone, $text, 'AUTOSHIP_REMINDER_FALLBACK');
-        }
-        return true;
-    }
-
-    /**
-     * Send New Marketplace Order Alert to Seller
-     * Pattern: {0} = Order ID
-     */
-    public function sendSellerNewOrderAlert($phone, $orderId, $amount = 0) {
-        $phone = self::normalizePhone($phone);
-        if (empty($phone) || strlen($phone) !== 11) return false;
-
-        $bodyId = self::getBodyId('seller_order');
-        $sent = $this->sendPatternRequest($phone, $bodyId, [(string)$orderId], 'SELLER_ORDER');
-        if (!$sent) {
-            $text = "فروشنده گرامی، سفارش جدید به شماره #{$orderId} برای محصولات شما در سامانه آسنا ثبت شد. جهت آماده‌سازی و ارسال به پنل فروشندگان مراجعه فرمایید.\nasena.company";
-            return $this->sendDirectSms($phone, $text, 'SELLER_ORDER_FALLBACK');
-        }
-        return true;
-    }
-
-    /**
-     * Send Delivery Completed Notice to Buyer (Starts 7-day guarantee window)
-     */
-    public function sendDeliveryCompletedNotice($phone, $orderId) {
-        $phone = self::normalizePhone($phone);
-        if (empty($phone) || strlen($phone) !== 11) return false;
-
-        $text = "کاربر گرامی، مرسوله پستی سفارش شماره #{$orderId} به شما تحویل داده شد. بازه ۷ روزه تضمین و بازگشت کالا فعال گردید.\nasena.company";
-        return $this->sendDirectSms($phone, $text, 'DELIVERY_COMPLETED');
-    }
-
-    /**
-     * Send Support Ticket Reply Alert to User
-     * Pattern: {0} = User Name, {1} = Subject
-     */
-    public function sendTicketReplyNotice($phone, $userName, $subject) {
-        $phone = self::normalizePhone($phone);
-        if (empty($phone) || strlen($phone) !== 11) return false;
-
-        $bodyId = self::getBodyId('ticket_reply');
-        $userName = $userName ?: 'کاربر گرامی';
-        $subject = $subject ?: 'پشتیبانی آسنا';
-        $sent = $this->sendPatternRequest($phone, $bodyId, [(string)$userName, (string)$subject], 'TICKET_REPLY');
-        if (!$sent) {
-            $text = "{$userName} گرامی، پاسخ جدیدی برای تیکت پشتیبانی «{$subject}» در سامانه آسنا ثبت شد.\nasena.company";
-            return $this->sendDirectSms($phone, $text, 'TICKET_REPLY_FALLBACK');
-        }
-        return true;
-    }
-
-    /**
-     * Send New Ticket Notification to Admin(s)
-     * Pattern: {0} = User Name, {1} = Subject, {2} = Contact/Phone
-     */
-    public function sendAdminTicketAlert($phones, $userName, $subject, $contact = '') {
-        if (empty($phones)) return false;
-
-        $phoneList = is_array($phones) ? $phones : preg_split('/[,\s;]+/', (string)$phones);
-        $bodyId = self::getBodyId('admin_ticket');
-        $userName = $userName ?: 'کاربر';
-        $subject = $subject ?: 'درخواست پشتیبانی';
-        $contact = $contact ?: 'سامانه آسنا';
-
-        $atLeastOneSent = false;
-        foreach ($phoneList as $p) {
-            $p = self::normalizePhone($p);
-            if (empty($p) || strlen($p) !== 11) continue;
-
-            $sent = $this->sendPatternRequest($p, $bodyId, [(string)$userName, (string)$subject, (string)$contact], 'ADMIN_TICKET');
-            if (!$sent) {
-                $text = "پیام جدیدی از طرف {$userName} با موضوع «{$subject}» در سامانه آسنا ثبت شد.\nasena.company";
-                $this->sendDirectSms($p, $text, 'ADMIN_TICKET_FALLBACK');
-            }
-            $atLeastOneSent = true;
-        }
-        return $atLeastOneSent;
-    }
-
-    /**
-     * Send Pharmacist Electronic Prescription Alert
-     */
-    public function sendPharmacistRxAlert($phone, $rxId, $patientName) {
-        $phone = self::normalizePhone($phone);
-        if (empty($phone) || strlen($phone) !== 11) return false;
-
-        $text = "مسئول فنی گرامی داروخانه، نسخه الکترونیک جدید به شناسه #RX-{$rxId} برای بیمار ({$patientName}) جهت بررسی ثبت شد.\nasena.company";
-        return $this->sendDirectSms($phone, $text, 'PHARMACIST_RX');
-    }
-
-    /**
-     * Send Weekly Paya Payout Settled Notice to Seller
-     */
-    public function sendSellerPayoutNotice($phone, $amount, $shebaLast4) {
-        $phone = self::normalizePhone($phone);
-        if (empty($phone) || strlen($phone) !== 11) return false;
-
-        $formatted = number_format((float)$amount);
-        $text = "فروشنده گرامی آسنا، تسویه‌حساب بانکی پایا به مبلغ {$formatted} تومان به شبا منتهی به {$shebaLast4} واریز گردید.\nasena.company";
-        return $this->sendDirectSms($phone, $text, 'PAYA_PAYOUT');
-    }
-
-    /**
-     * Get effective username for Melipayamak web services (requires 09... format)
+     * Get effective username for Melipayamak web services (strips leading 0 for mobile numbers)
      */
     public function getEffectiveUsername(): string {
-        $u = self::normalizePhone($this->username);
-        return !empty($u) ? $u : trim((string)$this->username);
+        $u = trim((string)$this->username);
+        if (preg_match('/^0(9\d{9})$/', $u, $m)) {
+            return $m[1]; // e.g. 9146676978
+        }
+        return $u;
+    }
+
+    /**
+     * Modern Console REST API for OTP and Patterns (console.melipayamak.com)
+     */
+    public function sendViaConsoleApi($phone, $bodyId, array $args, $isOtp = false) {
+        if (empty($this->apiKey) || str_contains($this->apiKey, 'SANDBOX')) {
+            return false;
+        }
+
+        $endpoint = $isOtp 
+            ? "https://console.melipayamak.com/api/send/otp/{$this->apiKey}" 
+            : "https://console.melipayamak.com/api/send/shared/{$this->apiKey}";
+
+        $payload = [
+            'to'     => $phone,
+            'bodyId' => (int)$bodyId,
+            'args'   => array_values(array_map('strval', $args))
+        ];
+
+        $startTime = microtime(true);
+        $ch = curl_init($endpoint);
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => json_encode($payload, JSON_UNESCAPED_UNICODE),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => ['Content-Type: application/json; charset=utf-8'],
+            CURLOPT_TIMEOUT        => 8,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
+        ]);
+
+        $response   = curl_exec($ch);
+        $httpCode   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError  = curl_error($ch);
+        curl_close($ch);
+        $durationMs = round((microtime(true) - $startTime) * 1000);
+
+        $this->logDiagnostic(($isOtp ? 'CONSOLE_OTP' : 'CONSOLE_SHARED'), $endpoint, ['Content-Type: application/json'], $payload, $httpCode, $response, $curlError, $durationMs);
+
+        $result = json_decode((string)$response, true);
+        if ($httpCode >= 200 && $httpCode < 300) {
+            if (isset($result['status']) && ($result['status'] === 200 || $result['status'] === 'success' || (isset($result['recId']) && $result['recId'] > 0))) {
+                return true;
+            }
+            if (isset($result['recId']) && is_numeric($result['recId']) && (float)$result['recId'] > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Modern Console REST API for Direct Simple SMS (console.melipayamak.com)
+     */
+    public function sendDirectViaConsoleApi($phone, $text) {
+        if (empty($this->apiKey) || str_contains($this->apiKey, 'SANDBOX')) {
+            return false;
+        }
+
+        $endpoint = "https://console.melipayamak.com/api/send/simple/{$this->apiKey}";
+        $payload = [
+            'to'   => $phone,
+            'from' => $this->from ?: '50004001',
+            'text' => (string)$text
+        ];
+
+        $startTime = microtime(true);
+        $ch = curl_init($endpoint);
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => json_encode($payload, JSON_UNESCAPED_UNICODE),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => ['Content-Type: application/json; charset=utf-8'],
+            CURLOPT_TIMEOUT        => 8,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
+        ]);
+
+        $response   = curl_exec($ch);
+        $httpCode   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError  = curl_error($ch);
+        curl_close($ch);
+        $durationMs = round((microtime(true) - $startTime) * 1000);
+
+        $this->logDiagnostic('CONSOLE_SIMPLE', $endpoint, ['Content-Type: application/json'], $payload, $httpCode, $response, $curlError, $durationMs);
+
+        $result = json_decode((string)$response, true);
+        if ($httpCode >= 200 && $httpCode < 300) {
+            if (isset($result['status']) && ($result['status'] === 200 || $result['status'] === 'success' || (isset($result['recId']) && $result['recId'] > 0))) {
+                return true;
+            }
+            if (isset($result['recId']) && is_numeric($result['recId']) && (float)$result['recId'] > 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -526,7 +485,15 @@ class SmsService {
         $indexedArgs = array_values(array_map('strval', $textVariables));
         $effectiveUser = $this->getEffectiveUsername();
 
-        // 1. Primary Engine: Melipayamak Classic REST API (BaseServiceNumber)
+        // 1. Primary Modern Engine: Melipayamak Console REST API
+        if (!empty($this->apiKey) && !str_contains($this->apiKey, 'SANDBOX') && strlen($this->apiKey) >= 16) {
+            $isOtpAction = (strpos($actionTag, 'OTP') !== false);
+            if ($this->sendViaConsoleApi($phone, $intBodyId, $indexedArgs, $isOtpAction)) {
+                return true;
+            }
+        }
+
+        // 2. Secondary Engine: Melipayamak Classic REST API (BaseServiceNumber)
         $url = "https://rest.payamak-panel.com/api/SendSMS/BaseServiceNumber";
         $headers = ['Content-Type: application/json; charset=utf-8'];
         $payload = [
@@ -643,6 +610,14 @@ class SmsService {
             return true;
         }
 
+        // 1. Primary Modern Engine: Melipayamak Console REST API
+        if (!empty($this->apiKey) && !str_contains($this->apiKey, 'SANDBOX') && strlen($this->apiKey) >= 16) {
+            if ($this->sendDirectViaConsoleApi($phone, $text)) {
+                return true;
+            }
+        }
+
+        // 2. Secondary Engine: Melipayamak Classic REST API (SendSMS)
         $url = "https://rest.payamak-panel.com/api/SendSMS/SendSMS";
         $headers = ['Content-Type: application/json; charset=utf-8'];
         $payload = [
