@@ -14,6 +14,7 @@ class SmsService {
     private $username;
     private $password;
     private $from;
+    private bool $isMock = false;
 
     private $lastError = '';
     private $lastLog = [];
@@ -30,12 +31,61 @@ class SmsService {
 
     public function __construct() {
         self::loadEnv();
+        require_once __DIR__ . '/functions.php';
 
-        $this->apiKey   = getenv('MELIPAYAMAK_API_KEY') ?: 'd3cbc1e6-79e8-4a25-910e-35e86370cad0';
-        $rawUsername    = getenv('MELIPAYAMAK_USERNAME') ?: '09146676978';
-        $this->username = self::normalizePhone($rawUsername) ?: '09146676978';
-        $this->password = getenv('MELIPAYAMAK_PASSWORD') ?: 'd3cbc1e6-79e8-4a25-910e-35e86370cad0';
-        $this->from     = getenv('MELIPAYAMAK_FROM') ?: '2170007653';
+        global $pdo;
+        if (!($pdo instanceof PDO)) {
+            $dbFile = __DIR__ . '/db.php';
+            if (file_exists($dbFile)) {
+                require_once $dbFile;
+            }
+        }
+
+        $dbApiKey   = ($pdo instanceof PDO) ? get_setting($pdo, 'melipayamak_api_key', '') : '';
+        $dbUsername = ($pdo instanceof PDO) ? get_setting($pdo, 'melipayamak_username', '') : '';
+        $dbPassword = ($pdo instanceof PDO) ? get_setting($pdo, 'melipayamak_password', '') : '';
+        $dbFrom     = ($pdo instanceof PDO) ? get_setting($pdo, 'melipayamak_from', '') : '';
+        $dbSandbox  = ($pdo instanceof PDO) ? get_setting($pdo, 'melipayamak_sandbox', null) : null;
+
+        // Hardened Fallbacks to ensure PWA and all submodules always authenticate
+        $defaultApiKey   = 'efaec6c8-2daf-4473-9080-df7ac67eea89';
+        $defaultUsername = '9146676978';
+        $defaultPassword = 'efaec6c8-2daf-4473-9080-df7ac67eea89';
+        $defaultFrom     = '2170002198';
+
+        $this->apiKey   = !empty($dbApiKey) ? trim((string)$dbApiKey) : (getenv('MELIPAYAMAK_API_KEY') ?: ($_ENV['MELIPAYAMAK_API_KEY'] ?? $defaultApiKey));
+        $rawUsername    = !empty($dbUsername) ? trim((string)$dbUsername) : (getenv('MELIPAYAMAK_USERNAME') ?: ($_ENV['MELIPAYAMAK_USERNAME'] ?? $defaultUsername));
+        $this->username = $rawUsername; // Preserves both mobile numbers and alphanumeric usernames!
+        $this->password = !empty($dbPassword) ? trim((string)$dbPassword) : (getenv('MELIPAYAMAK_PASSWORD') ?: ($_ENV['MELIPAYAMAK_PASSWORD'] ?? $defaultPassword));
+        $this->from     = !empty($dbFrom) ? trim((string)$dbFrom) : (getenv('MELIPAYAMAK_FROM') ?: ($_ENV['MELIPAYAMAK_FROM'] ?? $defaultFrom));
+
+        // Safe Sandbox Detection:
+        $isExplicitSandbox = ($dbSandbox !== null) ? ($dbSandbox === '1') : (getenv('MELIPAYAMAK_SANDBOX') === 'true');
+        $hasRealApiKey = !empty($this->apiKey) && !str_contains($this->apiKey, 'SANDBOX') && strlen($this->apiKey) >= 16;
+        $hasRealUserPass = !empty($this->username) && !empty($this->password) && $this->username !== 'your_username' && $this->password !== 'your_password';
+
+        // Run live if explicit live credentials exist; otherwise run in safe mock sandbox
+        $this->isMock = ($isExplicitSandbox || (!$hasRealApiKey && !$hasRealUserPass));
+    }
+
+    public function isMock(): bool {
+        return $this->isMock;
+    }
+
+    public function getActiveGateway(): string {
+        if ($this->isMock) return 'mock';
+        if (!empty($this->apiKey) && !str_contains($this->apiKey, 'SANDBOX')) return 'console';
+        return 'classic';
+    }
+
+    /**
+     * Resolve effective credential secret (ApiKey if set, or panel password)
+     */
+    public function getAuthSecret(): string {
+        if (!empty($this->apiKey) && !str_contains($this->apiKey, 'SANDBOX') && strlen($this->apiKey) >= 16) {
+            return $this->apiKey;
+        }
+        return $this->password;
     }
 
     /**
@@ -63,12 +113,8 @@ class SmsService {
                         list($key, $val) = explode('=', $line, 2);
                         $key = trim($key);
                         $val = trim($val, " \t\n\r\0\x0B\"'");
-                        if (getenv($key) === false) {
-                            putenv("$key=$val");
-                        }
-                        if (!isset($_ENV[$key])) {
-                            $_ENV[$key] = $val;
-                        }
+                        putenv("$key=$val");
+                        $_ENV[$key] = $val;
                     }
                 }
                 break;
@@ -335,6 +381,105 @@ class SmsService {
     }
 
     /**
+     * Modern Console REST API for OTP and Patterns (console.melipayamak.com)
+     */
+    public function sendViaConsoleApi($phone, $bodyId, array $args, $isOtp = false) {
+        if (empty($this->apiKey) || str_contains($this->apiKey, 'SANDBOX')) {
+            return false;
+        }
+
+        $endpoint = $isOtp 
+            ? "https://console.melipayamak.com/api/send/otp/{$this->apiKey}" 
+            : "https://console.melipayamak.com/api/send/shared/{$this->apiKey}";
+
+        $payload = [
+            'to'     => $phone,
+            'bodyId' => (int)$bodyId,
+            'args'   => array_values(array_map('strval', $args))
+        ];
+
+        $startTime = microtime(true);
+        $ch = curl_init($endpoint);
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => json_encode($payload, JSON_UNESCAPED_UNICODE),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => ['Content-Type: application/json; charset=utf-8'],
+            CURLOPT_TIMEOUT        => 8,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
+        ]);
+
+        $response   = curl_exec($ch);
+        $httpCode   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError  = curl_error($ch);
+        curl_close($ch);
+        $durationMs = round((microtime(true) - $startTime) * 1000);
+
+        $this->logDiagnostic(($isOtp ? 'CONSOLE_OTP' : 'CONSOLE_SHARED'), $endpoint, ['Content-Type: application/json'], $payload, $httpCode, $response, $curlError, $durationMs);
+
+        $result = json_decode((string)$response, true);
+        if ($httpCode >= 200 && $httpCode < 300) {
+            if (isset($result['status']) && ($result['status'] === 200 || $result['status'] === 'success' || (isset($result['recId']) && $result['recId'] > 0))) {
+                return true;
+            }
+            if (isset($result['recId']) && is_numeric($result['recId']) && (float)$result['recId'] > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Modern Console REST API for Direct Simple SMS (console.melipayamak.com)
+     */
+    public function sendDirectViaConsoleApi($phone, $text) {
+        if (empty($this->apiKey) || str_contains($this->apiKey, 'SANDBOX')) {
+            return false;
+        }
+
+        $endpoint = "https://console.melipayamak.com/api/send/simple/{$this->apiKey}";
+        $payload = [
+            'to'   => $phone,
+            'from' => $this->from ?: '50004001',
+            'text' => (string)$text
+        ];
+
+        $startTime = microtime(true);
+        $ch = curl_init($endpoint);
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => json_encode($payload, JSON_UNESCAPED_UNICODE),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => ['Content-Type: application/json; charset=utf-8'],
+            CURLOPT_TIMEOUT        => 8,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
+        ]);
+
+        $response   = curl_exec($ch);
+        $httpCode   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError  = curl_error($ch);
+        curl_close($ch);
+        $durationMs = round((microtime(true) - $startTime) * 1000);
+
+        $this->logDiagnostic('CONSOLE_SIMPLE', $endpoint, ['Content-Type: application/json'], $payload, $httpCode, $response, $curlError, $durationMs);
+
+        $result = json_decode((string)$response, true);
+        if ($httpCode >= 200 && $httpCode < 300) {
+            if (isset($result['status']) && ($result['status'] === 200 || $result['status'] === 'success' || (isset($result['recId']) && $result['recId'] > 0))) {
+                return true;
+            }
+            if (isset($result['recId']) && is_numeric($result['recId']) && (float)$result['recId'] > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Send pattern request with indexed variables
      */
     public function sendPatternRequest($phone, $bodyId, array $textVariables, $actionTag = 'PATTERN') {
@@ -350,15 +495,30 @@ class SmsService {
             return false;
         }
 
+        // Safe Mock Delivery in Sandbox Mode
+        if ($this->isMock) {
+            $this->logMockDelivery($actionTag, $phone, (string)$intBodyId, implode(' ; ', $textVariables));
+            $this->lastError = 'اطلاعات وب‌سرویس ملی‌پیامک (کلید API یا نام کاربری و رمز عبور) تنظیم نشده است. لطفاً از پنل مدیریت > تنظیمات پیامک اقدام نمایید.';
+            return false;
+        }
+
         $indexedArgs = array_values(array_map('strval', $textVariables));
         $effectiveUser = $this->getEffectiveUsername();
 
-        // 1. Primary Engine: Melipayamak Classic REST API (BaseServiceNumber)
+        // 1. Primary Modern Engine: Melipayamak Console REST API
+        if (!empty($this->apiKey) && !str_contains($this->apiKey, 'SANDBOX') && strlen($this->apiKey) >= 16) {
+            $isOtpAction = (strpos($actionTag, 'OTP') !== false);
+            if ($this->sendViaConsoleApi($phone, $intBodyId, $indexedArgs, $isOtpAction)) {
+                return true;
+            }
+        }
+
+        // 2. Secondary Engine: Melipayamak Classic REST API (BaseServiceNumber)
         $url = "https://rest.payamak-panel.com/api/SendSMS/BaseServiceNumber";
         $headers = ['Content-Type: application/json; charset=utf-8'];
         $payload = [
             'username' => $effectiveUser,
-            'password' => $this->password,
+            'password' => $this->getAuthSecret(),
             'text'     => implode(';', $indexedArgs),
             'to'       => $phone,
             'bodyId'   => $intBodyId
@@ -406,7 +566,7 @@ class SmsService {
 
                 $soapData = [
                     'username' => $effectiveUser,
-                    'password' => $this->password,
+                    'password' => $this->getAuthSecret(),
                     'to'       => $phone,
                     'bodyId'   => $intBodyId,
                     'text'     => implode(';', $indexedArgs)
@@ -448,6 +608,13 @@ class SmsService {
     }
 
     /**
+     * General send alias pointing to sendDirectSms
+     */
+    public function send($phone, $text) {
+        return $this->sendDirectSms($phone, $text);
+    }
+
+    /**
      * Send Direct / Simple SMS (Used for general alerts and pattern fallback)
      */
     public function sendDirectSms($phone, $text, $actionTag = 'DIRECT') {
@@ -457,11 +624,26 @@ class SmsService {
             return false;
         }
 
+        // Safe Mock Delivery in Sandbox Mode
+        if ($this->isMock) {
+            $this->logMockDelivery($actionTag, $phone, null, (string)$text);
+            $this->lastError = 'اطلاعات وب‌سرویس ملی‌پیامک (کلید API یا نام کاربری و رمز عبور) تنظیم نشده است. لطفاً از پنل مدیریت > تنظیمات پیامک اقدام نمایید.';
+            return false;
+        }
+
+        // 1. Primary Modern Engine: Melipayamak Console REST API
+        if (!empty($this->apiKey) && !str_contains($this->apiKey, 'SANDBOX') && strlen($this->apiKey) >= 16) {
+            if ($this->sendDirectViaConsoleApi($phone, $text)) {
+                return true;
+            }
+        }
+
+        // 2. Secondary Engine: Melipayamak Classic REST API (SendSMS)
         $url = "https://rest.payamak-panel.com/api/SendSMS/SendSMS";
         $headers = ['Content-Type: application/json; charset=utf-8'];
         $payload = [
             'username' => $this->getEffectiveUsername(),
-            'password' => $this->password,
+            'password' => $this->getAuthSecret(),
             'from'     => $this->from,
             'to'       => $phone,
             'text'     => (string)$text,
@@ -498,6 +680,27 @@ class SmsService {
         }
 
         return false;
+    }
+
+    /**
+     * Record simulated SMS delivery in sandbox mode without hitting external network
+     */
+    private function logMockDelivery(string $actionTag, string $phone, ?string $bodyId, string $message): void {
+        try {
+            $pdo = $GLOBALS['pdo'] ?? null;
+            if ($pdo) {
+                $stmt = $pdo->prepare("
+                    INSERT INTO sms_delivery_logs (phone, action_tag, body_id, message, is_mock, status, gateway_response, created_at)
+                    VALUES (:phone, :tag, :body, :msg, 1, 'mock_delivered', '200 OK (Simulated Sandbox)', NOW())
+                ");
+                $stmt->execute([
+                    'phone' => $phone,
+                    'tag' => $actionTag,
+                    'body' => $bodyId,
+                    'msg' => substr($message, 0, 500)
+                ]);
+            }
+        } catch (Throwable $e) {}
     }
 
     /**
@@ -610,7 +813,7 @@ class SmsService {
                 ]);
                 $res = $client->GetCredit([
                     'username' => $this->getEffectiveUsername(),
-                    'password' => $this->password
+                    'password' => $this->getAuthSecret()
                 ]);
                 return isset($res->GetCreditResult) ? (float)$res->GetCreditResult : null;
             } catch (\Exception $e) {
@@ -618,5 +821,29 @@ class SmsService {
             }
         }
         return null;
+    }
+
+    /**
+     * Get remaining paid SMS credits for a seller/doctor/clinic
+     */
+    public static function getUserSmsCredits(PDO $pdo, int $userId): int {
+        $stmt = $pdo->prepare("SELECT sms_credits FROM seller_wallets WHERE seller_id = ?");
+        $stmt->execute([$userId]);
+        $val = $stmt->fetchColumn();
+        return ($val !== false) ? (int)$val : 0;
+    }
+
+    /**
+     * Deduct SMS credit from seller/doctor/clinic wallet upon sending
+     */
+    public static function deductUserSmsCredits(PDO $pdo, int $userId, string $recipient, string $message, int $credits = 1): bool {
+        $stmt = $pdo->prepare("UPDATE seller_wallets SET sms_credits = GREATEST(0, sms_credits - ?) WHERE seller_id = ? AND sms_credits >= ?");
+        $stmt->execute([$credits, $userId, $credits]);
+        if ($stmt->rowCount() > 0) {
+            $log = $pdo->prepare("INSERT INTO sms_usage_logs (user_id, recipient, message, credits_deducted) VALUES (?, ?, ?, ?)");
+            $log->execute([$userId, $recipient, $message, $credits]);
+            return true;
+        }
+        return false;
     }
 }

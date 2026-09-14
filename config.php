@@ -5,13 +5,19 @@
  */
 
 $is_local = false;
-if (isset($_SERVER['HTTP_HOST'])) {
+if (is_dir('C:\\xampp') || file_exists('/opt/lampp')) {
+    $is_local = true;
+} elseif (isset($_SERVER['HTTP_HOST'])) {
     $host = $_SERVER['HTTP_HOST'];
-    if (strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false) {
+    if (strpos($host, 'localhost') !== false || 
+        strpos($host, '127.0.0.1') !== false || 
+        strpos($host, '192.168.') !== false || 
+        strpos($host, '10.') === 0 || 
+        strpos($host, '.local') !== false) {
         $is_local = true;
     }
 } elseif (php_sapi_name() === 'cli') {
-    if (file_exists('/opt/lampp') && !file_exists('/home/asencomp')) {
+    if (!file_exists('/home/asencomp')) {
         $is_local = true;
     }
 }
