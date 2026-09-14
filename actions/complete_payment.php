@@ -317,6 +317,33 @@ try {
                     error_log("Seller new order SMS alert error: " . $sEx->getMessage());
                 }
             }
+
+            // In-app Notification for User
+            try {
+                require_once __DIR__ . '/../includes/PushNotificationService.php';
+                $notifService = new PushNotificationService($pdo);
+                if (!empty($order_id)) {
+                    $notifService->createNotification(
+                        (int)$user_id,
+                        'order_status',
+                        "سفارش #{$order_id} با موفقیت ثبت شد",
+                        "سفارش شما با موفقیت تایید شد و هم‌اکنون در صف بسته‌بندی و تحویل به ناوگان پستی قرار گرفت.",
+                        "profile.php",
+                        "local_shipping"
+                    );
+                } elseif ($is_booking && !empty($bookingId)) {
+                    $notifService->createNotification(
+                        (int)$user_id,
+                        'order_status',
+                        "رزرو نوبت ویزیت با موفقیت ثبت شد",
+                        "نوبت پزشکی شما در سامانه آسنا با موفقیت تایید گردید. لطفا در زمان مقرر در کلینیک حاضر باشید.",
+                        "profile.php#appointments",
+                        "calendar_month"
+                    );
+                }
+            } catch (Throwable $notifEx) {
+                error_log("In-app notification creation error: " . $notifEx->getMessage());
+            }
         }
     }
 
