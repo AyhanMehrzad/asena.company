@@ -1,3 +1,9 @@
+<?php
+if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) {
+    http_response_code(403);
+    exit('Direct access forbidden');
+}
+?>
     <!-- Footer -->
     <footer class="bg-surface-container-low border border-outline-variant/30 rounded-[2rem] md:rounded-[3rem] mt-16 md:mt-24 w-[96%] max-w-[1600px] mx-auto overflow-hidden">
         <div class="flex flex-col lg:flex-row-reverse justify-between px-6 lg:px-10 py-10 lg:py-16 gap-10 lg:gap-16">
@@ -161,9 +167,7 @@
         <a href="cart.php" class="bottom-nav-link <?php echo ($current_page === 'cart.php') ? 'active' : ''; ?>">
             <div class="relative flex items-center justify-center">
                 <span class="material-symbols-outlined">shopping_cart</span>
-                <?php if (!empty($cart_count) && $cart_count > 0): ?>
-                    <span class="nav-cart-badge"><?php echo $cart_count; ?></span>
-                <?php endif; ?>
+                <span id="mobile-nav-cart-badge" class="nav-cart-badge cart-badge-count <?php echo (!empty($cart_count) && $cart_count > 0) ? '' : 'hidden'; ?>"><?php echo $cart_count ?? 0; ?></span>
             </div>
             <span>سبد خرید</span>
         </a>

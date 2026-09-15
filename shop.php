@@ -168,8 +168,18 @@ $countStmt->execute($params);
 $total = $countStmt->fetchColumn();
 $totalPages = ceil($total / $limit);
 
-// Get products
-$stmt = $pdo->prepare("SELECT * FROM products $whereClause $orderBy LIMIT $limit OFFSET $offset");
+// Get products with provider organizations and sellers
+$stmt = $pdo->prepare("
+    SELECT p.*, 
+           o.name as org_name, o.type as org_type, o.id as org_id,
+           u.name as seller_name
+    FROM products p
+    LEFT JOIN organizations o ON p.organization_id = o.id
+    LEFT JOIN users u ON p.seller_id = u.id
+    $whereClause 
+    $orderBy 
+    LIMIT $limit OFFSET $offset
+");
 $stmt->execute($params);
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -177,10 +187,21 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $brandsStmt = $pdo->query("SELECT DISTINCT brand FROM products WHERE brand IS NOT NULL AND brand != '' ORDER BY brand ASC");
 $all_brands = $brandsStmt->fetchAll(PDO::FETCH_COLUMN);
 
-// Fetch Suggested Autoship Offers (for top banner)
+// Fetch Suggested Autoship Offers (Enforce Inventory Authentication: >= 5 units & autoship buffer)
 $autoship_offers = [];
 if ($has_autoship_col) {
-    $autoStmt = $pdo->query("SELECT * FROM products WHERE is_autoship = 1 GROUP BY name ORDER BY (price - IFNULL(discount_price, price)) DESC, rating_cache DESC LIMIT 4");
+    $autoStmt = $pdo->query("
+        SELECT p.*, 
+               o.name as org_name, o.type as org_type,
+               u.name as seller_name
+        FROM products p
+        LEFT JOIN organizations o ON p.organization_id = o.id
+        LEFT JOIN users u ON p.seller_id = u.id
+        WHERE p.is_autoship = 1 AND p.stock >= IFNULL(p.autoship_min_months_stock, 5) AND p.stock >= 5
+        GROUP BY p.name 
+        ORDER BY (p.price - IFNULL(p.discount_price, p.price)) DESC, p.rating_cache DESC 
+        LIMIT 4
+    ");
     $autoship_offers = $autoStmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
@@ -886,13 +907,39 @@ function buildUrlRemoveArrayItem($arrayName, $valueToRemove) {
                             </h3>
                         </a>
 
-                        <?php if(!empty($product['is_autoship'])): ?>
+                        <?php 
+                            $provTag = AutoshipService::resolveProviderTag($product);
+                            $autoAuth = AutoshipService::authenticateAutoshipInventory($product);
+                        ?>
+
+                        <!-- Organization / Provider Tag Visible on Card -->
                         <div class="mb-2">
-                            <span class="text-[10px] text-secondary-container font-bold bg-secondary-container/10 px-2 py-0.5 rounded-md inline-flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[12px]">autorenew</span>
-                                Autoship: <?php echo $product['autoship_discount'] ?? 10; ?>٪ تخفیف
-                            </span>
+                            <a href="<?php echo htmlspecialchars($provTag['profile_url']); ?>" class="text-[10px] font-bold <?php echo htmlspecialchars($provTag['badge_class']); ?> border px-2 py-0.5 rounded-lg inline-flex items-center gap-1 hover:opacity-85 transition-opacity" title="تأمین‌کننده مورد تأیید آسنا">
+                                <span class="material-symbols-outlined text-[12px]"><?php echo $provTag['icon']; ?></span>
+                                <span class="truncate max-w-[140px]"><?php echo htmlspecialchars($provTag['name']); ?></span>
+                                <?php if ($provTag['is_verified']): ?>
+                                    <span class="material-symbols-outlined text-[11px] text-primary">verified</span>
+                                <?php endif; ?>
+                            </a>
                         </div>
+
+                        <!-- Autoship Eligibility Badge (Balances provider and user satisfaction) -->
+                        <?php if(!empty($product['is_autoship'])): ?>
+                            <?php if($autoAuth['is_eligible']): ?>
+                            <div class="mb-2">
+                                <span class="text-[10px] text-secondary-container font-bold bg-secondary-container/10 border border-secondary-container/20 px-2 py-0.5 rounded-md inline-flex items-center gap-1" title="<?php echo htmlspecialchars($autoAuth['user_note']); ?>">
+                                    <span class="material-symbols-outlined text-[12px]">autorenew</span>
+                                    اشتراک دوره‌ای: <?php echo $product['autoship_discount'] ?? 10; ?>٪ تخفیف (موجودی پایدار)
+                                </span>
+                            </div>
+                            <?php else: ?>
+                            <div class="mb-2">
+                                <span class="text-[10px] text-slate-500 font-medium bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md inline-flex items-center gap-1" title="<?php echo htmlspecialchars($autoAuth['user_note']); ?>">
+                                    <span class="material-symbols-outlined text-[12px] text-amber-500">info</span>
+                                    خرید تکی فعال (سهمیه اشتراک محدود)
+                                </span>
+                            </div>
+                            <?php endif; ?>
                         <?php endif; ?>
 
                         <!-- Card Footer with Price & Permanent Touch Button -->
@@ -1245,43 +1292,13 @@ function toggleAutoshipParam(isChecked) {
     window.location.href = url.toString();
 }
 
-// Add to Cart with AJAX
+// Add to Cart with Universal Optimistic Cart Manager (0ms latency live counter)
 function addToCart(btn, productId, type = 'standard') {
-    if(window.event) window.event.preventDefault();
-    
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[18px]">sync</span>';
-    btn.disabled = true;
-    
-    fetch('actions/cart_action.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'action=add&ajax=1&csrf_token=<?php echo csrf_token(); ?>&product_id=' + productId + '&type=' + type
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check_circle</span>';
-            btn.classList.add('bg-status-active');
-            
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.classList.remove('bg-status-active');
-                btn.disabled = false;
-            }, 2000);
-        } else {
-            alert('خطا در افزودن به سبد خرید');
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    });
+    if (typeof window.cartManagerAddToCart === 'function') {
+        window.cartManagerAddToCart(btn, productId, type);
+    } else if (typeof window.addToCart === 'function' && window.addToCart !== addToCart) {
+        window.addToCart(btn, productId, type);
+    }
 }
 
 // Wishlist interactions are handled universally by assets/js/wishlist-manager.js

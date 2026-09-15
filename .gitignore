@@ -1,8 +1,34 @@
+# Dependencies & Environment
+vendor/
+node_modules/
 .env
-petshop.db
-uploads/
-migrate_subscriptions.php
-logs/*.log
-!logs/.gitkeep
+accounts_credentials.txt
+*credentials*.txt
+
+# System & OS
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary uploads / cache
+uploads/tmp/
+uploads/.autoship_last_run
+.tempmediaStorage/
+database/backups/
+*.cache
+*.metadata.json
+scratch/
+
+# Build artifacts
 dist/*.zip
-.agents/
+dist/*_*
+!dist/.gitkeep
+

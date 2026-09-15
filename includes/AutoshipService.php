@@ -240,65 +240,134 @@ class AutoshipService
     }
 
     /**
-     * Scan and dispatch proactive SMS reminders to subscribers whose autoship is ending or renewing in N days.
-     * Guaranteed to use Pattern 535285 with dedicated line fallback.
+     * Check whether an item qualifies for Autoship recommendation based on stock buffer.
+     * Guaranteed 3+ months buffer (default threshold: 5 units).
      */
-    public function processEndingReminders(int $daysAhead = 3): int
+    public static function isEligibleForAutoship(int $stock, int $threshold = 5): bool
     {
-        require_once __DIR__ . '/SmsService.php';
-        $sms = new SmsService();
-        $targetDate = date('Y-m-d', strtotime("+{$daysAhead} days"));
-        $dispatched = 0;
+        return $stock >= max(1, $threshold);
+    }
 
-        // 1. Check user_subscriptions (Chewy-style)
-        try {
-            $stmt = $this->pdo->prepare("
-                SELECT s.id, s.plan_name, s.next_delivery_date, u.phone as user_phone, u.name as user_name
-                FROM user_subscriptions s
-                JOIN users u ON s.user_id = u.id
-                WHERE s.status = 'active' AND s.next_delivery_date = ?
-            ");
-            $stmt->execute([$targetDate]);
-            $subs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    /**
+     * Authenticate an inventory item for Autoship eligibility.
+     * Balances user trust and provider business needs without disappointing either party.
+     */
+    public static function authenticateAutoshipInventory(array $item, int $monthlyQty = 1, int $minMonths = 3): array
+    {
+        $stock = (int)($item['stock'] ?? 0);
+        $threshold = (int)($item['autoship_min_months_stock'] ?? max(5, $monthlyQty * $minMonths));
+        $isEligible = ($stock >= $threshold);
+        $monthsBuffer = ($monthlyQty > 0) ? (int)floor($stock / $monthlyQty) : 0;
 
-            foreach ($subs as $sub) {
-                if (!empty($sub['user_phone'])) {
-                    $plan = $sub['plan_name'] ?: 'محصول سفارش ادواری';
-                    $dateStr = $sub['next_delivery_date'] ?: $targetDate;
-                    if ($sms->sendAutoshipEndingReminder($sub['user_phone'], $plan, $dateStr)) {
-                        $dispatched++;
-                    }
-                }
-            }
-        } catch (Throwable $e) {
-            error_log("processEndingReminders (user_subscriptions) warning: " . $e->getMessage());
+        if ($stock <= 0) {
+            return [
+                'is_eligible'    => false,
+                'can_single_buy' => false,
+                'status'         => 'out_of_stock',
+                'badge_fa'       => 'ناموجود در انبار',
+                'badge_class'    => 'bg-rose-100 text-rose-800 border-rose-200',
+                'user_note'      => 'این کالا در حال حاضر اتمام موجودی شده است.',
+                'provider_tip'   => 'جهت امکان فروش، لطفاً انبار خود را شارژ فرمایید.',
+                'months_buffer'  => 0,
+                'stock'          => 0
+            ];
         }
 
-        // 2. Also check legacy/standard subscriptions table if present
-        try {
-            $stmt2 = $this->pdo->prepare("
-                SELECT s.id, p.name as product_name, s.next_delivery_date, u.phone as user_phone, u.name as user_name
-                FROM subscriptions s
-                JOIN products p ON s.product_id = p.id
-                JOIN users u ON s.user_id = u.id
-                WHERE s.status = 'active' AND s.next_delivery_date = ?
-            ");
-            $stmt2->execute([$targetDate]);
-            $subs2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
-
-            foreach ($subs2 as $sub2) {
-                if (!empty($sub2['user_phone'])) {
-                    $prod = $sub2['product_name'] ?: 'محصولات دوره ای پت';
-                    $dateStr = $sub2['next_delivery_date'] ?: $targetDate;
-                    if ($sms->sendAutoshipEndingReminder($sub2['user_phone'], $prod, $dateStr)) {
-                        $dispatched++;
-                    }
-                }
-            }
-        } catch (Throwable $e) {
-            // Table might not exist or already merged
+        if ($isEligible) {
+            return [
+                'is_eligible'    => true,
+                'can_single_buy' => true,
+                'status'         => 'autoship_qualified',
+                'badge_fa'       => 'واجد شرایط تحویل ادواری (Autoship)',
+                'badge_class'    => 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                'user_note'      => 'این کالا دارای موجودی پایدار است و با ۱۵٪ تخفیف دائمی قابل سفارش ادواری است.',
+                'provider_tip'   => 'کالای شما دارای نشان طلایی اتوشیپ بوده و در اولویت سبد اشتراک ماهانه مشتریان قرار دارد.',
+                'months_buffer'  => $monthsBuffer,
+                'stock'          => $stock
+            ];
         }
 
-        return $dispatched;
+        // Low stock: single purchase only, NOT suggested for autoship
+        // User is happy because they can still purchase immediately!
+        // Provider is happy because they get an immediate sale and avoid stockout cancellation penalties!
+        return [
+            'is_eligible'    => false,
+            'can_single_buy' => true,
+            'status'         => 'single_order_only',
+            'badge_fa'       => 'خرید تک‌باره فعال (سهمیه اشتراک محدود)',
+            'badge_class'    => 'bg-amber-100 text-amber-800 border-amber-200',
+            'user_note'      => 'امکان خرید تکی وجود دارد. (سفارش دوره‌ای موقتاً جهت تضمین تحویل پایدار ماه‌های بعد برای این کالا غیرفعال است)',
+            'provider_tip'   => "با افزایش موجودی به حداقل {$threshold} عدد، نشان پرفروش اشتراک دوره‌ای برای این کالا فعال می‌گردد.",
+            'months_buffer'  => $monthsBuffer,
+            'stock'          => $stock
+        ];
+    }
+
+    /**
+     * Resolve provider tag, verified icon, and store link for any product or medicine.
+     */
+    public static function resolveProviderTag(array $item): array
+    {
+        $orgName   = $item['org_name'] ?? null;
+        $orgType   = $item['org_type'] ?? null;
+        $orgId     = !empty($item['organization_id']) ? (int)$item['organization_id'] : null;
+        $sellerName= $item['seller_name'] ?? null;
+        $sellerId  = !empty($item['seller_id']) ? (int)$item['seller_id'] : null;
+
+        // If direct clinic or hospital
+        if (!empty($orgName) && in_array($orgType, ['hospital', 'clinic'], true)) {
+            return [
+                'name'         => $orgName,
+                'type'         => 'clinic',
+                'type_fa'      => 'مرکز درمانی',
+                'icon'         => 'local_hospital',
+                'tag_label'    => "🏥 مرکز درمانی: {$orgName}",
+                'badge_class'  => 'bg-blue-50 text-blue-800 border-blue-200',
+                'is_verified'  => true,
+                'profile_url'  => "organization_profile.php?id={$orgId}"
+            ];
+        }
+
+        // If pharmacy
+        if (!empty($orgName) && $orgType === 'pharmacy') {
+            return [
+                'name'         => $orgName,
+                'type'         => 'pharmacy',
+                'type_fa'      => 'داروخانه رسمی',
+                'icon'         => 'medication',
+                'tag_label'    => "💊 داروخانه: {$orgName}",
+                'badge_class'  => 'bg-teal-50 text-teal-800 border-teal-200',
+                'is_verified'  => true,
+                'profile_url'  => "organization_profile.php?id={$orgId}"
+            ];
+        }
+
+        // If seller / petshop
+        if (!empty($sellerName) || !empty($sellerId)) {
+            $name = !empty($sellerName) ? $sellerName : 'فروشنده تاییدشده';
+            return [
+                'name'         => $name,
+                'type'         => 'seller',
+                'type_fa'      => 'پت‌شاپ مجاز',
+                'icon'         => 'storefront',
+                'tag_label'    => "🛍️ تأمین‌کننده: {$name}",
+                'badge_class'  => 'bg-purple-50 text-purple-800 border-purple-200',
+                'is_verified'  => true,
+                'profile_url'  => "shop.php?seller_id={$sellerId}"
+            ];
+        }
+
+        // Default: ASENA Corporate Express
+        return [
+            'name'         => 'آسنا اکسپرس',
+            'type'         => 'official',
+            'type_fa'      => 'پلتفرم رسمی',
+            'icon'         => 'verified',
+            'tag_label'    => '✨ ارسال مستقیم آسنا اکسپرس',
+            'badge_class'  => 'bg-amber-50 text-amber-800 border-amber-200',
+            'is_verified'  => true,
+            'profile_url'  => 'about.php'
+        ];
     }
 }
+

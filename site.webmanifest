@@ -1,44 +1,36 @@
 {
-  "name": "آسنا • مراقبت و سلامت پت",
+  "name": "ASENA Company - Veterinary Clinic & Pet Care Platform",
   "short_name": "ASENA",
-  "description": "پلتفرم جامع دامپزشکی، داروخانه و ملزومات حیوانات خانگی آسنا",
+  "description": "پلتفرم یکپارچه کلینیک دامپزشکی، پت‌شاپ و داروخانه تخصصی آنلاین آسنا",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#ffffff",
+  "background_color": "#f8fafc",
   "theme_color": "#002d72",
   "lang": "fa-IR",
   "dir": "rtl",
   "icons": [
     {
-      "src": "/assets/images/asena-maskable-v4-192.png",
+      "src": "/assets/images/favicon-48x48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/images/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/images/favicon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/assets/images/cute-splash-icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/images/asena-maskable-v4-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/assets/images/cute-splash-icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/assets/images/favicon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/apple-touch-icon.png",

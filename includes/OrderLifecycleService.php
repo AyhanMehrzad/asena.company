@@ -183,7 +183,9 @@ class OrderLifecycleService
             $name = $user['name'] ?: 'مشتری گرامی';
 
             if ($status === self::STATUS_HANDED_OVER || $status === 'shipped') {
-                $cName = $carrier ?: 'شرکت ملی پست / پستکس';
+                $cName = $carrier ?: 'پست/تیپاکس';
+                $code = $trackingCode ?: 'ثبت در سامانه';
+                $text = "آسنا: {$name} عزیز، سفارش شما (#{$orderId}) تحویل {$cName} گردید. کد رهگیری مرسوله: {$code}";
 
                 // Check seller SMS credits if this is a marketplace seller order
                 $selStmt = $this->pdo->prepare("SELECT seller_id FROM order_items WHERE order_id = ? AND seller_id IS NOT NULL LIMIT 1");
@@ -196,19 +198,16 @@ class OrderLifecycleService
                         error_log("Seller #{$sellerId} has 0 SMS credits. Shipping SMS was blocked for order #{$orderId}.");
                         return;
                     }
-                    SmsService::deductUserSmsCredits($this->pdo, $sellerId, $phone, "ارسال سفارش #{$orderId} با بارکد {$trackingCode}", 1);
+                    SmsService::deductUserSmsCredits($this->pdo, $sellerId, $phone, $text, 1);
                 }
 
-                if (!empty($trackingCode)) {
-                    $sms->sendPostTrackingNotice($phone, $orderId, $trackingCode, $cName);
-                } else {
-                    $sms->sendShippingUpdate($phone, $orderId);
-                }
+                $sms->send($phone, $text);
             } elseif ($status === self::STATUS_OUT_DELIVERY) {
-                $text = "کاربر گرامی، مرسوله سفارش (#{$orderId}) به پیک تحویل داده شد و در مسیر تحویل به شماست.\nasena.company";
-                $sms->sendDirectSms($phone, $text, 'OUT_DELIVERY');
+                $text = "آسنا: {$name} عزیز، مرسوله سفارش (#{$orderId}) به پیک تحویل داده شد و در مسیر تحویل به شماست.";
+                $sms->send($phone, $text);
             } elseif ($status === self::STATUS_DELIVERED) {
-                $sms->sendDeliveryCompletedNotice($phone, $orderId);
+                $text = "آسنا: سفارش (#{$orderId}) با موفقیت تحویل داده شد. از خرید شما سپاسگزاریم! مشتاق خواندن نظر شما در سایت هستیم.";
+                $sms->send($phone, $text);
             }
         } catch (Exception $e) {
             error_log("Fulfillment SMS dispatch error: " . $e->getMessage());
