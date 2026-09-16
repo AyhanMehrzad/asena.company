@@ -31,4 +31,5 @@ scratch/
 dist/*.zip
 dist/*_*
 !dist/.gitkeep
+demo/
 
