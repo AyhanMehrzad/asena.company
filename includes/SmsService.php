@@ -28,8 +28,8 @@ class SmsService {
     const BODY_ID_CHARITY           = '528865'; // قدردانی خیریه
     const BODY_ID_ADMIN_ORDER       = '528866'; // اطلاع‌رسانی سفارش جدید به مدیر
     const BODY_ID_DOCTOR_BOOKING    = '528867'; // اطلاع‌رسانی نوبت جدید به پزشک
-    const BODY_ID_DOCTOR_TELEHEALTH = '528867'; // اطلاع‌رسانی پیام جدید تله‌هلث به پزشک
-    const BODY_ID_USER_CHAT         = '518597'; // اطلاع‌رسانی پیام جدید به کاربر/بیمار
+    const BODY_ID_DOCTOR_TELEHEALTH = '538904'; // اطلاع‌رسانی پیام جدید تله‌هلث به پزشک (تایید شده در پنل)
+    const BODY_ID_USER_CHAT         = '538924'; // اطلاع‌رسانی پیام جدید به کاربر/بیمار (ثبت‌شده در پنل)
 
     public function __construct() {
         self::loadEnv();
