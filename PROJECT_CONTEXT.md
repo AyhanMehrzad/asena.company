@@ -276,6 +276,39 @@
     - معماری شبکه نامتقارن Bento Grid جهت معرفی تفکیک‌شده ۳ رکن اصلی آسنا (دامپزشکی و تله‌هلث، داروخانه زنجیره سرد و اشتراک خودکار Autoship مدل Chewy).
     - به‌روزرسانی رفرنس‌های حاکمیتی در [`AGENTS.md`](file:///opt/lampp/htdocs/asena/asena-enterprise/AGENTS.md) و [`PROJECT_GUIDELINES.md`](file:///opt/lampp/htdocs/asena/asena-enterprise/PROJECT_GUIDELINES.md).
 
+37. **پیاده‌سازی موتور جامع کدهای تخفیف انترپرایز و پوشش مالی از کارمزد پلتفرم (Enterprise Promo Code & Margin Absorption Engine):**
+    - **قانون جامع مالی و حفظ محرمانگی کارمزد پلتفرم ([`.agents/rules/marketplace_promo_and_financial_rules.md`](file:///.agents/rules/marketplace_promo_and_financial_rules.md) و [`AGENTS.md`](file:///opt/lampp/htdocs/asena/asena-enterprise/AGENTS.md)):** تثبیت قانون سهم ۱۵٪ کارمزد پلتفرم به عنوان توافق خصوصی B2B با مراکز و تأمین‌کنندگان؛ منع اکید هرگونه اشاره به درصد کارمزد پلتفرم در دید مشتریان؛ اعمال مالیات بر ارزش افزوده ۱۰٪ مصوب قانونی صرفاً بر مازاد خالص مشمول مالیات پس از کسر تخفیف؛ و اصل مصونیت درآمدی تأمین‌کنندگان (تأمین ۱۰۰٪ هزینه کدهای تخفیف از محل کارمزد ۱۵٪ پلتفرم و تضمین دریافت ۸۵٪ سهم ناخالص توسط فروشنده/پزشک/کلینیک).
+    - **مایگریشن دیتابیس کدهای تخفیف و لاگ استفاده ([`database/migrations/18_enterprise_promo_engine.sql`](file:///opt/lampp/htdocs/asena/asena-enterprise/database/migrations/18_enterprise_promo_engine.sql)):** ارتقای جدول `promo_codes` با فیلدهای سقف تخفیف درصدی (`max_discount_amount`)، حداقل سبد خرید (`min_order_amount`)، محدودیت تعداد کل و کاربر، محدودیت سفارش اول؛ ایجاد جدول `promo_code_usages` جهت ثبت ردگیری اتمیک و جلوگیری از دابل‌اسپندینگ.
+    - **سرویس منطق کسب‌وکار پروموشن‌ها ([`includes/PromoCodeService.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/includes/PromoCodeService.php) و [`includes/App.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/includes/App.php)):** ایجاد سرویس کدهای تخفیف با متد سینگلتون `App::promo()` جهت اعتبارسنجی همه‌جانبه، محاسبه مالیات ۱۰٪ پس از تخفیف، ثبت اتمیک ردگیری مصرف، و مدیریت CRUD ادمین.
+    - **تعدیل لجر و اسکروی هفتگی تأمین‌کنندگان ([`includes/MarketplaceEscrowService.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/includes/MarketplaceEscrowService.php)):** ثبت هزینه بازاریابی و کد تخفیف به صورت منفی از محل کارمزد پلتفرم آسنا در `platform_ledger_entries` جهت همخوانی دوبل‌انتری حسابداری بدون ریالی کسر از کیف‌پول تأمین‌کننده.
+    - **رابط کاربری سبد خرید و اکشن ایجکس ([`cart.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/cart.php) و [`actions/promo_action.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/actions/promo_action.php)):** افزودن نوار مدرن اعمال کد تخفیف با کلید CSRF، نمایش ریل‌تایم نشان سبز سود تخفیف، محاسبه مجدد مالیات ۱۰٪ و مبلغ نهایی بدون ریفرش صفحه، و ذخیره امن در سشن.
+    - **اتصال جریان پرداخت زرین‌پال و ثبت فاکتور ([`payment.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/payment.php) و [`actions/complete_payment.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/actions/complete_payment.php)):** انتقال مبلغ تخفیف‌خورده به درگاه رسمی زرین‌پال، ذخیره کد و تخفیف در سفارش، ثبت در لجر استفاده، و هدایت خریدار به رسید رسمی فاکتور.
+    - **رسید رسمی دیجیتال پرداخت خریدار ([`order_receipt.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/order_receipt.php)):** صفحه استاندارد فاکتور الکترونیک و رسید پرداخت با شناسه پیگیری زرین‌پال، اقلام، تخفیف، مالیات ۱۰٪، استایل‌های پرینت `@media print` و لینک‌دهی در پروفایل کاربر و پنل ادمین.
+38. **تکمیل پنل اختصاصی مدیریت، ویرایش، پایان‌دهی آنی و ارسال اعلان همگانی کدهای تخفیف (Admin Promo Suite, Instant Termination & Multi-Channel Broadcast):**
+    - **مدیریت، ویرایش و پایان‌دهی آنی ([`admin/promo_codes.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/admin/promo_codes.php)):**
+      - پیاده‌سازی فرم یکپارچه ایجاد و ویرایش کدهای تخفیف با پشتیبانی از کدهای درصدی/ثابت، تعیین سقف ریالی، حداقل سفارش، سقف دفعات، سفارش اول و بازه تاریخی.
+      - افزودن دکمه پایان دادن فوری (`end_promo` / `endPromoCode()`) که فوراً وضعیت را غیرفعال کرده و تاریخ انقضا را به زمان جاری تغییر می‌دهد.
+      - حذف ایمن کدها با حفظ تاریخچه لجر (در صورت داشتن تراکنش قبلی، سیستم کد را غیرفعال می‌کند تا رفرنس حسابداری مخدوش نشود).
+    - **ارسال اعلان هوشمند و پیامک به کاربران سامانه (`broadcast_promo` / `broadcastPromoNotification()`):**
+      - مودال اختصاصی ارسال کمپین اطلاع‌رسانی با پیش‌نویس متن ترغیب‌کننده و انتخاب جامعه هدف (همه کاربران، خریداران قبلی، یا کاربران وب‌اپلیکیشن PWA).
+      - ایجاد خودکار رکورد در `user_notifications` و ارسال همزمان پیامک با وب‌سرویس ملی‌پیامک (`SmsService`) در صورت فعال بودن تیک پیامک.
+    - **لینک‌دهی هوشمند و فعال‌سازی خودکار کوپن در فروشگاه و سبد خرید ([`shop.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/shop.php) و [`cart.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/cart.php)):**
+      - پشتیبانی از پارامتر `coupon=CODE` در لینک نوتیفیکیشن‌ها؛ ذخیره در سشن و نمایش بنر اطلاع‌رسانی بالای کاتالوگ فروشگاه.
+39. **مهندسی ساده‌سازی فراگیر اپلیکیشن و استقرار معماری افشای تدریجی (App-Wide Simplification & Progressive Disclosure Architecture):**
+    - **تدوین استاندارد حاکمیتی ساده‌سازی ([`.agents/rules/progressive_disclosure_and_app_simplification.md`](file:///.agents/rules/progressive_disclosure_and_app_simplification.md) و [`AGENTS.md`](file:///opt/lampp/htdocs/asena/asena-enterprise/AGENTS.md)):**
+      - تصویب اصل تفکیک «ویترین از کارگاه» (Showcase vs. Workshop).
+      - ممنوعیت قرار دادن ابزارهای سنگین نرم‌افزاری چندمرحله‌ای (فرم‌های ۴۰۰ خطی، تقویم‌های رزرو، کاتالوگ‌های خام دارویی) مستقیماً در اسکرول صفحه اصلی.
+      - استقرار معماری اطلاعات ۳ سطحی: (۱) جریان اصلی مصرف‌کننده، (۲) هاب‌ها و ابزارهای تخصصی مجزا، (۳) پرتال همکاران و متخصصین (B2B).
+    - **ایجاد صفحه مستقل ابزار محاسبه‌گر کالری و تغذیه پت ([`calculator.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/calculator.php)):**
+      - استخراج فرمول‌های استاندارد FEDIAF و WSAVA از صفحه اصلی به یک صفحه تخصصی مستقل با سئو قوی، انتخاب گونه سگ/گربه، اسلایدر وزن، سن و فعالیت، پیشنهاد گرم روزانه غذای خشک و آب مصرفی، راهنمای علمی، و پیوند به پت‌شاپ و تداخل دارویی.
+    - **بازطراحی و کاهش ۹۰ درصدی حجم صفحه اصلی ([`index.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/index.php)):**
+      - کاهش خطوط کد از ۳,۴۳۱ خط (۲۵۱ کیلوبایت) به حدود ۴۳۰ خط (۲۶ کیلوبایت) با حفظ کامل زیبایی و عملکرد فوق‌سریع.
+      - هیروی اقدام‌محور با جعبه جستجوی فوری ۳ تبِ نوبت‌دهی دامپزشک، پت‌شاپ و داروخانه.
+      - بنتوگرید ۳ ستون خدمات، اسپات‌لایت ۴ پزشک برتر با رزرو فوری، پرفروش‌ترین‌های پت‌شاپ، تیزر کارت‌های ۳‌گانه ابزارهای سلامت، نظرات خریداران و بنر تریاژ اورژانس ۲۴ ساعته.
+    - **ساماندهی سراسری ناوبری و هدر و فوتر ([`includes/header.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/includes/header.php) و [`includes/footer.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/includes/footer.php)):**
+      - ارتقای منوی دراپ‌داون دسکتاپ به **«ابزارها و خدمات»** شامل محاسبه‌گر کالری، تداخل‌سنج دارویی، مراکز درمانی، تحویل خودکار Autoship، دانشنامه، خیریه و باشگاه مشتریان (هیچ ابزاری پنهان نیست، اما دسته‌بندی‌شده است).
+      - افزودن ابزارها به منوی باتم‌شیت موبایل و ساماندهی ستون‌های فوتر سراسری به همراه فال‌بک‌های داینامیک سئو.
+
 ---
 
 
