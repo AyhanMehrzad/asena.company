@@ -90,7 +90,7 @@ if (!$doctorProfile) {
             'history'      => ['icon' => 'history', 'title' => 'آرشیو مراجعات و پرونده‌ها', 'tab' => 'history-tab'],
             'emr'          => ['icon' => 'manage_accounts', 'title' => 'رجیستری بیماران و EMR', 'tab' => 'emr-tab'],
             'bpms'         => ['icon' => 'medication', 'title' => 'نسخه‌نویسی و گردش کار BPMS', 'tab' => 'bpms-tab'],
-            'interactions' => ['icon' => 'hub', 'title' => 'تعاملات، مالی و پیامک آسنا', 'url' => '../partner_interactions.php'],
+            'site_builder' => ['icon' => 'web', 'title' => 'وب‌سایت اختصاصی من', 'url' => 'site_builder.php'],
             'profile'      => ['icon' => 'contact_phone', 'title' => 'اطلاعات تماس و پیامک نوبت', 'tab' => 'profile-tab'],
         ];
 
@@ -134,7 +134,6 @@ if (!$doctorProfile) {
                 <span class="font-label-sm text-label-sm">خروج از حساب</span>
             </a>
         </div>
-    </div>
 </aside>
 
 <!-- Main Content Wrapper -->
