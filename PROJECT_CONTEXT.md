@@ -83,6 +83,39 @@
 
 ## ۳. تاریخچه تغییرات اخیر (Change Log)
 
+### نسخه ۱.۰.۳۷ (اکتبر ۲۰۲۶ - بازطراحی لوکس صفحه ویترین وب‌سایت‌ها، پیوند عمیق وب‌سایت به حساب کاربران، کاک‌پیت اختصاصی وب‌سایت در پنل‌های چهارگانه، و ویرایشگر پیشرفته با ذخیره زنده)
+1. **بازطراحی اساسی صفحه ویترین وب‌سایت‌ها (`websites.php` و ریدایرکت `/website`):**
+   - حذف کامل جداول قدیمی و کدهای منسوخ ۱۳۰۰ خطی و ساخت ویترین پیشرفته با گرادینت سرمه‌ای و امبر آسنا، انیمیشن‌های ملایم، و تایپوگرافی Geist/Vazirmatn.
+   - تشخیص خودکار نقش کاربر لاگین‌شده (پزشک، داروخانه، پت‌شاپ، کلینیک) با سلام نقش‌محور، هدایت مستقیم به وب‌سایت فعال یا استودیو، و پیش‌انتخاب تب تخصصی متناسب با شغل.
+   - چکر تعاملی ساب‌دامین (`hero-subdomain-input`) با استعلام زنده وضعیت آزادی دامنه، فریم‌های پیش‌نمایش تعاملی دوگانه (دسکتاپ و PWA موبایل)، و حفظ کامل المان‌های آزمون خودکار.
+2. **اتصال ساختاری وب‌سایت به حساب کاربران (`TenantSiteService` و پایگاه داده):**
+   - خودترمیمی ستون‌های `user_id` و `custom_domain` در جدول `tenant_sites` همراه با ایندکس‌های اختصاصی در هر دو محیط MySQL و SQLite.
+   - متد `getSiteForUser(userId, role)` با اولویت‌بندی جستجوی مستقیم `user_id`، `provisioned_by_user_id` و نگاشت نقش‌های شغلی.
+   - متد `getSiteByDomain(domain)` و پشتیبانی مستقیم از دامنه‌های اختصاصی شخصی (`.ir` / `.com`) در `site.php`.
+   - اکشن‌های `provision_my_site` (راه‌اندازی فوری ۱ کلیکه وب‌سایت از درون پنل) و `update_custom_domain` در بک‌اند.
+3. **ایجاد کاک‌پیت اختصاصی مدیریت وب‌سایت در پنل‌های چهارگانه (`website.php`):**
+   - ایجاد مؤلفه یکپارچه [`includes/portal_website_cockpit.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/includes/portal_website_cockpit.php) و صفحات اختصاصی در تمام پورتال‌ها:
+     - [`doctor/website.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/doctor/website.php) (پزشکان)
+     - [`pharmacist/website.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/pharmacist/website.php) (داروخانه‌ها)
+     - [`seller/website.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/seller/website.php) (فروشندگان پت‌شاپ)
+     - [`organization/website.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/organization/website.php) (کلینیک‌ها و بیمارستان‌ها)
+   - امکانات کاک‌پیت: کارت ویزیت دیجیتال و QR Code هوشمند وکتوری (تولید آفلاین SVG با قابلیت دانلود)، مدیریت دامنه اختصاصی با راهنمای رکوردهای DNS، پایش آمار بازدید و نرخ تبدیل، وضعیت ماژول‌های فعال، فریم پیش‌نمایش زنده وب‌سایت، و دکمه راه‌اندازی فوری برای کاربران فاقد وب‌سایت.
+   - به‌روزرسانی نوبارهای چهار پورتال جهت هدایت منوی وب‌سایت اختصاصی به کاک‌پیت مرکزی `website.php`.
+4. **ارتقای استودیوی ویرایشگر زنده (`includes/site_builder_studio.php`):**
+   - پیوند دکمه بازگشت به پیشخوان وب‌سایت (`website.php`).
+   - استقرار نشانگر کپسولی وضعیت ذخیره زنده (همگام‌سازی شده ✓ / تغییرات ذخیره‌نشده / در حال ذخیره‌سازی...) با گوش دادن به رویدادهای فیلدهای فرم و کلیدهای میانبر.
+5. **پوشش تست ۱۰۰٪ و همگام‌سازی دو مخزن:**
+   - نگارش سوییت تست جامع [`tests/test_website_cockpit_and_account_linking.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/tests/test_website_cockpit_and_account_linking.php) و پاس شدن تمام آزمون‌های ۵ گانه در هر دو مخزن `asena-enterprise` و `asena.company`.
+
+### نسخه ۱.۰.۳۶ (اکتبر ۲۰۲۶ - بهینه‌سازی پوسته شبکه وب‌سایت‌ها و استقرار مهارت‌های استاندارد سیستم)
+1. بازطراحی پوسته بصری و ویترین شبکه وب‌سایت‌های تخصصی در [`websites.php`](file:///opt/lampp/htdocs/asena/asena-enterprise/websites.php) (`website-network-shell`) با فیلتر سریع الگوها بر اساس اهداف کاری (درمان، فروش، سازمانی)، اعتبارسنجی زنده نشانی ساب‌دامین و استقرار فرآیند سه‌مرحله‌ای شفاف از انتخاب تا انتشار.
+2. استقرار مهارت‌های استاندارد عامل در پوشه `.agents/skills/` شامل راهنماهای طراحی رابط کاربری ([`asena-ui`](file:///opt/lampp/htdocs/asena/asena-enterprise/.agents/skills/asena-ui/SKILL.md))، بازبینی طراحی محصول ([`design-review`](file:///opt/lampp/htdocs/asena/asena-enterprise/.agents/skills/design-review/SKILL.md)) و کدنویسی بهینه و کم‌حجم ([`efficient-coding`](file:///opt/lampp/htdocs/asena/asena-enterprise/.agents/skills/efficient-coding/SKILL.md)).
+
+### نسخه ۱.۰.۳۵ (اکتبر ۲۰۲۶ - هسته مدیریت شبکه وب‌سایت‌های چندمستاجری)
+1. افزودن مهاجرت `25_tenant_website_operations.sql` برای وضعیت چرخه عمر، منشأ provision، مالک عملیات، وضعیت پرداخت و متادیتای انتشار وب‌سایت‌های مستاجر.
+2. افزودن کابینت مرکزی مالک در `admin/websites.php` و اکشن امن `actions/admin_websites_action.php` برای ایجاد بدون پرداخت، انتشار/تعلیق، تغییر tier و بررسی درخواست‌های `website_orders` با ثبت رویداد ممیزی.
+3. افزودن ورودی سازگار `/website` به کاتالوگ `/websites` و خودترمیمی ستون‌های عملیاتی در `TenantSiteService` برای نصب‌های قدیمی.
+
 ### نسخه ۱.۰.۳۴ (اکتبر ۲۰۲۶ - بازطراحی اساسی صفحه وب‌سایت‌ساز /websites، لغو طبقه‌بندی طبقاتی قیمت‌گذاری و معرفی نسخه‌های تخصصی وب‌سایت، سوئیچر تعاملی دسکتاپ و PWA موبایل، و نوسازی لوکس هیرو بنر)
 1. **لغو کامل طبقه‌بندی طبقاتی قیمت‌ها و جایگزینی با نسخه‌های تخصصی بر اساس حوزه کاری (Dedicated Website Editions):**
    - حذف کامل کارت‌های تفکیک طبقاتی قدیمی (Basic / Standard / Premium / Enterprise) و امکانات قفل‌شده با علامت ضربدر قرمز؛ تمامی وب‌سایت‌ها به عنوان یک نهاد واحد و مستقل تعریف شده و تنوع آن‌ها صرفاً بر پایه ماژول‌ها و نیازهای شغلی تخصصی است.
@@ -1308,6 +1341,9 @@
     - **ایجاد مایگریشن نسخه ۲۴ پایگاه‌داده ([`database/migrations/24_tickets_multitenant_alignment.sql`](file:///opt/lampp/htdocs/asena/asena-enterprise/database/migrations/24_tickets_multitenant_alignment.sql)):**
       - ثبت استاندارد تغییرات ساختار جدول `tickets` و `ticket_messages`.
 
+78. **افزودن مهارت‌های محلی Codex برای توسعه و بازبینی آسنا:**
+    - ایجاد [` .agents/skills/asena-ui/SKILL.md`](file:///opt/lampp/htdocs/asena/asena-enterprise/.agents/skills/asena-ui/SKILL.md)، [` .agents/skills/design-review/SKILL.md`](file:///opt/lampp/htdocs/asena/asena-enterprise/.agents/skills/design-review/SKILL.md) و [` .agents/skills/efficient-coding/SKILL.md`](file:///opt/lampp/htdocs/asena/asena-enterprise/.agents/skills/efficient-coding/SKILL.md) برای راهنمایی طراحی رابط، بازبینی UX و اجرای کم‌هزینه و متمرکز.
+
 ---
 
 ## ۴. پروتکل ثبت تغییرات آینده (Maintenance Rule)
@@ -1315,5 +1351,3 @@
 > هر زمان که فایل جدیدی ایجاد یا فایلی ویرایش شد:
 > ۱. بلافاصله تغییر انجام‌شده را با ذکر نام فایل و دلیل فنی، به انتهای بخش **۳. تاریخچه تغییرات اخیر (Change Log)** در همین فایل ([`PROJECT_CONTEXT.md`](file:///opt/lampp/htdocs/asena/asena-enterprise/PROJECT_CONTEXT.md)) اضافه کن.  
 > ۲. نیاز به نگهداری تاریخچه طولانی در پنجره پرامپت نیست؛ هر زمان کانتکس پر یا ریست شد، با استناد به این فایل می‌توان کار را بدون اتلاف وقت ادامه داد.
-
-
