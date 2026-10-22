@@ -961,3 +961,186 @@ img.lazy-img-loaded {
     display: flex;
     transform: translateY(0);
 }
+
+/* ==========================================================================
+   ASENA Global Color Contrast & Gradient Fallbacks
+   ========================================================================== */
+.aspect-\[4\/3\] { aspect-ratio: 4 / 3 !important; }
+.aspect-\[16\/9\] { aspect-ratio: 16 / 9 !important; }
+.aspect-square { aspect-ratio: 1 / 1 !important; }
+.aspect-video { aspect-ratio: 16 / 9 !important; }
+
+.text-orange-950 { color: #431407 !important; }
+.text-amber-950 { color: #451a03 !important; }
+.text-rose-950 { color: #4c0519 !important; }
+.text-slate-950 { color: #020617 !important; }
+.text-emerald-950 { color: #022c22 !important; }
+.text-indigo-950 { color: #1e1b4b !important; }
+.text-purple-950 { color: #3b0764 !important; }
+.text-blue-950 { color: #172554 !important; }
+.text-sky-950 { color: #082f49 !important; }
+.text-teal-950 { color: #042f2e !important; }
+
+.bg-orange-950 { background-color: #431407 !important; }
+.bg-amber-950 { background-color: #451a03 !important; }
+.bg-rose-950 { background-color: #4c0519 !important; }
+.bg-slate-950 { background-color: #020617 !important; }
+.bg-emerald-950 { background-color: #022c22 !important; }
+.bg-indigo-950 { background-color: #1e1b4b !important; }
+.bg-purple-950 { background-color: #3b0764 !important; }
+.bg-blue-950 { background-color: #172554 !important; }
+.bg-sky-950 { background-color: #082f49 !important; }
+
+.border-orange-950 { border-color: #431407 !important; }
+.border-amber-950 { border-color: #451a03 !important; }
+.border-rose-950 { border-color: #4c0519 !important; }
+.border-slate-950 { border-color: #020617 !important; }
+.border-emerald-950 { border-color: #022c22 !important; }
+.border-indigo-950 { border-color: #1e1b4b !important; }
+.border-purple-950 { border-color: #3b0764 !important; }
+
+.bg-gradient-to-r { background-image: linear-gradient(to right, var(--tw-gradient-stops)) !important; }
+.bg-gradient-to-l { background-image: linear-gradient(to left, var(--tw-gradient-stops)) !important; }
+.bg-gradient-to-t { background-image: linear-gradient(to top, var(--tw-gradient-stops)) !important; }
+.bg-gradient-to-b { background-image: linear-gradient(to bottom, var(--tw-gradient-stops)) !important; }
+.bg-gradient-to-tr { background-image: linear-gradient(to top right, var(--tw-gradient-stops)) !important; }
+.bg-gradient-to-tl { background-image: linear-gradient(to top left, var(--tw-gradient-stops)) !important; }
+.bg-gradient-to-br { background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)) !important; }
+.bg-gradient-to-bl { background-image: linear-gradient(to bottom left, var(--tw-gradient-stops)) !important; }
+
+.from-\[\#001a48\] { --tw-gradient-from: #001a48; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(0, 26, 72, 0)); }
+.to-\[\#042866\] { --tw-gradient-to: #042866; }
+.to-\[\#0a3580\] { --tw-gradient-to: #0a3580; }
+.to-\[\#002d72\] { --tw-gradient-to: #002d72; }
+.to-\[\#041535\] { --tw-gradient-to: #041535; }
+.from-\[\#001a44\] { --tw-gradient-from: #001a44; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(0, 26, 68, 0)); }
+.via-\[\#002d72\] { --tw-gradient-stops: var(--tw-gradient-from, #001a48), #002d72, var(--tw-gradient-to, #001a48); }
+.via-\[\#08296c\] { --tw-gradient-stops: var(--tw-gradient-from, #001a48), #08296c, var(--tw-gradient-to, #001a48); }
+
+.from-indigo-900 { --tw-gradient-from: #312e81; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(49, 46, 129, 0)); }
+.via-indigo-950 { --tw-gradient-stops: var(--tw-gradient-from, #312e81), #1e1b4b, var(--tw-gradient-to, #0f172a); }
+.from-indigo-950 { --tw-gradient-from: #1e1b4b; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(30, 27, 75, 0)); }
+.to-indigo-950 { --tw-gradient-to: #1e1b4b; }
+
+.from-purple-900 { --tw-gradient-from: #581c87; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(88, 28, 135, 0)); }
+.via-purple-950 { --tw-gradient-stops: var(--tw-gradient-from, #581c87), #3b0764, var(--tw-gradient-to, #0f172a); }
+.to-purple-950 { --tw-gradient-to: #3b0764; }
+
+.from-slate-900 { --tw-gradient-from: #0f172a; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(15, 23, 42, 0)); }
+.via-slate-800 { --tw-gradient-stops: var(--tw-gradient-from, #0f172a), #1e293b, var(--tw-gradient-to, #001a48); }
+.to-slate-900 { --tw-gradient-to: #0f172a; }
+.from-slate-950 { --tw-gradient-from: #020617; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(2, 6, 23, 0)); }
+.to-slate-950 { --tw-gradient-to: #020617; }
+
+.from-sky-950 { --tw-gradient-from: #082f49; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(8, 47, 73, 0)); }
+.from-sky-900 { --tw-gradient-from: #0c4a6e; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(12, 74, 110, 0)); }
+
+.from-amber-500 { --tw-gradient-from: #f59e0b; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(245, 158, 11, 0)); }
+.via-amber-600 { --tw-gradient-stops: var(--tw-gradient-from, #f59e0b), #d97706, var(--tw-gradient-to, #ea580c); }
+.via-orange-500 { --tw-gradient-stops: var(--tw-gradient-from, #f59e0b), #f97316, var(--tw-gradient-to, #d97706); }
+.to-orange-600 { --tw-gradient-to: #ea580c; }
+.to-amber-600 { --tw-gradient-to: #d97706; }
+
+.from-red-600 { --tw-gradient-from: #dc2626; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(220, 38, 38, 0)); }
+.via-rose-600 { --tw-gradient-stops: var(--tw-gradient-from, #dc2626), #e11d48, var(--tw-gradient-to, #b91c1c); }
+.to-red-700 { --tw-gradient-to: #b91c1c; }
+
+.from-emerald-600 { --tw-gradient-from: #059669; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(5, 150, 105, 0)); }
+.via-teal-700 { --tw-gradient-stops: var(--tw-gradient-from, #059669), #0f766e, var(--tw-gradient-to, #064e3b); }
+.to-emerald-900 { --tw-gradient-to: #064e3b; }
+
+/* Dedicated Specialized Live Cockpit Hero Gradients & Fallbacks (Rule 11) */
+.cockpit-pharmacist {
+    background-color: #1a102f !important;
+    background-image: linear-gradient(135deg, #1e1338 0%, #2a174d 50%, #120b24 100%) !important;
+    color: #ffffff !important;
+}
+.cockpit-pansion {
+    background-color: #06241a !important;
+    background-image: linear-gradient(135deg, #06241a 0%, #093526 50%, #041a12 100%) !important;
+    color: #ffffff !important;
+}
+.cockpit-groomer {
+    background-color: #1a1200 !important;
+    background-image: linear-gradient(135deg, #1a1200 0%, #2c1a00 50%, #120b00 100%) !important;
+    color: #ffffff !important;
+}
+.cockpit-doctor,
+.cockpit-seller,
+.cockpit-admin,
+.cockpit-org {
+    background-color: #001a48 !important;
+    background-image: linear-gradient(135deg, #001a48 0%, #002868 50%, #001438 100%) !important;
+    color: #ffffff !important;
+}
+
+/* Color stops for arbitrary tailwind gradients */
+.from-\[\#1e1338\] { --tw-gradient-from: #1e1338; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(30, 19, 56, 0)); }
+.via-\[\#2a174d\] { --tw-gradient-stops: var(--tw-gradient-from, #1e1338), #2a174d, var(--tw-gradient-to, #120b24); }
+.to-\[\#120b24\] { --tw-gradient-to: #120b24; }
+
+.from-\[\#06241a\] { --tw-gradient-from: #06241a; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(6, 36, 26, 0)); }
+.via-\[\#093526\] { --tw-gradient-stops: var(--tw-gradient-from, #06241a), #093526, var(--tw-gradient-to, #041a12); }
+.to-\[\#041a12\] { --tw-gradient-to: #041a12; }
+
+.from-\[\#1a1200\] { --tw-gradient-from: #1a1200; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(26, 18, 0, 0)); }
+.via-\[\#2c1a00\] { --tw-gradient-stops: var(--tw-gradient-from, #1a1200), #2c1a00, var(--tw-gradient-to, #120b00); }
+.to-\[\#120b00\] { --tw-gradient-to: #120b00; }
+
+.via-\[\#002868\] { --tw-gradient-stops: var(--tw-gradient-from, #001a48), #002868, var(--tw-gradient-to, #001438); }
+.to-\[\#001438\] { --tw-gradient-to: #001438; }
+
+/* ==========================================================================
+   Unified Collapsible Panel Desktop Sidebar (All Specialized & Admin Portals)
+   ========================================================================== */
+@media (min-width: 1024px) {
+    .panel-sidebar {
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .panel-main-content {
+        transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .panel-sidebar.sidebar-collapsed {
+        width: 5rem !important; /* 80px */
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    .panel-sidebar.sidebar-collapsed .sidebar-header-text,
+    .panel-sidebar.sidebar-collapsed .sidebar-label,
+    .panel-sidebar.sidebar-collapsed .sidebar-badge,
+    .panel-sidebar.sidebar-collapsed .sidebar-cta-btn span:not(.material-symbols-outlined),
+    .panel-sidebar.sidebar-collapsed .sidebar-tier-badge,
+    .panel-sidebar.sidebar-collapsed .sidebar-footer-extra {
+        display: none !important;
+    }
+    .panel-sidebar.sidebar-collapsed .sidebar-cta-btn {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        justify-content: center !important;
+        gap: 0 !important;
+    }
+    .panel-sidebar.sidebar-collapsed .sidebar-cta-btn span.material-symbols-outlined {
+        margin: 0 !important;
+        font-size: 1.4rem !important;
+    }
+    .panel-sidebar.sidebar-collapsed .sidebar-toggle-container {
+        justify-content: center !important;
+    }
+    .panel-sidebar.sidebar-collapsed nav a,
+    .panel-sidebar.sidebar-collapsed .sidebar-footer-link {
+        justify-content: center !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        gap: 0 !important;
+    }
+    .panel-sidebar.sidebar-collapsed nav a span.material-symbols-outlined,
+    .panel-sidebar.sidebar-collapsed .sidebar-footer-link span.material-symbols-outlined {
+        margin: 0 !important;
+        font-size: 1.4rem !important;
+    }
+    .panel-main-content.sidebar-collapsed {
+        margin-right: 5rem !important;
+    }
+}
+
+
